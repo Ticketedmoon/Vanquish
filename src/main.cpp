@@ -4,10 +4,13 @@
 #include <stdlib.h>
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include "./tilemap.cpp"
 
-static bool USE_VERTICAL_SYNC = false;
 static uint32_t WINDOW_WIDTH = 800;
 static uint32_t WINDOW_HEIGHT = 600;
+
+static bool USE_VERTICAL_SYNC = false;
+static bool APP_FRAME_RATE = 60;
 
 static uint32_t SPRITE_SHEET_X = 32;
 static uint32_t SPRITE_SHEET_Y = 32;
@@ -84,6 +87,7 @@ void createWindow()
     float screenHeight = sf::VideoMode::getDesktopMode().height;
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "vanquish");
+
     window.setPosition(sf::Vector2i((screenWidth - WINDOW_WIDTH)/2, (screenHeight - WINDOW_HEIGHT)/2));
 
 
@@ -92,7 +96,7 @@ void createWindow()
         window.setVerticalSyncEnabled(true);
     }
     else {
-        window.setFramerateLimit(120);
+        window.setFramerateLimit(APP_FRAME_RATE);
     }
 
     sf::Texture texture;
@@ -106,6 +110,26 @@ void createWindow()
     sf::Clock clock;
     sf::Vector2f charPos;
 
+    const int level[] =
+    {
+        0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+        1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+        0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+        0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+        0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+        2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+        0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+    };
+
+    // create the tilemap from the level definition
+    TileMap map;
+    if (!map.load("./assets/basic_tilemap.png", sf::Vector2u(32, 32), level, 16, 8))
+    {
+        std::cout << "Failed to load tileset" << std::endl;
+        return;
+    }
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -117,7 +141,9 @@ void createWindow()
             }
         }
 
-        if (clock.getElapsedTime().asSeconds() > 0.1f) 
+        std::cout << "update" << std::endl;
+
+        if (clock.getElapsedTime().asSeconds() > 0.0f) 
         {
             updatePlayerPosition(rectSourceSprite, charPos);
             sprite.setPosition(charPos);
@@ -127,6 +153,7 @@ void createWindow()
         }
 
         window.clear();
+        window.draw(map);
         window.draw(sprite);
         window.display();
     }
