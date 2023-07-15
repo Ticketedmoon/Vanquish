@@ -1,3 +1,5 @@
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <cstdint>
 #include <stdlib.h>
 #include <iostream>
@@ -6,6 +8,75 @@
 static bool USE_VERTICAL_SYNC = false;
 static uint32_t WINDOW_WIDTH = 800;
 static uint32_t WINDOW_HEIGHT = 600;
+
+static uint32_t SPRITE_SHEET_X = 32;
+static uint32_t SPRITE_SHEET_Y = 32;
+static uint32_t LAST_SPRITE_LEFT_POS = 64;
+
+void updatePlayerPosition(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
+{
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+    {
+        rectSourceSprite.top = SPRITE_SHEET_X * 0;
+        if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
+        {
+            rectSourceSprite.left = 0;
+        }
+        else 
+        {
+            rectSourceSprite.left += SPRITE_SHEET_X;
+        }
+
+        charPos.y += 10;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+    {
+        rectSourceSprite.top = SPRITE_SHEET_X * 3;
+        if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
+        {
+            rectSourceSprite.left = 0;
+        }
+        else 
+        {
+            rectSourceSprite.left += SPRITE_SHEET_X;
+        }
+
+        charPos.y -= 10;
+    }
+
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+    {
+        rectSourceSprite.top = SPRITE_SHEET_X * 1;
+        if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
+        {
+            rectSourceSprite.left = 0;
+        }
+        else 
+        {
+            rectSourceSprite.left += SPRITE_SHEET_X;
+        }
+
+        charPos.x -= 10;
+    }
+
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+    {
+        rectSourceSprite.top = SPRITE_SHEET_X * 2;
+        if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
+        {
+            rectSourceSprite.left = 0;
+        }
+        else 
+        {
+            rectSourceSprite.left += SPRITE_SHEET_X;
+        }
+
+        charPos.x += 10;
+    }
+}
 
 void createWindow()
 {
@@ -24,8 +95,16 @@ void createWindow()
         window.setFramerateLimit(120);
     }
 
-    sf::CircleShape shape(WINDOW_WIDTH);
-    shape.setFillColor(sf::Color::Green);
+    sf::Texture texture;
+    if (!texture.loadFromFile("assets/character_sprite_sheet.png"))
+    {
+        std::cout << "Failed to load character sprite sheet" << std::endl;
+    }
+
+    sf::IntRect rectSourceSprite(0, 0, SPRITE_SHEET_X, SPRITE_SHEET_Y);
+    sf::Sprite sprite(texture, rectSourceSprite);
+    sf::Clock clock;
+    sf::Vector2f charPos;
 
     while (window.isOpen())
     {
@@ -33,11 +112,22 @@ void createWindow()
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
+            {
                 window.close();
+            }
+        }
+
+        if (clock.getElapsedTime().asSeconds() > 0.1f) 
+        {
+            updatePlayerPosition(rectSourceSprite, charPos);
+            sprite.setPosition(charPos);
+            sprite.setTextureRect(rectSourceSprite);
+
+            clock.restart();
         }
 
         window.clear();
-        window.draw(shape);
+        window.draw(sprite);
         window.display();
     }
 
