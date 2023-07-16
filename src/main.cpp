@@ -59,7 +59,7 @@ void checkForMoveVerticalDirection(sf::IntRect& rectSourceSprite, sf::Vector2f& 
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
-        if (tileUnderPlayerY < 0 || (level[tileUnderPlayerX + (tileUnderPlayerY - 16)] > 0))
+        if (tileUnderPlayerY <= 0 || (level[tileUnderPlayerX + (tileUnderPlayerY - 16)] > 0))
         {
             return;
         }
@@ -145,12 +145,20 @@ void createWindow()
 
     window.setPosition(sf::Vector2i((screenWidth - WINDOW_WIDTH)/2, (screenHeight - WINDOW_HEIGHT)/2));
 
+    sf::IntRect rectSourceSprite(0, 0, SPRITE_SHEET_X, SPRITE_SHEET_Y);
+    sf::Clock clock;
+    sf::Vector2f charPos = sf::Vector2f(0.0f, 0.0f);
+
+    // create a view with its center and size
+    sf::View view(sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
+    view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.75f, 1.75f));
 
     if (USE_VERTICAL_SYNC)
     {
         window.setVerticalSyncEnabled(true);
     }
-    else {
+    else 
+    {
         window.setFramerateLimit(APP_FRAME_RATE);
     }
 
@@ -159,11 +167,9 @@ void createWindow()
     {
         std::cout << "Failed to load character sprite sheet" << std::endl;
     }
+    texture.setSmooth(true);
 
-    sf::IntRect rectSourceSprite(0, 0, SPRITE_SHEET_X, SPRITE_SHEET_Y);
     sf::Sprite sprite(texture, rectSourceSprite);
-    sf::Clock clock;
-    sf::Vector2f charPos;
 
     // create the tilemap from the level definition
     TileMap map;
@@ -190,6 +196,9 @@ void createWindow()
             sprite.setPosition(charPos);
             sprite.setTextureRect(rectSourceSprite);
             clock.restart();
+
+            view.setCenter((WINDOW_WIDTH / 2) + charPos.x - (WINDOW_WIDTH / 4), (WINDOW_HEIGHT / 2) + charPos.y - (WINDOW_HEIGHT / 4));
+            window.setView(view);
         }
 
         window.clear();
