@@ -5,21 +5,48 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "./tilemap.cpp"
+#include <cmath>
 
 static uint32_t WINDOW_WIDTH = 800;
 static uint32_t WINDOW_HEIGHT = 600;
 
 static bool USE_VERTICAL_SYNC = false;
-static bool APP_FRAME_RATE = 60;
+static uint32_t APP_FRAME_RATE = 60;
 
 static uint32_t SPRITE_SHEET_X = 32;
 static uint32_t SPRITE_SHEET_Y = 32;
 static uint32_t LAST_SPRITE_LEFT_POS = 64;
 
+static const int level[] =
+{
+    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+    0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1,
+    0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
+    1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+    0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
+    0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
+    0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
+    2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
+    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+};
+
+// TODO A better solution might be to temporarily update player position in tmp vars.
+//      If validation passes, commit update player pos.
+//      Otherwise, reject and don't move player.
 void updatePlayerPosition(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
 {
+    int tileUnderPlayerX = floor(charPos.x/32);
+    int tileUnderPlayerY = floor(charPos.y/32) * 16;
+    std::cout << "tileX: " << tileUnderPlayerX << ", tileY: " << tileUnderPlayerY << ", charX: " << charPos.x << ", charY: " << charPos.y << std::endl;
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
+        if (tileUnderPlayerY >= (8 * 16) || level[tileUnderPlayerX + (tileUnderPlayerY + 16)] > 0)
+        {
+            return;
+        }
+
         rectSourceSprite.top = SPRITE_SHEET_X * 0;
         if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
         {
@@ -30,11 +57,16 @@ void updatePlayerPosition(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
             rectSourceSprite.left += SPRITE_SHEET_X;
         }
 
-        charPos.y += 10;
+        charPos.y += 32;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
+        if (tileUnderPlayerY < 0 || (tileUnderPlayerY > 0 && level[tileUnderPlayerX + (tileUnderPlayerY - 16)] > 0))
+        {
+            return;
+        }
+
         rectSourceSprite.top = SPRITE_SHEET_X * 3;
         if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
         {
@@ -45,12 +77,17 @@ void updatePlayerPosition(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
             rectSourceSprite.left += SPRITE_SHEET_X;
         }
 
-        charPos.y -= 10;
+        charPos.y -= 32;
     }
 
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
+        if (tileUnderPlayerX == 0 || level[(tileUnderPlayerX - 1) + tileUnderPlayerY] > 0)
+        {
+            return;
+        }
+
         rectSourceSprite.top = SPRITE_SHEET_X * 1;
         if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
         {
@@ -61,12 +98,17 @@ void updatePlayerPosition(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
             rectSourceSprite.left += SPRITE_SHEET_X;
         }
 
-        charPos.x -= 10;
+        charPos.x -= 32;
     }
 
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
+        if (tileUnderPlayerX > 16 || level[(tileUnderPlayerX + 1) + tileUnderPlayerY] > 0)
+        {
+            return;
+        }
+
         rectSourceSprite.top = SPRITE_SHEET_X * 2;
         if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
         {
@@ -77,7 +119,7 @@ void updatePlayerPosition(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
             rectSourceSprite.left += SPRITE_SHEET_X;
         }
 
-        charPos.x += 10;
+        charPos.x += 32;
     }
 }
 
@@ -110,18 +152,6 @@ void createWindow()
     sf::Clock clock;
     sf::Vector2f charPos;
 
-    const int level[] =
-    {
-        0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
-        1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
-        0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0,
-        0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0,
-        0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
-        2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
-        0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
-    };
-
     // create the tilemap from the level definition
     TileMap map;
     if (!map.load("./assets/basic_tilemap.png", sf::Vector2u(32, 32), level, 16, 8))
@@ -141,14 +171,11 @@ void createWindow()
             }
         }
 
-        std::cout << "update" << std::endl;
-
-        if (clock.getElapsedTime().asSeconds() > 0.0f) 
+        if (clock.getElapsedTime().asSeconds() > 0.1f) 
         {
             updatePlayerPosition(rectSourceSprite, charPos);
             sprite.setPosition(charPos);
             sprite.setTextureRect(rectSourceSprite);
-
             clock.restart();
         }
 
