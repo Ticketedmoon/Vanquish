@@ -1,5 +1,6 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <cstdint>
 #include <stdlib.h>
 #include <iostream>
@@ -20,7 +21,7 @@ static uint32_t LAST_SPRITE_LEFT_POS = 64;
 static const int level[] =
 {
     0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1,
     0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0,
     1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -31,18 +32,14 @@ static const int level[] =
     0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
 };
 
-// TODO A better solution might be to temporarily update player position in tmp vars.
-//      If validation passes, commit update player pos.
-//      Otherwise, reject and don't move player.
-void updatePlayerPosition(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
+void checkForMoveVerticalDirection(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
 {
-    int tileUnderPlayerX = floor(charPos.x/32);
-    int tileUnderPlayerY = floor(charPos.y/32) * 16;
-    std::cout << "tileX: " << tileUnderPlayerX << ", tileY: " << tileUnderPlayerY << ", charX: " << charPos.x << ", charY: " << charPos.y << std::endl;
+    int tileUnderPlayerX = floor(charPos.x/SPRITE_SHEET_X);
+    int tileUnderPlayerY = floor(charPos.y/SPRITE_SHEET_X) * 16;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
-        if (tileUnderPlayerY >= (8 * 16) || level[tileUnderPlayerX + (tileUnderPlayerY + 16)] > 0)
+        if (tileUnderPlayerY >= (7 * 16) || level[tileUnderPlayerX + (tileUnderPlayerY + 16)] > 0)
         {
             return;
         }
@@ -57,12 +54,12 @@ void updatePlayerPosition(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
             rectSourceSprite.left += SPRITE_SHEET_X;
         }
 
-        charPos.y += 32;
+        charPos.y += SPRITE_SHEET_X;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
-        if (tileUnderPlayerY < 0 || (tileUnderPlayerY > 0 && level[tileUnderPlayerX + (tileUnderPlayerY - 16)] > 0))
+        if (tileUnderPlayerY < 0 || (level[tileUnderPlayerX + (tileUnderPlayerY - 16)] > 0))
         {
             return;
         }
@@ -77,9 +74,15 @@ void updatePlayerPosition(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
             rectSourceSprite.left += SPRITE_SHEET_X;
         }
 
-        charPos.y -= 32;
+        charPos.y -= SPRITE_SHEET_X;
     }
 
+}
+
+void checkForMoveHorizontalDirection(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
+{
+    int tileUnderPlayerX = floor(charPos.x/SPRITE_SHEET_X);
+    int tileUnderPlayerY = floor(charPos.y/SPRITE_SHEET_X) * 16;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
@@ -98,13 +101,13 @@ void updatePlayerPosition(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
             rectSourceSprite.left += SPRITE_SHEET_X;
         }
 
-        charPos.x -= 32;
+        charPos.x -= SPRITE_SHEET_X;
     }
 
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
-        if (tileUnderPlayerX > 16 || level[(tileUnderPlayerX + 1) + tileUnderPlayerY] > 0)
+        if (tileUnderPlayerX >= 15 || level[(tileUnderPlayerX + 1) + tileUnderPlayerY] > 0)
         {
             return;
         }
@@ -119,8 +122,18 @@ void updatePlayerPosition(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
             rectSourceSprite.left += SPRITE_SHEET_X;
         }
 
-        charPos.x += 32;
+        charPos.x += SPRITE_SHEET_X;
     }
+}
+
+
+// TODO A better solution might be to temporarily update player position in tmp vars.
+//      If validation passes, commit update player pos.
+//      Otherwise, reject and don't move player.
+void updatePlayerPosition(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
+{
+    checkForMoveVerticalDirection(rectSourceSprite, charPos);
+    checkForMoveHorizontalDirection(rectSourceSprite, charPos);
 }
 
 void createWindow()
