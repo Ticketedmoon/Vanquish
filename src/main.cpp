@@ -18,7 +18,7 @@ static uint32_t SPRITE_SHEET_X = 32;
 static uint32_t SPRITE_SHEET_Y = 32;
 static uint32_t LAST_SPRITE_LEFT_POS = 64;
 
-static const int level[] =
+static const uint32_t level[] =
 {
     0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -30,7 +30,23 @@ static const int level[] =
     0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0,
     2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1,
     0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+    0, 0, 1, 0, 3, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
+    0, 0, 1, 0, 3, 2, 0, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+    0, 0, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
+    0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1,
 };
+
+uint32_t levelRowSize = 16;
+uint32_t totalLevelCols = (sizeof(level) / sizeof(level[0])) / levelRowSize;
 
 void checkForMoveVerticalDirection(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
 {
@@ -39,7 +55,7 @@ void checkForMoveVerticalDirection(sf::IntRect& rectSourceSprite, sf::Vector2f& 
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
-        if (tileUnderPlayerY >= (7 * 16) || level[tileUnderPlayerX + (tileUnderPlayerY + 16)] > 0)
+        if (tileUnderPlayerY >= ((totalLevelCols-1) * levelRowSize) || level[tileUnderPlayerX + (tileUnderPlayerY + levelRowSize)] > 0)
         {
             return;
         }
@@ -59,7 +75,7 @@ void checkForMoveVerticalDirection(sf::IntRect& rectSourceSprite, sf::Vector2f& 
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
-        if (tileUnderPlayerY <= 0 || (level[tileUnderPlayerX + (tileUnderPlayerY - 16)] > 0))
+        if (tileUnderPlayerY <= 0 || (level[tileUnderPlayerX + (tileUnderPlayerY - levelRowSize)] > 0))
         {
             return;
         }
@@ -82,7 +98,7 @@ void checkForMoveVerticalDirection(sf::IntRect& rectSourceSprite, sf::Vector2f& 
 void checkForMoveHorizontalDirection(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
 {
     int tileUnderPlayerX = floor(charPos.x/SPRITE_SHEET_X);
-    int tileUnderPlayerY = floor(charPos.y/SPRITE_SHEET_X) * 16;
+    int tileUnderPlayerY = floor(charPos.y/SPRITE_SHEET_X) * levelRowSize;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
@@ -107,7 +123,7 @@ void checkForMoveHorizontalDirection(sf::IntRect& rectSourceSprite, sf::Vector2f
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
-        if (tileUnderPlayerX >= 15 || level[(tileUnderPlayerX + 1) + tileUnderPlayerY] > 0)
+        if (tileUnderPlayerX >= (levelRowSize-1) || level[(tileUnderPlayerX + 1) + tileUnderPlayerY] > 0)
         {
             return;
         }
@@ -163,7 +179,7 @@ void createWindow()
     }
 
     sf::Texture texture;
-    if (!texture.loadFromFile("assets/character_sprite_sheet.png"))
+    if (!texture.loadFromFile("assets/character_sprite_sheet_v2.png"))
     {
         std::cout << "Failed to load character sprite sheet" << std::endl;
     }
@@ -173,7 +189,8 @@ void createWindow()
 
     // create the tilemap from the level definition
     TileMap map;
-    if (!map.load("./assets/basic_tilemap.png", sf::Vector2u(32, 32), level, 16, 8))
+
+    if (!map.load("./assets/basic_tilemap.png", sf::Vector2u(32, 32), level, levelRowSize, totalLevelCols))
     {
         std::cout << "Failed to load tileset" << std::endl;
         return;
