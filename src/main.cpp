@@ -18,6 +18,9 @@ static uint32_t SPRITE_SHEET_X = 32;
 static uint32_t SPRITE_SHEET_Y = 32;
 static uint32_t LAST_SPRITE_LEFT_POS = 64;
 
+static uint32_t PLAYER_SPEED = 32;
+static float GAME_TICK = 0.05;
+
 static const uint32_t level[] =
 {
     0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -48,6 +51,19 @@ static const uint32_t level[] =
 uint32_t levelRowSize = 16;
 uint32_t totalLevelCols = (sizeof(level) / sizeof(level[0])) / levelRowSize;
 
+void updatePlayerAnimation(sf::IntRect& rectSourceSprite, uint32_t spriteSheetTopOffset)
+{
+    rectSourceSprite.top = SPRITE_SHEET_X * spriteSheetTopOffset;
+    if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
+    {
+        rectSourceSprite.left = 0;
+    }
+    else 
+    {
+        rectSourceSprite.left += SPRITE_SHEET_X;
+    }
+}
+
 void checkForMoveVerticalDirection(sf::IntRect& rectSourceSprite, sf::Vector2f& charPos)
 {
     int tileUnderPlayerX = floor(charPos.x/SPRITE_SHEET_X);
@@ -55,42 +71,24 @@ void checkForMoveVerticalDirection(sf::IntRect& rectSourceSprite, sf::Vector2f& 
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
+        updatePlayerAnimation(rectSourceSprite, 0);
         if (tileUnderPlayerY >= ((totalLevelCols-1) * levelRowSize) || level[tileUnderPlayerX + (tileUnderPlayerY + levelRowSize)] > 0)
         {
             return;
         }
 
-        rectSourceSprite.top = SPRITE_SHEET_X * 0;
-        if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
-        {
-            rectSourceSprite.left = 0;
-        }
-        else 
-        {
-            rectSourceSprite.left += SPRITE_SHEET_X;
-        }
-
-        charPos.y += SPRITE_SHEET_X;
+        charPos.y += PLAYER_SPEED;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
+        updatePlayerAnimation(rectSourceSprite, 3);
         if (tileUnderPlayerY <= 0 || (level[tileUnderPlayerX + (tileUnderPlayerY - levelRowSize)] > 0))
         {
             return;
         }
 
-        rectSourceSprite.top = SPRITE_SHEET_X * 3;
-        if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
-        {
-            rectSourceSprite.left = 0;
-        }
-        else 
-        {
-            rectSourceSprite.left += SPRITE_SHEET_X;
-        }
-
-        charPos.y -= SPRITE_SHEET_X;
+        charPos.y -= PLAYER_SPEED;
     }
 
 }
@@ -102,43 +100,25 @@ void checkForMoveHorizontalDirection(sf::IntRect& rectSourceSprite, sf::Vector2f
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
+        updatePlayerAnimation(rectSourceSprite, 1);
         if (tileUnderPlayerX == 0 || level[(tileUnderPlayerX - 1) + tileUnderPlayerY] > 0)
         {
             return;
         }
 
-        rectSourceSprite.top = SPRITE_SHEET_X * 1;
-        if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
-        {
-            rectSourceSprite.left = 0;
-        }
-        else 
-        {
-            rectSourceSprite.left += SPRITE_SHEET_X;
-        }
-
-        charPos.x -= SPRITE_SHEET_X;
+        charPos.x -= PLAYER_SPEED;
     }
 
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
+        updatePlayerAnimation(rectSourceSprite, 2);
         if (tileUnderPlayerX >= (levelRowSize-1) || level[(tileUnderPlayerX + 1) + tileUnderPlayerY] > 0)
         {
             return;
         }
 
-        rectSourceSprite.top = SPRITE_SHEET_X * 2;
-        if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
-        {
-            rectSourceSprite.left = 0;
-        }
-        else 
-        {
-            rectSourceSprite.left += SPRITE_SHEET_X;
-        }
-
-        charPos.x += SPRITE_SHEET_X;
+        charPos.x += PLAYER_SPEED;
     }
 }
 
@@ -207,7 +187,7 @@ void createWindow()
             }
         }
 
-        if (clock.getElapsedTime().asSeconds() > 0.1f) 
+        if (clock.getElapsedTime().asSeconds() > GAME_TICK) 
         {
             updatePlayerPosition(rectSourceSprite, charPos);
             sprite.setPosition(charPos);
