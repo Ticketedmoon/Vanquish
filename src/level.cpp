@@ -16,7 +16,7 @@ void Level::update()
 
 void Level::loadLevel()
 {
-    if (!map.load("./assets/basic_tilemap.png", sf::Vector2u(32, 32), level, LEVEL_ROW_SIZE, TOTAL_ROWS_IN_LEVEL))
+    if (!map.load("./resources/assets/basic_tilemap.png", sf::Vector2u(32, 32), level, LEVEL_ROW_SIZE, TOTAL_ROWS_IN_LEVEL))
     {
         std::cout << "Failed to load tileset" << std::endl;
         return;
@@ -32,7 +32,7 @@ void Level::checkForMoveVerticalDirection()
 {
     sf::Vector2f playerPos = player->getPlayerPos();
     int tileUnderPlayerX = floor(playerPos.x/spriteSheetX);
-    int tileUnderPlayerY = floor(playerPos.y/spriteSheetX) * 16;
+    int tileUnderPlayerY = floor(playerPos.y/spriteSheetX) * 32;
 
     // TODO Move keyboard check to engine/controller class
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))

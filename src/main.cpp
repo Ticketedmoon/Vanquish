@@ -68,7 +68,8 @@ void initialise()
 
     // create a view with its center and size
     sf::View view(sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
-    view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.75f, 1.75f));
+    view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.25f, 1.25f));
+    window.setView(view);
 
     if (USE_VERTICAL_SYNC)
     {

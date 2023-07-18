@@ -3,7 +3,7 @@
 
 Player::Player()
 {
-    if (!texture.loadFromFile("assets/character_sprite_sheet_v2.png"))
+    if (!texture.loadFromFile("resources/assets/character_sprite_sheet_v2.png"))
     {
         std::cout << "Failed to load character sprite sheet" << std::endl;
     }
