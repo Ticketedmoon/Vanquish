@@ -15,19 +15,13 @@ Player::Player()
     playerSprite = sf::Sprite(texture, rectSourceSprite);
 }
 
-sf::Vector2f Player::getPlayerPos()
+// TODO A better solution might be to temporarily update player position in tmp vars.
+//      If validation passes, commit update player pos.
+//      Otherwise, reject and don't move player.
+void Player::update()
 {
-    return playerPos;
-}
-
-PlayerDirection Player::getPlayerDir()
-{
-    return playerDir;
-}
-
-sf::Sprite Player::getSprite()
-{
-    return playerSprite;
+    playerSprite.setPosition(playerPos);
+    playerSprite.setTextureRect(rectSourceSprite);
 }
 
 void Player::updatePlayerPosition()
@@ -64,12 +58,18 @@ void Player::updateAnimation(uint32_t spriteSheetTopOffset, PlayerDirection newD
     playerDir = newDirection;
 }
 
-// TODO A better solution might be to temporarily update player position in tmp vars.
-//      If validation passes, commit update player pos.
-//      Otherwise, reject and don't move player.
-void Player::update()
+sf::Vector2f Player::getPlayerPos()
 {
-    playerSprite.setPosition(playerPos);
-
-    playerSprite.setTextureRect(rectSourceSprite);
+    return playerPos;
 }
+
+PlayerDirection Player::getPlayerDir()
+{
+    return playerDir;
+}
+
+sf::Sprite Player::getSprite()
+{
+    return playerSprite;
+}
+

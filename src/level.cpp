@@ -32,7 +32,7 @@ void Level::checkForMoveVerticalDirection()
 {
     sf::Vector2f playerPos = player->getPlayerPos();
     int tileUnderPlayerX = floor(playerPos.x/spriteSheetX);
-    int tileUnderPlayerY = floor(playerPos.y/spriteSheetX) * 32;
+    int tileUnderPlayerY = floor(playerPos.y/spriteSheetX) * LEVEL_ROW_SIZE;
 
     // TODO Move keyboard check to engine/controller class
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
@@ -94,6 +94,7 @@ void Level::checkForMoveHorizontalDirection()
     }
 }
 
+// TODO centralise common logic in this method
 void Level::checkForChopTree()
 {
     sf::Vector2f playerPos = player->getPlayerPos();
@@ -102,10 +103,27 @@ void Level::checkForChopTree()
         int tileUnderPlayerX = floor(playerPos.x/spriteSheetX);
         int tileUnderPlayerY = floor(playerPos.y/spriteSheetX) * LEVEL_ROW_SIZE;
 
+        if (player->getPlayerDir() == PlayerDirection::UP)
+        {
+            // TODO Rename tileUnder* as it's confusing
+            int tileAbovePlayerPos = tileUnderPlayerX + (tileUnderPlayerY - LEVEL_ROW_SIZE);
+            bool isTileInBounds = tileAbovePlayerPos >= 0;
+            if (isTileInBounds && level[tileAbovePlayerPos] == 2)
+            {
+                std::cout << "cut tree!" << std::endl;
+                level[tileAbovePlayerPos] = 0;
+
+                // TODO not ideal, fix me
+                loadLevel();
+            }
+        }
+
         if (player->getPlayerDir() == PlayerDirection::DOWN)
         {
-            uint32_t tileBelowPlayerPos = tileUnderPlayerX + (tileUnderPlayerY + LEVEL_ROW_SIZE);
-            if (level[tileBelowPlayerPos] == 2)
+            int tileBelowPlayerPos = (tileUnderPlayerX + (tileUnderPlayerY + LEVEL_ROW_SIZE));
+            bool isTileInBounds = tileBelowPlayerPos < (TOTAL_ROWS_IN_LEVEL * LEVEL_ROW_SIZE);
+
+            if (isTileInBounds && level[tileBelowPlayerPos] == 2)
             {
                 std::cout << "cut tree!" << std::endl;
                 level[tileBelowPlayerPos] = 0;
@@ -113,7 +131,36 @@ void Level::checkForChopTree()
                 // TODO not ideal, fix me
                 loadLevel();
             }
-            // TODO DO OTHER DIRS
+        }
+
+        if (player->getPlayerDir() == PlayerDirection::LEFT)
+        {
+            int tileToLeftOfPlayerPos = (tileUnderPlayerX-1) + tileUnderPlayerY;
+            bool isTileInBounds = tileToLeftOfPlayerPos >= 0;
+
+            if (isTileInBounds && level[tileToLeftOfPlayerPos] == 2)
+            {
+                std::cout << "cut tree!" << std::endl;
+                level[tileToLeftOfPlayerPos] = 0;
+
+                // TODO not ideal, fix me
+                loadLevel();
+            }
+        }
+
+        if (player->getPlayerDir() == PlayerDirection::RIGHT)
+        {
+            int tileToRightOfPlayerPos = (tileUnderPlayerX+1) + tileUnderPlayerY;
+            bool isTileInBounds = tileUnderPlayerX < LEVEL_ROW_SIZE;
+
+            if (isTileInBounds && level[tileToRightOfPlayerPos] == 2)
+            {
+                std::cout << "cut tree!" << std::endl;
+                level[tileToRightOfPlayerPos] = 0;
+
+                // TODO not ideal, fix me
+                loadLevel();
+            }
         }
     }
 }
