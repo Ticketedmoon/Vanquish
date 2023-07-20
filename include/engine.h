@@ -14,8 +14,8 @@
 #include "player.h"
 #include "level.h"
 
-static uint32_t WINDOW_WIDTH = 800;
-static uint32_t WINDOW_HEIGHT = 600;
+static uint32_t WINDOW_WIDTH = 1280;
+static uint32_t WINDOW_HEIGHT = 720;
 
 static bool USE_VERTICAL_SYNC = false;
 static uint32_t APP_FRAME_RATE = 60;
