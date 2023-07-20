@@ -12,7 +12,7 @@ static uint32_t WINDOW_HEIGHT = 600;
 static bool USE_VERTICAL_SYNC = false;
 static uint32_t APP_FRAME_RATE = 60;
 
-static float GAME_TICK = 0.05;
+static float GAME_TICK = 0.01;
 
 class Engine
 {

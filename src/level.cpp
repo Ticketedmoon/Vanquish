@@ -1,4 +1,5 @@
 #include "../include/level.h"
+#include <cstdint>
 
 Level::Level(Player* player, uint32_t spriteSheetX)
 {
@@ -7,10 +8,15 @@ Level::Level(Player* player, uint32_t spriteSheetX)
     this->player = player;
 }
 
-void Level::update()
+void Level::update(sf::Clock& clock)
 {
-    checkForMoveVerticalDirection();
-    checkForMoveHorizontalDirection();
+    sf::Vector2f playerPos = player->getPlayerPos();
+    uint32_t tileUnderPlayerX = round(playerPos.x/spriteSheetX);
+    uint32_t tileUnderPlayerY = round(playerPos.y/spriteSheetX) * LEVEL_ROW_SIZE;
+    std::cout << "tile x, y: (" << tileUnderPlayerX << ", " << tileUnderPlayerY << "), sum: " << (tileUnderPlayerX+tileUnderPlayerY) << std::endl;
+
+    checkForMoveVerticalDirection(clock, tileUnderPlayerX, tileUnderPlayerY);
+    checkForMoveHorizontalDirection(clock, tileUnderPlayerX,tileUnderPlayerY);
     checkForChopTree();
 }
 
@@ -28,18 +34,19 @@ TileMap Level::getTileMap()
     return map;
 }
 
-void Level::checkForMoveVerticalDirection()
+void Level::checkForMoveVerticalDirection(sf::Clock& clock, uint32_t tileUnderPlayerX, uint32_t tileUnderPlayerY)
 {
     sf::Vector2f playerPos = player->getPlayerPos();
-    int tileUnderPlayerX = floor(playerPos.x/spriteSheetX);
-    int tileUnderPlayerY = floor(playerPos.y/spriteSheetX) * LEVEL_ROW_SIZE;
 
     // TODO Move keyboard check to engine/controller class
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
-        player->updateAnimation(0, PlayerDirection::DOWN);
+        player->updateAnimation(clock, 0, PlayerDirection::DOWN);
 
-        if (tileUnderPlayerY >= ((TOTAL_ROWS_IN_LEVEL-1) * LEVEL_ROW_SIZE) || level[tileUnderPlayerX + (tileUnderPlayerY + LEVEL_ROW_SIZE)] > 0)
+        int tmpTilePos = tileUnderPlayerX + (tileUnderPlayerY + LEVEL_ROW_SIZE);
+        int tileBelowPlayerPos = tmpTilePos < (LEVEL_ROW_SIZE * TOTAL_ROWS_IN_LEVEL) ? tmpTilePos : (LEVEL_ROW_SIZE * TOTAL_ROWS_IN_LEVEL);
+
+        if (level[tileBelowPlayerPos] > 0)
         {
             return;
         }
@@ -49,9 +56,12 @@ void Level::checkForMoveVerticalDirection()
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
-        player->updateAnimation(3, PlayerDirection::UP);
+        player->updateAnimation(clock, 3, PlayerDirection::UP);
 
-        if (tileUnderPlayerY <= 0 || (level[tileUnderPlayerX + (tileUnderPlayerY - LEVEL_ROW_SIZE)] > 0))
+        int tmpTilePos = tileUnderPlayerX + (tileUnderPlayerY - LEVEL_ROW_SIZE);
+        int tileAbovePlayerPos = tmpTilePos < 0 ? 0 : tmpTilePos;
+
+        if (level[tileAbovePlayerPos] > 0)
         {
             return;
         }
@@ -62,17 +72,17 @@ void Level::checkForMoveVerticalDirection()
 }
 
 
-void Level::checkForMoveHorizontalDirection()
+void Level::checkForMoveHorizontalDirection(sf::Clock& clock, uint32_t tileUnderPlayerX, uint32_t tileUnderPlayerY)
 {
     sf::Vector2f playerPos = player->getPlayerPos();
-    int tileUnderPlayerX = floor(playerPos.x/spriteSheetX);
-    int tileUnderPlayerY = floor(playerPos.y/spriteSheetX) * LEVEL_ROW_SIZE;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
-        player->updateAnimation(1, PlayerDirection::LEFT);
+        player->updateAnimation(clock, 1, PlayerDirection::LEFT);
 
-        if (tileUnderPlayerX == 0 || level[(tileUnderPlayerX - 1) + tileUnderPlayerY] > 0)
+        int tmpTilePos = (tileUnderPlayerX-1) + tileUnderPlayerY;
+        uint32_t tileToLeftOfPlayerPos = tmpTilePos < 0 ? 0 : tmpTilePos;
+        if (level[tileToLeftOfPlayerPos] > 0)
         {
             return;
         }
@@ -83,9 +93,11 @@ void Level::checkForMoveHorizontalDirection()
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
-        player->updateAnimation(2, PlayerDirection::RIGHT);
+        player->updateAnimation(clock, 2, PlayerDirection::RIGHT);
 
-        if (tileUnderPlayerX >= (LEVEL_ROW_SIZE-1) || level[(tileUnderPlayerX + 1) + tileUnderPlayerY] > 0)
+        int tmpTilePos = (tileUnderPlayerX + 1) + tileUnderPlayerY;
+        uint32_t tileToRightOfPlayerPos = tmpTilePos > TOTAL_ROWS_IN_LEVEL ? TOTAL_ROWS_IN_LEVEL : tmpTilePos;
+        if (level[tileToRightOfPlayerPos] > 0)
         {
             return;
         }

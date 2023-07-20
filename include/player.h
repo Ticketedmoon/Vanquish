@@ -5,6 +5,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <SFML/System/Clock.hpp>
 #include <cstdint>
 #include <stdlib.h>
 #include <iostream>
@@ -13,6 +14,8 @@
 static uint32_t SPRITE_SHEET_X = 32;
 static uint32_t SPRITE_SHEET_Y = 32;
 static uint32_t LAST_SPRITE_LEFT_POS = 64;
+
+// TODO STILL NEEDED?
 static uint32_t PLAYER_SPEED = 32;
 
 enum class PlayerDirection { 
@@ -33,7 +36,9 @@ class Player
         PlayerDirection getPlayerDir();
 
         void updatePlayerPosition();
-        void updateAnimation(uint32_t spriteSheetTopOffset, PlayerDirection newDirection);
+        void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, PlayerDirection newDirection);
+
+        sf::Vector2f velocity;
 
     private:
         sf::IntRect rectSourceSprite;
@@ -42,4 +47,7 @@ class Player
         sf::Sprite playerSprite;
 
         PlayerDirection playerDir;
+
+        sf::Time animationFrameStartTime{ sf::Time::Zero };
+        sf::Time animationFrameDuration{ sf::seconds(1.f / 6.f) }; // 3 frames per second
 };

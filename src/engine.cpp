@@ -51,12 +51,8 @@ void Engine::listenForEvents(sf::RenderWindow& window)
 
 void Engine::update(sf::Clock& clock, Player& player, Level& level)
 {
-    if (clock.getElapsedTime().asSeconds() > GAME_TICK) 
-    {
-        level.update();
-        player.update();
-        clock.restart();
-    }
+    level.update(clock);
+    player.update();
 };
 
 void Engine::render(sf::RenderWindow& window, Player& player, Level& level)

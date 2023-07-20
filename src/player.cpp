@@ -1,4 +1,5 @@
 #include "../include/player.h"
+#include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 
 Player::Player()
@@ -26,34 +27,72 @@ void Player::update()
 
 void Player::updatePlayerPosition()
 {
+    sf::Vector2f acceleration;
+
+    // adjust this at will
+    const float dAcc = 0.3f;
+
     if (playerDir == PlayerDirection::UP)
     {
-        playerPos.y -= PLAYER_SPEED;
+        acceleration.y -= dAcc;
     }
     if (playerDir == PlayerDirection::DOWN)
     {
-        playerPos.y += PLAYER_SPEED;
+        acceleration.y += dAcc;
     }
     if (playerDir == PlayerDirection::LEFT)
     {
-        playerPos.x -= PLAYER_SPEED;
+        acceleration.x -= dAcc;
     }
     if (playerDir == PlayerDirection::RIGHT) 
     {
-        playerPos.x += PLAYER_SPEED;
+        acceleration.x += dAcc;
     }
-}
 
-void Player::updateAnimation(uint32_t spriteSheetTopOffset, PlayerDirection newDirection)
-{
-    rectSourceSprite.top = SPRITE_SHEET_X * spriteSheetTopOffset;
-    if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
+    // update velocity through acceleration
+    velocity += acceleration;
+
+    // TODO REPLACE ALL TEST TMP VALUES BELOW
+    if ((playerPos.x+velocity.x >= 0) && (playerPos.x+velocity.x <= 32*32))
     {
-        rectSourceSprite.left = 0;
+        //std::cout << "yo: " << playerPos.x << ", " << velocity.x << std::endl;
+        playerPos.x += velocity.x;
+        velocity.x = 0.85f * velocity.x;
+    }
+    else 
+    {
+        velocity.x = 0;
+    }
+
+
+    if ((playerPos.y+velocity.y >= 0) && (playerPos.y+velocity.y <= 150))
+    {
+        playerPos.y += velocity.y;
+        velocity.y = 0.85f * velocity.y;
     }
     else
     {
-        rectSourceSprite.left += SPRITE_SHEET_X;
+        velocity.y = 0;
+    }
+
+}
+
+void Player::updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, PlayerDirection newDirection)
+{
+    sf::Time currentTime = clock.getElapsedTime();
+    if (currentTime - animationFrameStartTime >= animationFrameDuration)
+    {
+        rectSourceSprite.top = SPRITE_SHEET_X * spriteSheetTopOffset;
+        if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
+        {
+            rectSourceSprite.left = 0;
+        }
+        else
+        {
+            rectSourceSprite.left += SPRITE_SHEET_X;
+        }
+
+        animationFrameStartTime = currentTime;
     }
     playerDir = newDirection;
 }
