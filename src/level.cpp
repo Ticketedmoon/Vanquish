@@ -13,7 +13,7 @@ void Level::update(sf::Clock& clock)
     sf::Vector2f playerPos = player->getPlayerPos();
     uint32_t tileUnderPlayerX = round(playerPos.x/spriteSheetX);
     uint32_t tileUnderPlayerY = round(playerPos.y/spriteSheetX) * LEVEL_ROW_SIZE;
-    std::cout << "tile x, y: (" << tileUnderPlayerX << ", " << tileUnderPlayerY << "), sum: " << (tileUnderPlayerX+tileUnderPlayerY) << std::endl;
+    //std::cout << "tile x, y: (" << tileUnderPlayerX << ", " << tileUnderPlayerY << "), sum: " << (tileUnderPlayerX+tileUnderPlayerY) << std::endl;
 
     checkForMoveVerticalDirection(clock, tileUnderPlayerX, tileUnderPlayerY);
     checkForMoveHorizontalDirection(clock, tileUnderPlayerX,tileUnderPlayerY);
