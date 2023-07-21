@@ -35,7 +35,7 @@ void Player::updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight)
     sf::Vector2f acceleration;
 
     // adjust this at will
-    const float dAcc = 0.3f;
+    const float dAcc = 0.5f;
 
     if (playerDir == PlayerDirection::UP)
     {
