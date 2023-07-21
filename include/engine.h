@@ -32,10 +32,10 @@ class Engine
         void update(sf::Clock& clock, Player& player, Level& level);
         void render(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level);
         void centerViewOnPlayer(sf::RenderWindow& window, Player& player);
-        void displayFpsText(sf::RenderWindow& window, sf::Clock& clock, Player& player);
+        void displayDebugText(sf::RenderWindow& window, sf::Clock& clock, Player& player);
         void configureTextRendering();
 
         sf::Font font;
-        sf::Text fpsText;
-        bool showFpsText = false;
+        sf::Text debugText;
+        bool showDebugText = false;
 };

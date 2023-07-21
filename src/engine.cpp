@@ -29,11 +29,11 @@ void Engine::initialise()
         window.setFramerateLimit(APP_FRAME_RATE);
     }
 
-    sf::Clock clock;
-    sf::Clock fpsClock;
+    sf::Clock worldClock;
+    sf::Clock debugClock;
 
     Player player;
-    Level level(&player, 32); // TODO CENTRALISE THIS MAGIC NUM
+    Level level(&player);
 
     configureTextRendering();
 
@@ -41,8 +41,8 @@ void Engine::initialise()
     while (window.isOpen())
     {
         listenForEvents(window);
-        update(clock, player, level);
-        render(window, fpsClock, player, level);
+        update(worldClock, player, level);
+        render(window, debugClock, player, level);
     }
 
 };
@@ -61,7 +61,7 @@ void Engine::listenForEvents(sf::RenderWindow& window)
         {
             if (event.key.code == sf::Keyboard::SemiColon)
             {
-                showFpsText = !showFpsText;
+                showDebugText = !showDebugText;
             }
         }
     }
@@ -70,7 +70,7 @@ void Engine::listenForEvents(sf::RenderWindow& window)
 void Engine::update(sf::Clock& clock, Player& player, Level& level)
 {
     level.update(clock);
-    player.update();
+    player.update(level.getLevelWidth());
 };
 
 /* 
@@ -88,7 +88,7 @@ void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, 
     window.draw(level.getTileMap());
     window.draw(player.getSprite());
 
-    displayFpsText(window, clock, player);
+    displayDebugText(window, clock, player);
     window.display();
 };
 
@@ -114,23 +114,25 @@ void Engine::centerViewOnPlayer(sf::RenderWindow& window, Player& player)
  * @param window sf::RenderWindow to update
  * @param clock sf::Clock& to track the time.
  */
-void Engine::displayFpsText(sf::RenderWindow& window, sf::Clock& clock, Player& player)
+void Engine::displayDebugText(sf::RenderWindow& window, sf::Clock& clock, Player& player)
 {
-    if (!showFpsText)
+    if (!showDebugText)
     {
         return;
     }
 
     float fps = 1.0f / clock.restart().asSeconds();
-
-    fpsText.setString("fps: " + std::to_string(fps));
+    debugText.setString(
+            "Fps: " + std::to_string(fps) + "\n" +
+            "Player tile position (x,y): " + "(" + std::to_string(player.tilePosition.x) + ", " + std::to_string(player.tilePosition.y) + ")" + "\n"
+    );
 
     sf::Vector2f centerView = window.getView().getCenter();
 
     float offset = 2.15f;
-    fpsText.setPosition(centerView.x - WINDOW_WIDTH / offset, centerView.y - WINDOW_HEIGHT / offset);
+    debugText.setPosition(centerView.x - WINDOW_WIDTH / offset, centerView.y - WINDOW_HEIGHT / offset);
 
-    window.draw(fpsText);
+    window.draw(debugText);
 }
 
 void Engine::configureTextRendering()
@@ -141,10 +143,10 @@ void Engine::configureTextRendering()
         throw new std::runtime_error(msg);
     }
 
-    fpsText.setFont(font); // font is a sf::Font
-    fpsText.setCharacterSize(12); // in pixels, not points!
-    fpsText.setFillColor(sf::Color::Green);
-    fpsText.setOutlineColor(sf::Color::Black);
-    fpsText.setOutlineThickness(0.5f);
-    fpsText.setLetterSpacing(3.0f);
+    debugText.setFont(font); // font is a sf::Font
+    debugText.setCharacterSize(12); // in pixels, not points!
+    debugText.setFillColor(sf::Color::Green);
+    debugText.setOutlineColor(sf::Color::Black);
+    debugText.setOutlineThickness(0.5f);
+    debugText.setLetterSpacing(3.0f);
 }

@@ -29,16 +29,17 @@ class Player
 {
     public:
         Player();
-        void update();
+        void update(uint32_t levelWidth);
+        void updatePlayerPosition();
+        void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, PlayerDirection newDirection);
 
+        // TODO IS THIS STILL NEEDED?
         sf::Vector2f getPlayerPos();
         sf::Sprite getSprite();
         PlayerDirection getPlayerDir();
 
-        void updatePlayerPosition();
-        void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, PlayerDirection newDirection);
-
         sf::Vector2f velocity;
+        sf::Vector2u tilePosition;
 
     private:
         sf::IntRect rectSourceSprite;

@@ -1,6 +1,7 @@
 #include "../include/player.h"
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <cstdint>
 
 Player::Player()
 {
@@ -19,8 +20,12 @@ Player::Player()
 // TODO A better solution might be to temporarily update player position in tmp vars.
 //      If validation passes, commit update player pos.
 //      Otherwise, reject and don't move player.
-void Player::update()
+void Player::update(uint32_t levelWidth)
 {
+    uint32_t tileUnderPlayerX = round(playerPos.x/SPRITE_SHEET_X);
+    uint32_t tileUnderPlayerY = round(playerPos.y/SPRITE_SHEET_Y) * levelWidth;
+
+    tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
     playerSprite.setPosition(playerPos);
     playerSprite.setTextureRect(rectSourceSprite);
 }

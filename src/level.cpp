@@ -1,23 +1,17 @@
 #include "../include/level.h"
 #include <cstdint>
 
-Level::Level(Player* player, uint32_t spriteSheetX)
+Level::Level(Player* player)
 {
     loadLevel();
-    this->spriteSheetX = spriteSheetX;
     this->player = player;
 }
 
 void Level::update(sf::Clock& clock)
 {
-    sf::Vector2f playerPos = player->getPlayerPos();
-    uint32_t tileUnderPlayerX = round(playerPos.x/spriteSheetX);
-    uint32_t tileUnderPlayerY = round(playerPos.y/spriteSheetX) * LEVEL_ROW_SIZE;
-    //std::cout << "tile x, y: (" << tileUnderPlayerX << ", " << tileUnderPlayerY << "), sum: " << (tileUnderPlayerX+tileUnderPlayerY) << std::endl;
-
-    checkForMoveVerticalDirection(clock, tileUnderPlayerX, tileUnderPlayerY);
-    checkForMoveHorizontalDirection(clock, tileUnderPlayerX,tileUnderPlayerY);
-    checkForChopTree();
+    checkForMoveVerticalDirection(clock, player->tilePosition.x, player->tilePosition.y);
+    checkForMoveHorizontalDirection(clock, player->tilePosition.x, player->tilePosition.y);
+    checkForChopTree(player->tilePosition.x, player->tilePosition.y);
 }
 
 void Level::loadLevel()
@@ -29,15 +23,8 @@ void Level::loadLevel()
     }
 }
 
-TileMap Level::getTileMap()
-{
-    return map;
-}
-
 void Level::checkForMoveVerticalDirection(sf::Clock& clock, uint32_t tileUnderPlayerX, uint32_t tileUnderPlayerY)
 {
-    sf::Vector2f playerPos = player->getPlayerPos();
-
     // TODO Move keyboard check to engine/controller class
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
@@ -74,8 +61,6 @@ void Level::checkForMoveVerticalDirection(sf::Clock& clock, uint32_t tileUnderPl
 
 void Level::checkForMoveHorizontalDirection(sf::Clock& clock, uint32_t tileUnderPlayerX, uint32_t tileUnderPlayerY)
 {
-    sf::Vector2f playerPos = player->getPlayerPos();
-
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
         player->updateAnimation(clock, 1, PlayerDirection::LEFT);
@@ -107,14 +92,11 @@ void Level::checkForMoveHorizontalDirection(sf::Clock& clock, uint32_t tileUnder
 }
 
 // TODO centralise common logic in this method
-void Level::checkForChopTree()
+void Level::checkForChopTree(uint32_t tileUnderPlayerX, uint32_t tileUnderPlayerY)
 {
     sf::Vector2f playerPos = player->getPlayerPos();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
     {
-        int tileUnderPlayerX = floor(playerPos.x/spriteSheetX);
-        int tileUnderPlayerY = floor(playerPos.y/spriteSheetX) * LEVEL_ROW_SIZE;
-
         if (player->getPlayerDir() == PlayerDirection::UP)
         {
             // TODO Rename tileUnder* as it's confusing
@@ -176,3 +158,14 @@ void Level::checkForChopTree()
         }
     }
 }
+
+TileMap Level::getTileMap()
+{
+    return map;
+}
+
+uint32_t Level::getLevelWidth()
+{
+    return LEVEL_ROW_SIZE;
+}
+

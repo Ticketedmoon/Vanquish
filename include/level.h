@@ -79,14 +79,15 @@ static uint32_t TOTAL_ROWS_IN_LEVEL = (sizeof(level) / sizeof(level[0])) / LEVEL
 class Level
 {
     public:
-        Level(Player* player, uint32_t spriteSheetX);
+        Level(Player* player);
         void update(sf::Clock& clock);
         TileMap getTileMap();
+        uint32_t getLevelWidth();
 
     private:
         void checkForMoveVerticalDirection(sf::Clock& clock, uint32_t tileUnderPlayerX, uint32_t tileUnderPlayerY);
         void checkForMoveHorizontalDirection(sf::Clock& clock, uint32_t tileUnderPlayerX, uint32_t tileUnderPlayerY);
-        void checkForChopTree();
+        void checkForChopTree(uint32_t tileUnderPlayerX, uint32_t tileUnderPlayerY);
         void loadLevel();
 
         Player* player;
