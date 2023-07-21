@@ -15,9 +15,6 @@ static uint32_t SPRITE_SHEET_X = 32;
 static uint32_t SPRITE_SHEET_Y = 32;
 static uint32_t LAST_SPRITE_LEFT_POS = 64;
 
-// TODO STILL NEEDED?
-static uint32_t PLAYER_SPEED = 32;
-
 enum class PlayerDirection { 
     DOWN = 0,
     UP = 1,
@@ -30,7 +27,7 @@ class Player
     public:
         Player();
         void update(uint32_t levelWidth);
-        void updatePlayerPosition();
+        void updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight);
         void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, PlayerDirection newDirection);
 
         // TODO IS THIS STILL NEEDED?

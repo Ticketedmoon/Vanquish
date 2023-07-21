@@ -123,8 +123,8 @@ void Engine::displayDebugText(sf::RenderWindow& window, sf::Clock& clock, Player
 
     float fps = 1.0f / clock.restart().asSeconds();
     debugText.setString(
-            "Fps: " + std::to_string(fps) + "\n" +
-            "Player tile position (x,y): " + "(" + std::to_string(player.tilePosition.x) + ", " + std::to_string(player.tilePosition.y) + ")" + "\n"
+            "fps: " + std::to_string(fps) + "\n" +
+            "position (x, y): " + "(" + std::to_string(player.tilePosition.x) + ", " + std::to_string(player.tilePosition.y) + ")" + "\n"
     );
 
     sf::Vector2f centerView = window.getView().getCenter();
@@ -147,6 +147,6 @@ void Engine::configureTextRendering()
     debugText.setCharacterSize(12); // in pixels, not points!
     debugText.setFillColor(sf::Color::Green);
     debugText.setOutlineColor(sf::Color::Black);
-    debugText.setOutlineThickness(0.5f);
+    debugText.setOutlineThickness(3.0f);
     debugText.setLetterSpacing(3.0f);
 }

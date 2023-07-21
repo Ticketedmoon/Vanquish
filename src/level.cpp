@@ -38,7 +38,7 @@ void Level::checkForMoveVerticalDirection(sf::Clock& clock, uint32_t tileUnderPl
             return;
         }
 
-        player->updatePlayerPosition();
+        player->updatePlayerPosition(LEVEL_ROW_SIZE, TOTAL_ROWS_IN_LEVEL);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
@@ -53,7 +53,7 @@ void Level::checkForMoveVerticalDirection(sf::Clock& clock, uint32_t tileUnderPl
             return;
         }
 
-        player->updatePlayerPosition();
+        player->updatePlayerPosition(LEVEL_ROW_SIZE, TOTAL_ROWS_IN_LEVEL);
     }
 
 }
@@ -72,7 +72,7 @@ void Level::checkForMoveHorizontalDirection(sf::Clock& clock, uint32_t tileUnder
             return;
         }
 
-        player->updatePlayerPosition();
+        player->updatePlayerPosition(LEVEL_ROW_SIZE, TOTAL_ROWS_IN_LEVEL);
     }
 
 
@@ -81,13 +81,14 @@ void Level::checkForMoveHorizontalDirection(sf::Clock& clock, uint32_t tileUnder
         player->updateAnimation(clock, 2, PlayerDirection::RIGHT);
 
         int tmpTilePos = (tileUnderPlayerX + 1) + tileUnderPlayerY;
-        uint32_t tileToRightOfPlayerPos = tmpTilePos > TOTAL_ROWS_IN_LEVEL ? TOTAL_ROWS_IN_LEVEL : tmpTilePos;
+        uint32_t tileToRightOfPlayerPos = tileUnderPlayerX > LEVEL_ROW_SIZE ? LEVEL_ROW_SIZE : tmpTilePos;
+
         if (level[tileToRightOfPlayerPos] > 0)
         {
             return;
         }
 
-        player->updatePlayerPosition();
+        player->updatePlayerPosition(LEVEL_ROW_SIZE, TOTAL_ROWS_IN_LEVEL);
     }
 }
 

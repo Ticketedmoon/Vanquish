@@ -30,7 +30,7 @@ void Player::update(uint32_t levelWidth)
     playerSprite.setTextureRect(rectSourceSprite);
 }
 
-void Player::updatePlayerPosition()
+void Player::updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight)
 {
     sf::Vector2f acceleration;
 
@@ -57,8 +57,8 @@ void Player::updatePlayerPosition()
     // update velocity through acceleration
     velocity += acceleration;
 
-    // TODO REPLACE ALL TEST TMP VALUES BELOW
-    if ((playerPos.x+velocity.x >= 0) && (playerPos.x+velocity.x <= 32*32))
+    // TODO REFACTOR ME CAN WE USE tilePosition?
+    if ((playerPos.x+velocity.x >= 0) && (playerPos.x+velocity.x < (levelWidth*(levelWidth-1))))
     {
         //std::cout << "yo: " << playerPos.x << ", " << velocity.x << std::endl;
         playerPos.x += velocity.x;
@@ -70,7 +70,7 @@ void Player::updatePlayerPosition()
     }
 
 
-    if ((playerPos.y+velocity.y >= 0) && (playerPos.y+velocity.y <= 150))
+    if ((playerPos.y+velocity.y >= 0) && (playerPos.y+velocity.y <= (levelWidth * levelHeight)))
     {
         playerPos.y += velocity.y;
         velocity.y = 0.85f * velocity.y;
