@@ -17,13 +17,10 @@ Player::Player()
     playerSprite = sf::Sprite(texture, rectSourceSprite);
 }
 
-// TODO A better solution might be to temporarily update player position in tmp vars.
-//      If validation passes, commit update player pos.
-//      Otherwise, reject and don't move player.
-void Player::update(uint32_t levelWidth)
+void Player::update()
 {
     uint32_t tileUnderPlayerX = round(playerPos.x/SPRITE_SHEET_X);
-    uint32_t tileUnderPlayerY = round(playerPos.y/SPRITE_SHEET_Y) * levelWidth;
+    uint32_t tileUnderPlayerY = round(playerPos.y/SPRITE_SHEET_Y);
 
     tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
     playerSprite.setPosition(playerPos);
@@ -35,7 +32,7 @@ void Player::updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight)
     sf::Vector2f acceleration;
 
     // adjust this at will
-    const float dAcc = 0.5f;
+    const float dAcc = 1.5f;
 
     if (playerDir == PlayerDirection::UP)
     {
@@ -58,11 +55,14 @@ void Player::updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight)
     velocity += acceleration;
 
     // TODO REFACTOR ME CAN WE USE tilePosition?
-    if ((playerPos.x+velocity.x >= 0) && (playerPos.x+velocity.x < (levelWidth*(levelWidth-1))))
+    uint32_t tileMapWidth = ((levelWidth-1) * SPRITE_SHEET_X);
+    uint32_t tileMapHeight = ((levelHeight-1) * SPRITE_SHEET_Y);
+
+    if ((playerPos.x+velocity.x >= 0) && (playerPos.x+velocity.x < tileMapWidth))
     {
         //std::cout << "yo: " << playerPos.x << ", " << velocity.x << std::endl;
         playerPos.x += velocity.x;
-        velocity.x = 0.85f * velocity.x;
+        velocity.x = 0.5f * velocity.x;
     }
     else 
     {
@@ -70,10 +70,10 @@ void Player::updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight)
     }
 
 
-    if ((playerPos.y+velocity.y >= 0) && (playerPos.y+velocity.y <= (levelWidth * levelHeight)))
+    if ((playerPos.y+velocity.y >= 0) && (playerPos.y+velocity.y <= tileMapHeight))
     {
         playerPos.y += velocity.y;
-        velocity.y = 0.85f * velocity.y;
+        velocity.y = 0.5f * velocity.y;
     }
     else
     {

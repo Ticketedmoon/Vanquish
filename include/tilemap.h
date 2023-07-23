@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <stdlib.h>
 #include <iostream>
+#include <vector>
 
 // Two tringles
 const uint32_t TOTAL_VERTICES_IN_TILE = 6;
@@ -17,11 +18,9 @@ const uint32_t TOTAL_VERTICES_IN_TILE = 6;
 class TileMap : public sf::Drawable, public sf::Transformable
 {
     public:
-
-        bool load(const std::string& tileset, sf::Vector2u tileSize, const uint32_t* tiles, uint32_t levelWidth, uint32_t levelHeight);
+        bool load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& tiles);
 
     private:
-        
         virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
         sf::VertexArray m_vertices;

@@ -1,6 +1,7 @@
 #include "../include/tilemap.h"
+#include <cstdint>
 
-bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const uint32_t* tiles, uint32_t levelWidth, uint32_t levelHeight)
+bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& tiles)
 {
     // load the tileset texture
     if (!m_tileset.loadFromFile(tileset))
@@ -11,19 +12,23 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const uint
     // resize the vertex array to fit the level size
     m_vertices.setPrimitiveType(sf::Triangles);
 
+    // extract levelWidth and levelHeight
+    uint32_t levelWidth = tiles.at(0).size();
+    uint32_t levelHeight = tiles.size();
+
     // resize vertex array based on level size
     m_vertices.resize(levelWidth * levelHeight * TOTAL_VERTICES_IN_TILE);
     
     std::cout << "Tileset match tilesize: " << ((m_tileset.getSize().x % tileSize.x == 0) && (m_tileset.getSize().y % tileSize.y == 0)) << std::endl;
 
     // populate the vertex array, with two triangles per tile
-    for (unsigned int i = 0; i < levelWidth; i++)
+    for (unsigned int i = 0; i < levelHeight; i++)
     {
-        for (unsigned int j = 0; j < levelHeight; j++)
+        for (unsigned int j = 0; j < levelWidth; j++)
         {
             // get the current tile number
-            int tilePos = i + j * levelWidth;
-            int tileNumber = tiles[i + j * levelWidth];
+            int tilePos = i + (j * levelWidth);
+            int tileNumber = tiles.at(i).at(j);
 
             // find its position in the tileset texture
             int tu = tileNumber % (m_tileset.getSize().x / tileSize.x);

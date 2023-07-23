@@ -1,8 +1,23 @@
 #include "../include/level.h"
 #include <cstdint>
+#include <vector>
 
 Level::Level(Player* player)
 {
+    std::cout << "Building level..." << std::endl;
+    for (uint32_t i = 0; i < 10; i++)
+    {
+        std::vector<uint32_t> row;
+        for (uint32_t j = 0; j < 10; j++)
+        {
+            row.emplace_back(0);
+        }
+        this->world.emplace_back(row);
+    }
+
+    std::cout << "Level Height: " << this->world.size() << std::endl;
+    std::cout << "Level Width: " << this->world.at(0).size() << std::endl;
+
     loadLevel();
     this->player = player;
 }
@@ -16,7 +31,7 @@ void Level::update(sf::Clock& clock)
 
 void Level::loadLevel()
 {
-    if (!map.load("./resources/assets/basic_tilemap.png", sf::Vector2u(32, 32), level, LEVEL_ROW_SIZE, TOTAL_ROWS_IN_LEVEL))
+    if (!map.load("./resources/assets/basic_tilemap.png", sf::Vector2u(32, 32), world))
     {
         std::cout << "Failed to load tileset" << std::endl;
         return;
@@ -29,31 +44,27 @@ void Level::checkForMoveVerticalDirection(sf::Clock& clock, uint32_t tileUnderPl
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
         player->updateAnimation(clock, 0, PlayerDirection::DOWN);
+        uint32_t nextTileY = tileUnderPlayerY+1 >= world.size() ? tileUnderPlayerY : tileUnderPlayerY+1;
 
-        int tmpTilePos = tileUnderPlayerX + (tileUnderPlayerY + LEVEL_ROW_SIZE);
-        int tileBelowPlayerPos = tmpTilePos < (LEVEL_ROW_SIZE * TOTAL_ROWS_IN_LEVEL) ? tmpTilePos : (LEVEL_ROW_SIZE * TOTAL_ROWS_IN_LEVEL);
-
-        if (level[tileBelowPlayerPos] > 0)
+        if (world.at(tileUnderPlayerX).at(nextTileY) > 0)
         {
             return;
         }
 
-        player->updatePlayerPosition(LEVEL_ROW_SIZE, TOTAL_ROWS_IN_LEVEL);
+        player->updatePlayerPosition(world.at(0).size(), world.size());
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
         player->updateAnimation(clock, 3, PlayerDirection::UP);
+        uint32_t nextTileY = tileUnderPlayerY > 0 ? tileUnderPlayerY-1 : 0;
 
-        int tmpTilePos = tileUnderPlayerX + (tileUnderPlayerY - LEVEL_ROW_SIZE);
-        int tileAbovePlayerPos = tmpTilePos < 0 ? 0 : tmpTilePos;
-
-        if (level[tileAbovePlayerPos] > 0)
+        if (world.at(tileUnderPlayerX).at(nextTileY) > 0)
         {
             return;
         }
 
-        player->updatePlayerPosition(LEVEL_ROW_SIZE, TOTAL_ROWS_IN_LEVEL);
+        player->updatePlayerPosition(world.at(0).size(), world.size());
     }
 
 }
@@ -64,15 +75,14 @@ void Level::checkForMoveHorizontalDirection(sf::Clock& clock, uint32_t tileUnder
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
         player->updateAnimation(clock, 1, PlayerDirection::LEFT);
+        uint32_t nextTileX = (tileUnderPlayerX > 0) ? tileUnderPlayerX-1 : 0;
 
-        int tmpTilePos = (tileUnderPlayerX-1) + tileUnderPlayerY;
-        uint32_t tileToLeftOfPlayerPos = tmpTilePos < 0 ? 0 : tmpTilePos;
-        if (level[tileToLeftOfPlayerPos] > 0)
+        if (world.at(nextTileX).at(tileUnderPlayerY) > 0)
         {
             return;
         }
 
-        player->updatePlayerPosition(LEVEL_ROW_SIZE, TOTAL_ROWS_IN_LEVEL);
+        player->updatePlayerPosition(world.at(0).size(), world.size());
     }
 
 
@@ -80,15 +90,13 @@ void Level::checkForMoveHorizontalDirection(sf::Clock& clock, uint32_t tileUnder
     {
         player->updateAnimation(clock, 2, PlayerDirection::RIGHT);
 
-        int tmpTilePos = (tileUnderPlayerX + 1) + tileUnderPlayerY;
-        uint32_t tileToRightOfPlayerPos = tileUnderPlayerX > LEVEL_ROW_SIZE ? LEVEL_ROW_SIZE : tmpTilePos;
-
-        if (level[tileToRightOfPlayerPos] > 0)
+        uint32_t nextTileX = tileUnderPlayerX < world.at(0).size()-1 ? tileUnderPlayerX+1 : tileUnderPlayerX;
+        if (world.at(nextTileX).at(tileUnderPlayerY) > 0)
         {
             return;
         }
 
-        player->updatePlayerPosition(LEVEL_ROW_SIZE, TOTAL_ROWS_IN_LEVEL);
+        player->updatePlayerPosition(world.at(0).size(), world.size());
     }
 }
 
@@ -101,12 +109,12 @@ void Level::checkForChopTree(uint32_t tileUnderPlayerX, uint32_t tileUnderPlayer
         if (player->getPlayerDir() == PlayerDirection::UP)
         {
             // TODO Rename tileUnder* as it's confusing
-            int tileAbovePlayerPos = tileUnderPlayerX + (tileUnderPlayerY - LEVEL_ROW_SIZE);
-            bool isTileInBounds = tileAbovePlayerPos >= 0;
-            if (isTileInBounds && level[tileAbovePlayerPos] == 2)
+            int nextTileY = tileUnderPlayerY > 0 ? tileUnderPlayerY-1 : 0;
+
+            if (world.at(tileUnderPlayerX).at(nextTileY) == 2)
             {
                 std::cout << "cut tree!" << std::endl;
-                level[tileAbovePlayerPos] = 0;
+                world.at(tileUnderPlayerX).at(tileUnderPlayerY - world.at(0).size()) = 0;
 
                 // TODO not ideal, fix me
                 loadLevel();
@@ -115,13 +123,13 @@ void Level::checkForChopTree(uint32_t tileUnderPlayerX, uint32_t tileUnderPlayer
 
         if (player->getPlayerDir() == PlayerDirection::DOWN)
         {
-            int tileBelowPlayerPos = (tileUnderPlayerX + (tileUnderPlayerY + LEVEL_ROW_SIZE));
-            bool isTileInBounds = tileBelowPlayerPos < (TOTAL_ROWS_IN_LEVEL * LEVEL_ROW_SIZE);
+            int tileBelowPlayerPos = (tileUnderPlayerX + (tileUnderPlayerY + world.at(0).size()));
+            bool isTileInBounds = tileBelowPlayerPos < (world.size() * world.at(0).size());
 
-            if (isTileInBounds && level[tileBelowPlayerPos] == 2)
+            if (isTileInBounds && world.at(tileUnderPlayerX).at(tileUnderPlayerY + world.at(0).size()) == 2)
             {
                 std::cout << "cut tree!" << std::endl;
-                level[tileBelowPlayerPos] = 0;
+                world.at(tileUnderPlayerX).at(tileUnderPlayerY + world.at(0).size()) = 0;
 
                 // TODO not ideal, fix me
                 loadLevel();
@@ -133,10 +141,10 @@ void Level::checkForChopTree(uint32_t tileUnderPlayerX, uint32_t tileUnderPlayer
             int tileToLeftOfPlayerPos = (tileUnderPlayerX-1) + tileUnderPlayerY;
             bool isTileInBounds = tileToLeftOfPlayerPos >= 0;
 
-            if (isTileInBounds && level[tileToLeftOfPlayerPos] == 2)
+            if (isTileInBounds && world.at(tileUnderPlayerX-1).at(tileUnderPlayerY) == 2)
             {
                 std::cout << "cut tree!" << std::endl;
-                level[tileToLeftOfPlayerPos] = 0;
+                world.at(tileUnderPlayerX-1).at(tileUnderPlayerY) = 0;
 
                 // TODO not ideal, fix me
                 loadLevel();
@@ -146,12 +154,12 @@ void Level::checkForChopTree(uint32_t tileUnderPlayerX, uint32_t tileUnderPlayer
         if (player->getPlayerDir() == PlayerDirection::RIGHT)
         {
             int tileToRightOfPlayerPos = (tileUnderPlayerX+1) + tileUnderPlayerY;
-            bool isTileInBounds = tileUnderPlayerX < LEVEL_ROW_SIZE;
+            bool isTileInBounds = tileUnderPlayerX < world.at(0).size();
 
-            if (isTileInBounds && level[tileToRightOfPlayerPos] == 2)
+            if (isTileInBounds && world.at(tileUnderPlayerX+1).at(tileUnderPlayerY) == 2)
             {
                 std::cout << "cut tree!" << std::endl;
-                level[tileToRightOfPlayerPos] = 0;
+                world.at(tileUnderPlayerX+1).at(tileUnderPlayerY) = 0;
 
                 // TODO not ideal, fix me
                 loadLevel();
@@ -164,9 +172,3 @@ TileMap Level::getTileMap()
 {
     return map;
 }
-
-uint32_t Level::getLevelWidth()
-{
-    return LEVEL_ROW_SIZE;
-}
-

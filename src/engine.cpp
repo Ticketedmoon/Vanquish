@@ -70,7 +70,7 @@ void Engine::listenForEvents(sf::RenderWindow& window)
 void Engine::update(sf::Clock& clock, Player& player, Level& level)
 {
     level.update(clock);
-    player.update(level.getLevelWidth());
+    player.update();
 };
 
 /* 
