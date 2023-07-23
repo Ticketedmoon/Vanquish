@@ -28,7 +28,7 @@ class Engine
         void initialise();
 
     private:
-        void listenForEvents(sf::RenderWindow& window);
+        void listenForEvents(sf::RenderWindow& window, Level& level);
         void update(sf::Clock& clock, Player& player, Level& level);
         void render(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level);
         void centerViewOnPlayer(sf::RenderWindow& window, Player& player);

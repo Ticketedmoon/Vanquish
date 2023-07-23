@@ -40,14 +40,14 @@ void Engine::initialise()
     //std::vector<sf::Drawable> drawables = { player.getSprite(), level.getTileMap() };
     while (window.isOpen())
     {
-        listenForEvents(window);
+        listenForEvents(window, level);
         update(worldClock, player, level);
         render(window, debugClock, player, level);
     }
 
 };
 
-void Engine::listenForEvents(sf::RenderWindow& window)
+void Engine::listenForEvents(sf::RenderWindow& window, Level& level)
 {
     sf::Event event;
     while (window.pollEvent(event))
@@ -59,6 +59,12 @@ void Engine::listenForEvents(sf::RenderWindow& window)
 
         if (event.type == sf::Event::KeyPressed)
         {
+
+            if (event.key.code == sf::Keyboard::Space)
+            {
+                level.chopTree();
+            }
+
             if (event.key.code == sf::Keyboard::SemiColon)
             {
                 showDebugText = !showDebugText;

@@ -27,7 +27,6 @@ void Level::update(sf::Clock& clock)
 {
     checkForMoveVerticalDirection(clock, player->tilePosition.x, player->tilePosition.y);
     checkForMoveHorizontalDirection(clock, player->tilePosition.x, player->tilePosition.y);
-    checkForChopTree(player->tilePosition.x, player->tilePosition.y);
 }
 
 void Level::loadLevel()
@@ -101,66 +100,34 @@ void Level::checkForMoveHorizontalDirection(sf::Clock& clock, uint32_t tileUnder
     }
 }
 
-// TODO centralise common logic in this method
-void Level::checkForChopTree(uint32_t tileUnderPlayerX, uint32_t tileUnderPlayerY)
+void Level::chopTree()
 {
-    sf::Vector2f playerPos = player->getPlayerPos();
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+    // up
+    uint32_t nextTileY = player->tilePosition.y > 0 ? player->tilePosition.y-1 : player->tilePosition.y;
+    chopTreeForPlayerDirection(PlayerDirection::UP, player->tilePosition.x, nextTileY);
+    // down
+    nextTileY = player->tilePosition.y < world.size()-1 ? player->tilePosition.y+1 : player->tilePosition.y;
+    chopTreeForPlayerDirection(PlayerDirection::DOWN, player->tilePosition.x, nextTileY);
+    // left
+    uint32_t nextTileX = player->tilePosition.x > 0 ? player->tilePosition.x-1 : player->tilePosition.x;
+    chopTreeForPlayerDirection(PlayerDirection::LEFT, nextTileX, player->tilePosition.y);
+    // right
+    nextTileX = player->tilePosition.x < world.at(0).size()-1 ? player->tilePosition.x+1 : player->tilePosition.x;
+    chopTreeForPlayerDirection(PlayerDirection::RIGHT, nextTileX, player->tilePosition.y);
+}
+
+void Level::chopTreeForPlayerDirection(PlayerDirection dir, uint32_t tileX, uint32_t tileY)
+{
+    if (player->getPlayerDir() == dir)
     {
-        if (player->getPlayerDir() == PlayerDirection::UP)
+        //std::cout << tileX << ", " << tileY << std::endl;
+        if (world.at(tileY).at(tileX) == 2)
         {
-            // TODO Rename tileUnder* as it's confusing
-            int nextTileY = tileUnderPlayerY > 0 ? tileUnderPlayerY-1 : tileUnderPlayerY;
+            std::cout << "cut tree!" << std::endl;
+            world.at(tileY).at(tileX) = 0;
 
-            if (world.at(nextTileY).at(tileUnderPlayerX) == 2)
-            {
-                std::cout << "cut tree!" << std::endl;
-                world.at(nextTileY).at(tileUnderPlayerX) = 0;
-
-                // TODO not ideal, fix me
-                loadLevel();
-            }
-        }
-
-        if (player->getPlayerDir() == PlayerDirection::DOWN)
-        {
-            uint32_t nextTileY = tileUnderPlayerY < world.size() ? tileUnderPlayerY+1 : tileUnderPlayerY;
-            if (world.at(nextTileY).at(tileUnderPlayerX) == 2)
-            {
-                std::cout << "cut tree!" << std::endl;
-                world.at(nextTileY).at(tileUnderPlayerX) = 0;
-
-                // TODO not ideal, fix me
-                loadLevel();
-            }
-        }
-
-        if (player->getPlayerDir() == PlayerDirection::LEFT)
-        {
-            uint32_t nextTileX = tileUnderPlayerX > 0 ? tileUnderPlayerX-1 : tileUnderPlayerX;
-            if (world.at(tileUnderPlayerY).at(nextTileX) == 2)
-
-            if (world.at(tileUnderPlayerY).at(nextTileX) == 2)
-            {
-                std::cout << "cut tree!" << std::endl;
-                world.at(tileUnderPlayerY).at(nextTileX) = 0;
-
-                // TODO not ideal, fix me
-                loadLevel();
-            }
-        }
-
-        if (player->getPlayerDir() == PlayerDirection::RIGHT)
-        {
-            uint32_t nextTileX = tileUnderPlayerX < world.at(0).size() ? tileUnderPlayerX+1 : tileUnderPlayerX;
-            if (world.at(tileUnderPlayerY).at(nextTileX) == 2)
-            {
-                std::cout << "cut tree!" << std::endl;
-                world.at(tileUnderPlayerY).at(nextTileX) = 0;
-
-                // TODO not ideal, fix me
-                loadLevel();
-            }
+            // TODO not ideal, fix me
+            loadLevel();
         }
     }
 }
