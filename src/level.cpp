@@ -120,7 +120,6 @@ void Level::chopTreeForPlayerDirection(PlayerDirection dir, uint32_t tileX, uint
 {
     if (player->getPlayerDir() == dir)
     {
-        //std::cout << tileX << ", " << tileY << std::endl;
         if (world.at(tileY).at(tileX) == 2)
         {
             std::cout << "cut tree!" << std::endl;
