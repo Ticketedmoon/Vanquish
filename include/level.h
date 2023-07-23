@@ -8,6 +8,9 @@
 #include "player.h"
 #include "tilemap.h"
 
+const uint32_t TOTAL_ROWS_IN_LEVEL = 10;
+const uint32_t TOTAL_COLS_IN_LEVEL = 10;
+
 class Level
 {
     public:
