@@ -20,6 +20,9 @@ static uint32_t WINDOW_HEIGHT = 720;
 static bool USE_VERTICAL_SYNC = false;
 static uint32_t APP_FRAME_RATE = 60;
 
+const uint32_t TOTAL_ROWS_IN_LEVEL = 10;
+const uint32_t TOTAL_COLS_IN_LEVEL = 10;
+
 static const std::string FONT_PATH = "resources/fonts/calibri.ttf";
 
 class Engine
@@ -28,7 +31,7 @@ class Engine
         void initialise();
 
     private:
-        void listenForEvents(sf::RenderWindow& window, Level& level);
+        void listenForEvents(sf::RenderWindow& window, Level& level, Player& player);
         void update(sf::Clock& clock, Player& player, Level& level);
         void render(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level);
         void centerViewOnPlayer(sf::RenderWindow& window, Player& player);

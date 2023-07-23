@@ -1,20 +1,21 @@
 #include "../include/level.h"
+#include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cstdint>
 #include <vector>
 
-Level::Level(Player* player)
+Level::Level(Player* player, uint32_t totalRowsForLevel, uint32_t totalColsForLevel)
 {
-    for (uint32_t i = 0; i < TOTAL_COLS_IN_LEVEL; i++)
+    for (uint32_t i = 0; i < totalColsForLevel; i++)
     {
         std::vector<uint32_t> row;
-        for (uint32_t j = 0; j < TOTAL_ROWS_IN_LEVEL; j++)
+        for (uint32_t j = 0; j < totalRowsForLevel; j++)
         {
             row.emplace_back(0);
         }
 
         // DEBUG
-        row.at(TOTAL_ROWS_IN_LEVEL/2) = 2;
+        row.at(totalRowsForLevel/2) = 2;
 
         this->world.emplace_back(row);
     }
@@ -25,80 +26,53 @@ Level::Level(Player* player)
 
 void Level::update(sf::Clock& clock)
 {
-    checkForMoveVerticalDirection(clock, player->tilePosition.x, player->tilePosition.y);
-    checkForMoveHorizontalDirection(clock, player->tilePosition.x, player->tilePosition.y);
+    // Cardinal movement directions
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+    {
+        uint32_t nextTileY = player->tilePosition.y > 0 ? player->tilePosition.y-1 : 0;
+        checkForPlayerMovement(clock, PlayerDirection::UP, player->tilePosition.x, nextTileY, 3);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+    {
+        uint32_t nextTileY = player->tilePosition.y+1 >= world.size() ? player->tilePosition.y : player->tilePosition.y+1;
+        checkForPlayerMovement(clock, PlayerDirection::DOWN, player->tilePosition.x, nextTileY, 0);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+    {
+        uint32_t nextTileX = (player->tilePosition.x > 0) ? player->tilePosition.x-1 : 0;
+        checkForPlayerMovement(clock, PlayerDirection::LEFT, nextTileX, player->tilePosition.y, 1);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+    {
+        uint32_t nextTileX = player->tilePosition.x < world.at(0).size()-1 ? player->tilePosition.x+1 : player->tilePosition.x;
+        checkForPlayerMovement(clock, PlayerDirection::RIGHT, nextTileX, player->tilePosition.y, 2);
+    }
 }
 
 void Level::loadLevel()
 {
-    if (!map.load("./resources/assets/basic_tilemap.png", sf::Vector2u(32, 32), world, TOTAL_ROWS_IN_LEVEL, TOTAL_COLS_IN_LEVEL))
+    if (!map.load("./resources/assets/basic_tilemap.png", sf::Vector2u(32, 32), world, world.size(), world.at(0).size()))
     {
         std::cout << "Failed to load tileset" << std::endl;
         return;
     }
 }
 
-void Level::checkForMoveVerticalDirection(sf::Clock& clock, uint32_t tileUnderPlayerX, uint32_t tileUnderPlayerY)
+void Level::checkForPlayerMovement(sf::Clock& clock, PlayerDirection dir, uint32_t tileX, uint32_t tileY, uint32_t spriteOffset)
 {
-    // TODO Move keyboard check to engine/controller class
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+    player->updateAnimation(clock, spriteOffset, dir);
+
+    if (world.at(tileY).at(tileX) > 0)
     {
-        player->updateAnimation(clock, 0, PlayerDirection::DOWN);
-        uint32_t nextTileY = tileUnderPlayerY+1 >= world.size() ? tileUnderPlayerY : tileUnderPlayerY+1;
-
-        if (world.at(nextTileY).at(tileUnderPlayerX) > 0)
-        {
-            return;
-        }
-
-        player->updatePlayerPosition(world.at(0).size(), world.size());
+        return;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-    {
-        player->updateAnimation(clock, 3, PlayerDirection::UP);
-        uint32_t nextTileY = tileUnderPlayerY > 0 ? tileUnderPlayerY-1 : 0;
-
-        if (world.at(nextTileY).at(tileUnderPlayerX) > 0)
-        {
-            return;
-        }
-
-        player->updatePlayerPosition(world.at(0).size(), world.size());
-    }
-
+    player->updatePlayerPosition(world.at(0).size(), world.size());
 }
 
-
-void Level::checkForMoveHorizontalDirection(sf::Clock& clock, uint32_t tileUnderPlayerX, uint32_t tileUnderPlayerY)
-{
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-    {
-        player->updateAnimation(clock, 1, PlayerDirection::LEFT);
-        uint32_t nextTileX = (tileUnderPlayerX > 0) ? tileUnderPlayerX-1 : 0;
-
-        if (world.at(tileUnderPlayerY).at(nextTileX) > 0)
-        {
-            return;
-        }
-
-        player->updatePlayerPosition(world.at(0).size(), world.size());
-    }
-
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-    {
-        player->updateAnimation(clock, 2, PlayerDirection::RIGHT);
-        uint32_t nextTileX = tileUnderPlayerX < world.at(0).size()-1 ? tileUnderPlayerX+1 : tileUnderPlayerX;
-
-        if (world.at(tileUnderPlayerY).at(tileUnderPlayerX) > 0)
-        {
-            return;
-        }
-
-        player->updatePlayerPosition(world.at(0).size(), world.size());
-    }
-}
 
 void Level::chopTree()
 {

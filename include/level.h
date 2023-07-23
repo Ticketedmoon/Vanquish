@@ -8,25 +8,24 @@
 #include "player.h"
 #include "tilemap.h"
 
-const uint32_t TOTAL_ROWS_IN_LEVEL = 10;
-const uint32_t TOTAL_COLS_IN_LEVEL = 10;
-
 class Level
 {
     public:
-        Level(Player* player);
+        Level(Player* player, uint32_t totalRows, uint32_t totalCols);
+
         void update(sf::Clock& clock);
         void chopTree();
+
         TileMap getTileMap();
 
     private:
-        void checkForMoveVerticalDirection(sf::Clock& clock, uint32_t tileUnderPlayerX, uint32_t tileUnderPlayerY);
-        void checkForMoveHorizontalDirection(sf::Clock& clock, uint32_t tileUnderPlayerX, uint32_t tileUnderPlayerY);
         void loadLevel();
         void chopTreeForPlayerDirection(PlayerDirection dir, uint32_t tileX, uint32_t tileY);
+        void checkForPlayerMovement(sf::Clock& clock, PlayerDirection dir, uint32_t tileX, uint32_t tileY, uint32_t spriteOffset);
 
         std::vector<std::vector<uint32_t>> world;
         Player* player;
         TileMap map;
+
         uint32_t spriteSheetX;
 };

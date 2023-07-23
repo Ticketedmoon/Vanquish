@@ -33,21 +33,21 @@ void Engine::initialise()
     sf::Clock debugClock;
 
     Player player;
-    Level level(&player);
+    Level level(&player, TOTAL_ROWS_IN_LEVEL, TOTAL_COLS_IN_LEVEL);
 
     configureTextRendering();
 
     //std::vector<sf::Drawable> drawables = { player.getSprite(), level.getTileMap() };
     while (window.isOpen())
     {
-        listenForEvents(window, level);
+        listenForEvents(window, level, player);
         update(worldClock, player, level);
         render(window, debugClock, player, level);
     }
 
 };
 
-void Engine::listenForEvents(sf::RenderWindow& window, Level& level)
+void Engine::listenForEvents(sf::RenderWindow& window, Level& level, Player& player)
 {
     sf::Event event;
     while (window.pollEvent(event))
@@ -57,26 +57,25 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level)
             window.close();
         }
 
-        if (event.type == sf::Event::KeyPressed)
+        // General player operations
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
         {
+            level.chopTree();
+        }
 
-            if (event.key.code == sf::Keyboard::Space)
-            {
-                level.chopTree();
-            }
 
-            if (event.key.code == sf::Keyboard::SemiColon)
-            {
-                showDebugText = !showDebugText;
-            }
+        // Debug
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::SemiColon))
+        {
+            showDebugText = !showDebugText;
         }
     }
 };
 
 void Engine::update(sf::Clock& clock, Player& player, Level& level)
 {
-    level.update(clock);
     player.update();
+    level.update(clock);
 };
 
 /* 
