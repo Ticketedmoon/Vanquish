@@ -47,7 +47,7 @@ void Level::update(sf::Clock& clock)
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
-        uint32_t nextTileX = player->tilePosition.x < world.at(0).size()-1 ? player->tilePosition.x+1 : player->tilePosition.x;
+        uint32_t nextTileX = player->tilePosition.x < world.at(0).size()-1 ? player->tilePosition.x : player->tilePosition.x;
         checkForPlayerMovement(clock, PlayerDirection::RIGHT, nextTileX, player->tilePosition.y, 2);
     }
 }
@@ -70,6 +70,17 @@ void Level::checkForPlayerMovement(sf::Clock& clock, PlayerDirection dir, uint32
         return;
     }
 
+    // PROBLEM:
+    // WE KEEP GOING UNTIL WE REACH THE OBSTACLE TILE.
+    // THIS MEANS THAT IF THERE IS A COLUMN OF OBSTACLE TILES, 
+    //  AND YOU PUSH UP AS FAR AS YOU CAN AGAINST IT, YOU WILL BE ON THE OBSTACLE TILE.
+    //  THIS IS PROBLEMATIC AS YOU CAN NO LONGER MOVE DOWN OR UP ALONG THIS COLUMN.
+    //  THE PLAYER SHOULD BE ABLE TO MOVE UP OR DOWN UNDER THESE CONDITIONS.
+    //
+    // TO RESOLVE, I THINK CAN PUT A CHECK HERE TO SEE IF THE TILE THE PLAYER WOULD BE ON
+    //  IS AN OBSTACLE, AND THEN AVOID THE PLAYER POS UPDATE.  
+    //  SOME IDEAS WOULD BE TO ADD A NEW `findTile` method to the Player class.
+    //  THIS WILL TAKE A DIRECTION AND IDENTIFY WHICH TILE, AFTER APPLYING THE VELOCITY, WOULD BE NEXT.
     player->updatePlayerPosition(world.at(0).size(), world.size());
 }
 

@@ -27,6 +27,8 @@ void Player::update()
     playerSprite.setTextureRect(rectSourceSprite);
 }
 
+
+// TODO REFACTOR ME
 void Player::updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight)
 {
     sf::Vector2f acceleration;
