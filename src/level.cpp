@@ -96,7 +96,6 @@ void Level::chopTreeForPlayerDirection(PlayerDirection dir, uint32_t tileX, uint
     {
         if (world.at(tileY).at(tileX) == 2)
         {
-            std::cout << "cut tree!" << std::endl;
             world.at(tileY).at(tileX) = 0;
 
             // TODO not ideal, fix me
