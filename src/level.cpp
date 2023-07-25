@@ -24,31 +24,28 @@ Level::Level(Player* player, uint32_t totalRowsForLevel, uint32_t totalColsForLe
     this->player = player;
 }
 
+// TODO MOVE TO ENGINE CLASS NOW THAT IT SIMPLY CHECKS KEYBOARD AND THEN CALLS A FUNC? 
 void Level::update(sf::Clock& clock)
 {
     // Cardinal movement directions
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
-        uint32_t nextTileY = player->tilePosition.y > 0 ? player->tilePosition.y-1 : 0;
-        checkForPlayerMovement(clock, PlayerDirection::UP, player->tilePosition.x, nextTileY, 3);
+        checkForPlayerMovement(clock, PlayerDirection::UP, 3);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     {
-        uint32_t nextTileY = player->tilePosition.y+1 >= world.size() ? player->tilePosition.y : player->tilePosition.y+1;
-        checkForPlayerMovement(clock, PlayerDirection::DOWN, player->tilePosition.x, nextTileY, 0);
+        checkForPlayerMovement(clock, PlayerDirection::DOWN, 0);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
-        uint32_t nextTileX = (player->tilePosition.x > 0) ? player->tilePosition.x-1 : 0;
-        checkForPlayerMovement(clock, PlayerDirection::LEFT, nextTileX, player->tilePosition.y, 1);
+        checkForPlayerMovement(clock, PlayerDirection::LEFT, 1);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
-        uint32_t nextTileX = player->tilePosition.x < world.at(0).size()-1 ? player->tilePosition.x : player->tilePosition.x;
-        checkForPlayerMovement(clock, PlayerDirection::RIGHT, nextTileX, player->tilePosition.y, 2);
+        checkForPlayerMovement(clock, PlayerDirection::RIGHT, 2);
     }
 }
 
@@ -61,26 +58,21 @@ void Level::loadLevel()
     }
 }
 
-void Level::checkForPlayerMovement(sf::Clock& clock, PlayerDirection dir, uint32_t tileX, uint32_t tileY, uint32_t spriteOffset)
+void Level::checkForPlayerMovement(sf::Clock& clock, PlayerDirection dir, uint32_t spriteOffset)
 {
     player->updateAnimation(clock, spriteOffset, dir);
 
-    if (world.at(tileY).at(tileX) > 0)
+    // TODO Create a tile object rather than a pair here?
+    std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(dir);
+
+
+    if (world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first))
     {
+        // Reset player velocity if they bump into an obstacle;
+        player->velocity = sf::Vector2f(0, 0);
         return;
     }
 
-    // PROBLEM:
-    // WE KEEP GOING UNTIL WE REACH THE OBSTACLE TILE.
-    // THIS MEANS THAT IF THERE IS A COLUMN OF OBSTACLE TILES, 
-    //  AND YOU PUSH UP AS FAR AS YOU CAN AGAINST IT, YOU WILL BE ON THE OBSTACLE TILE.
-    //  THIS IS PROBLEMATIC AS YOU CAN NO LONGER MOVE DOWN OR UP ALONG THIS COLUMN.
-    //  THE PLAYER SHOULD BE ABLE TO MOVE UP OR DOWN UNDER THESE CONDITIONS.
-    //
-    // TO RESOLVE, I THINK CAN PUT A CHECK HERE TO SEE IF THE TILE THE PLAYER WOULD BE ON
-    //  IS AN OBSTACLE, AND THEN AVOID THE PLAYER POS UPDATE.  
-    //  SOME IDEAS WOULD BE TO ADD A NEW `findTile` method to the Player class.
-    //  THIS WILL TAKE A DIRECTION AND IDENTIFY WHICH TILE, AFTER APPLYING THE VELOCITY, WOULD BE NEXT.
     player->updatePlayerPosition(world.at(0).size(), world.size());
 }
 

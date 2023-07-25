@@ -6,10 +6,12 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/System/Clock.hpp>
+
 #include <cstdint>
 #include <stdlib.h>
 #include <iostream>
 #include <cmath>
+#include <utility>
 
 static uint32_t SPRITE_SHEET_X = 32;
 static uint32_t SPRITE_SHEET_Y = 32;
@@ -29,6 +31,7 @@ class Player
         void update();
         void updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight);
         void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, PlayerDirection newDirection);
+        std::pair<uint32_t, uint32_t> findNextTileFromPlayerDirection(PlayerDirection playerDir);
 
         // TODO IS THIS STILL NEEDED?
         sf::Vector2f getPlayerPos();

@@ -21,7 +21,7 @@ class Level
     private:
         void loadLevel();
         void chopTreeForPlayerDirection(PlayerDirection dir, uint32_t tileX, uint32_t tileY);
-        void checkForPlayerMovement(sf::Clock& clock, PlayerDirection dir, uint32_t tileX, uint32_t tileY, uint32_t spriteOffset);
+        void checkForPlayerMovement(sf::Clock& clock, PlayerDirection dir, uint32_t spriteOffset);
 
         std::vector<std::vector<uint32_t>> world;
         Player* player;

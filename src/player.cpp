@@ -27,13 +27,39 @@ void Player::update()
     playerSprite.setTextureRect(rectSourceSprite);
 }
 
+std::pair<uint32_t, uint32_t> Player::findNextTileFromPlayerDirection(PlayerDirection playerDir)
+{
+    float nextPlayerX = playerPos.x;
+    float nextPlayerY = playerPos.y;
+
+    if (playerDir == PlayerDirection::UP)
+    {
+        nextPlayerY += (velocity.y - 1.5f);
+    }
+    if (playerDir == PlayerDirection::DOWN)
+    {
+        nextPlayerY += (velocity.y + 1.5f);
+    }
+    if (playerDir == PlayerDirection::LEFT)
+    {
+        nextPlayerX += (velocity.x - 1.5f);
+    }
+    if (playerDir == PlayerDirection::RIGHT) 
+    {
+        nextPlayerX += (velocity.x + 1.5f);
+    }
+
+    uint32_t nextTileX = round(nextPlayerX/SPRITE_SHEET_X);
+    uint32_t nextTileY = round(nextPlayerY/SPRITE_SHEET_Y);
+
+    return std::pair<uint32_t, uint32_t>(nextTileX, nextTileY);
+}
 
 // TODO REFACTOR ME
 void Player::updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight)
 {
     sf::Vector2f acceleration;
 
-    // adjust this at will
     const float dAcc = 1.5f;
 
     if (playerDir == PlayerDirection::UP)
