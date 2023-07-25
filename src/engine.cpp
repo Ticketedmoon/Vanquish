@@ -57,17 +57,20 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level, Player& pla
             window.close();
         }
 
-        // General player operations
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+        if (event.type == sf::Event::KeyPressed)
         {
-            level.chopTree();
-        }
+            // General player operations
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+            {
+                level.chopTree();
+            }
 
-
-        // Debug
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::SemiColon))
-        {
-            showDebugText = !showDebugText;
+            // Debug
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::SemiColon))
+            {
+                showDebugText = !showDebugText;
+            }
+        
         }
     }
 };
