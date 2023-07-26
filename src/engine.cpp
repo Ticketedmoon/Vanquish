@@ -33,7 +33,7 @@ void Engine::initialise()
     sf::Clock debugClock;
 
     Player player;
-    Level level(&player, TOTAL_ROWS_IN_LEVEL, TOTAL_COLS_IN_LEVEL);
+    Level level(&player);
 
     configureTextRendering();
 

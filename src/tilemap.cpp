@@ -1,7 +1,6 @@
 #include "../include/tilemap.h"
-#include <cstdint>
 
-bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& tiles, uint32_t totalRows, uint32_t totalCols)
+bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& tiles)
 {
     // load the tileset texture
     if (!m_tileset.loadFromFile(tileset))
@@ -15,11 +14,10 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std:
     // extract levelWidth and levelHeight
     uint32_t levelWidth = tiles.at(0).size();
     uint32_t levelHeight = tiles.size();
-    uint32_t rowVertexOffset = levelWidth / totalRows;
-    uint32_t colVertexOffset = levelHeight / totalCols;
 
     // resize vertex array based on level size
-    m_vertices.resize(levelWidth * levelHeight * rowVertexOffset * colVertexOffset * TOTAL_VERTICES_IN_TILE);
+    m_vertices.resize(levelWidth * levelHeight * TOTAL_VERTICES_IN_TILE);
+
     std::cout << "vertice size: " << m_vertices.getVertexCount() << std::endl;
     std::cout << "Tileset match tilesize: " << ((m_tileset.getSize().x % tileSize.x == 0) && (m_tileset.getSize().y % tileSize.y == 0)) << std::endl;
     std::cout << "Tile Map Height: " << tiles.size() << std::endl;

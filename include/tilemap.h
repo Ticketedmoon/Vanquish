@@ -18,7 +18,7 @@ const uint32_t TOTAL_VERTICES_IN_TILE = 6;
 class TileMap : public sf::Drawable, public sf::Transformable
 {
     public:
-        bool load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& tiles, uint32_t totalRows, uint32_t totalCols);
+        bool load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& tiles);
 
     private:
         virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;

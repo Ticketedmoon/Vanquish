@@ -6,7 +6,5 @@
 g++ ./src/*.cpp \
     -o vanquish.exe \
     -I./include \
-    -I./libs/vcpkg/packages/jsoncpp_x64-linux/include \
-    -L./libs/vcpkg/packages/jsoncpp_x64-linux/lib \
-    -ljsoncpp \
+    -I./libs/headers \
     -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio

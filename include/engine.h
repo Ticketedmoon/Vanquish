@@ -20,9 +20,6 @@ static uint32_t WINDOW_HEIGHT = 720;
 static bool USE_VERTICAL_SYNC = false;
 static uint32_t APP_FRAME_RATE = 60;
 
-const uint32_t TOTAL_ROWS_IN_LEVEL = 10;
-const uint32_t TOTAL_COLS_IN_LEVEL = 10;
-
 static const std::string FONT_PATH = "resources/fonts/calibri.ttf";
 
 class Engine

@@ -2,11 +2,9 @@
 sudo apt-get remove libsfml-dev -y
 sudo apt-get install libsfml-dev -y
 
-# jsoncpp
-mkdir -p libs/
+rm -rf libs/
+mkdir libs/
 cd libs
-git clone https://github.com/Microsoft/vcpkg.git
-cd vcpkg
-./bootstrap-vcpkg.sh
-./vcpkg integrate install
-./vcpkg install jsoncpp
+mkdir headers/
+cd headers
+wget https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp

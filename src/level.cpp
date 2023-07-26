@@ -1,31 +1,12 @@
 #include "../include/level.h"
-#include <SFML/System/Clock.hpp>
-#include <SFML/System/Vector2.hpp>
 #include <cstdint>
 #include <vector>
-#include <json/json.h>
 
-Level::Level(Player* player, uint32_t totalRowsForLevel, uint32_t totalColsForLevel)
+Level::Level(Player* player)
 {
-    // TODO REMOVE ME - just testing jsoncpp
-    Json::Value root = "test";   // 'root' will contain the root value after parsing.
-    std::cout << root << std::endl;
- 
-
-    for (uint32_t i = 0; i < totalColsForLevel; i++)
-    {
-        std::vector<uint32_t> row;
-        for (uint32_t j = 0; j < totalRowsForLevel; j++)
-        {
-            row.emplace_back(0);
-        }
-
-        // DEBUG
-        row.at(totalRowsForLevel/2) = 2;
-
-        this->world.emplace_back(row);
-    }
-
+    std::ifstream f("resources/level/forest_1.json");
+    nlohmann::json data = nlohmann::json::parse(f);
+    this->world = data["grid"];
     loadLevel();
     this->player = player;
 }
@@ -57,7 +38,7 @@ void Level::update(sf::Clock& clock)
 
 void Level::loadLevel()
 {
-    if (!map.load("./resources/assets/basic_tilemap.png", sf::Vector2u(32, 32), world, world.size(), world.at(0).size()))
+    if (!map.load("./resources/assets/basic_tilemap.png", sf::Vector2u(32, 32), world))
     {
         std::cout << "Failed to load tileset" << std::endl;
         return;

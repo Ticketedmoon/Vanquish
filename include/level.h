@@ -4,6 +4,8 @@
 #include <SFML/System/Clock.hpp>
 #include <cstdint>
 #include <vector>
+#include <json.hpp>
+#include <fstream>
 
 #include "player.h"
 #include "tilemap.h"
@@ -11,7 +13,7 @@
 class Level
 {
     public:
-        Level(Player* player, uint32_t totalRows, uint32_t totalCols);
+        Level(Player* player);
 
         void update(sf::Clock& clock);
         void chopTree();
