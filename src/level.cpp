@@ -3,9 +3,15 @@
 #include <SFML/System/Vector2.hpp>
 #include <cstdint>
 #include <vector>
+#include <json/json.h>
 
 Level::Level(Player* player, uint32_t totalRowsForLevel, uint32_t totalColsForLevel)
 {
+    // TODO REMOVE ME - just testing jsoncpp
+    Json::Value root = "test";   // 'root' will contain the root value after parsing.
+    std::cout << root << std::endl;
+ 
+
     for (uint32_t i = 0; i < totalColsForLevel; i++)
     {
         std::vector<uint32_t> row;
