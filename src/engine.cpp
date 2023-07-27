@@ -62,7 +62,7 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level, Player& pla
             // General player operations
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
             {
-                level.chopTree();
+                level.interactWithNode();
             }
 
             // Debug
@@ -93,7 +93,7 @@ void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, 
     window.clear();
     centerViewOnPlayer(window, player);
 
-    window.draw(level.getTileMap());
+    window.draw(level.map);
     window.draw(player.getSprite());
 
     displayDebugText(window, clock, player);

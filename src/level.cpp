@@ -1,7 +1,7 @@
 #include "../include/level.h"
 #include <cstdint>
-#include <string>
-#include <vector>
+
+// TODO Investigate if getters are conventional in c++
 
 Level::Level(Player* player)
 {
@@ -64,36 +64,17 @@ void Level::checkForPlayerMovement(sf::Clock& clock, PlayerDirection dir, uint32
 }
 
 
-void Level::chopTree()
+void Level::interactWithNode()
 {
-    // up
-    chopTreeForPlayerDirection(PlayerDirection::UP);
-    // down
-    chopTreeForPlayerDirection(PlayerDirection::DOWN);
-    // left
-    chopTreeForPlayerDirection(PlayerDirection::LEFT);
-    // right
-    chopTreeForPlayerDirection(PlayerDirection::RIGHT);
-}
+    // TODO Create a tile object rather than a pair here?
+    std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(player->getPlayerDir());
+    uint8_t nodeFacingPlayer = world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first);
 
-void Level::chopTreeForPlayerDirection(PlayerDirection dir)
-{
-    if (player->getPlayerDir() == dir)
+    if (nodeFacingPlayer == 2 || nodeFacingPlayer == 3)
     {
-        // TODO Create a tile object rather than a pair here?
-        std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(dir);
-        if (world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first) == 2)
-        {
-            world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first) = 0;
+        world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first) = 0;
 
-            // TODO not ideal, fix me
-            loadLevel();
-        }
+        // TODO not ideal, fix me
+        loadLevel();
     }
-}
-
-// TODO Investigate if getters are conventional in c++
-TileMap Level::getTileMap()
-{
-    return map;
 }

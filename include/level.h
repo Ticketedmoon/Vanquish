@@ -16,18 +16,16 @@ class Level
         Level(Player* player);
 
         void update(sf::Clock& clock);
-        void chopTree();
+        void interactWithNode();
 
-        TileMap getTileMap();
+        TileMap map;
 
     private:
         void loadLevel();
-        void chopTreeForPlayerDirection(PlayerDirection dir);
         void checkForPlayerMovement(sf::Clock& clock, PlayerDirection dir, uint32_t spriteOffset);
 
         std::vector<std::vector<uint32_t>> world;
         Player* player;
-        TileMap map;
 
         uint32_t spriteSheetX;
 };
