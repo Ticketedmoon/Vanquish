@@ -49,35 +49,27 @@ std::pair<uint32_t, uint32_t> Player::findNextTileFromPlayerDirection(PlayerDire
         nextPlayerX += (velocity.x + 1.5f);
     }
 
+    // TODO ROUND FUNC IS A PROBLEM HERE, MAYBE USE WITHOUT AGG FUNC? 
+    // CASE: 0 - 16 first tilePosition
+    // CASE: 16 - 32 second tilePosition
+    // CASE: 32 - 48 third tilePosition
+    //
+    // Currently it deems 0-16 tile 1, and 16-48 tile 2, due to rounding behaviour.
+    // We want to divide by 16 and floor maybe? but X breaks
     uint32_t nextTileX = round(nextPlayerX/SPRITE_SHEET_X);
     uint32_t nextTileY = round(nextPlayerY/SPRITE_SHEET_Y);
-
     return std::pair<uint32_t, uint32_t>(nextTileX, nextTileY);
 }
 
 // TODO REFACTOR ME
 void Player::updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight)
 {
-    sf::Vector2f acceleration;
-
     const float dAcc = 1.5f;
+    const int sign = playerDir == PlayerDirection::UP || playerDir == PlayerDirection::LEFT ? -1 : 1;
 
-    if (playerDir == PlayerDirection::UP)
-    {
-        acceleration.y -= dAcc;
-    }
-    if (playerDir == PlayerDirection::DOWN)
-    {
-        acceleration.y += dAcc;
-    }
-    if (playerDir == PlayerDirection::LEFT)
-    {
-        acceleration.x -= dAcc;
-    }
-    if (playerDir == PlayerDirection::RIGHT) 
-    {
-        acceleration.x += dAcc;
-    }
+    int xAccel = playerDir == PlayerDirection::LEFT || playerDir == PlayerDirection::RIGHT ? (dAcc * sign) : 0;
+    int yAccel = playerDir == PlayerDirection::UP || playerDir == PlayerDirection::DOWN ? (dAcc * sign) : 0;
+    sf::Vector2f acceleration = sf::Vector2f(xAccel, yAccel);
 
     // update velocity through acceleration
     velocity += acceleration;
@@ -86,28 +78,31 @@ void Player::updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight)
     uint32_t tileMapWidth = ((levelWidth-1) * SPRITE_SHEET_X);
     uint32_t tileMapHeight = ((levelHeight-1) * SPRITE_SHEET_Y);
 
-    if ((playerPos.x+velocity.x >= 0) && (playerPos.x+velocity.x < tileMapWidth))
+    if (playerDir == PlayerDirection::LEFT || playerDir == PlayerDirection::RIGHT)
     {
-        //std::cout << "yo: " << playerPos.x << ", " << velocity.x << std::endl;
-        playerPos.x += velocity.x;
-        velocity.x = 0.5f * velocity.x;
-    }
-    else 
-    {
-        velocity.x = 0;
-    }
-
-
-    if ((playerPos.y+velocity.y >= 0) && (playerPos.y+velocity.y <= tileMapHeight))
-    {
-        playerPos.y += velocity.y;
-        velocity.y = 0.5f * velocity.y;
-    }
-    else
-    {
-        velocity.y = 0;
+        if ((playerPos.x+velocity.x >= 0) && (playerPos.x+velocity.x < tileMapWidth))
+        {
+            playerPos.x += velocity.x;
+            velocity.x = 0.5f * velocity.x;
+        }
+        else 
+        {
+            velocity.x = 0;
+        }
     }
 
+    if (playerDir == PlayerDirection::UP || playerDir == PlayerDirection::DOWN)
+    {
+        if ((playerPos.y+velocity.y >= 0) && (playerPos.y+velocity.y <= tileMapHeight))
+        {
+            playerPos.y += velocity.y;
+            velocity.y = 0.5f * velocity.y;
+        }
+        else
+        {
+            velocity.y = 0;
+        }
+    }
 }
 
 void Player::updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, PlayerDirection newDirection)

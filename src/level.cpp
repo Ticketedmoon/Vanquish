@@ -1,5 +1,6 @@
 #include "../include/level.h"
 #include <cstdint>
+#include <string>
 #include <vector>
 
 Level::Level(Player* player)
@@ -51,7 +52,6 @@ void Level::checkForPlayerMovement(sf::Clock& clock, PlayerDirection dir, uint32
 
     // TODO Create a tile object rather than a pair here?
     std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(dir);
-
 
     if (world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first))
     {
