@@ -32,7 +32,7 @@ void Engine::initialise()
     sf::Clock worldClock;
     sf::Clock debugClock;
 
-    Player player;
+    Player player(32, 32);
     Level level(&player);
 
     configureTextRendering();

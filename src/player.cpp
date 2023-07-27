@@ -1,26 +1,30 @@
 #include "../include/player.h"
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cstdint>
 
-Player::Player()
+Player::Player(uint8_t playerWidth, uint8_t playerHeight)
 {
+    this->playerWidth = playerWidth;
+    this->playerHeight = playerHeight;
+    playerDir = PlayerDirection::DOWN;
+
     if (!texture.loadFromFile("resources/assets/character_sprite_sheet_v2.png"))
     {
         std::cout << "Failed to load character sprite sheet" << std::endl;
     }
-    texture.setSmooth(true);
 
-    playerPos = sf::Vector2f(0.0f, 0.0f);
-    rectSourceSprite = sf::IntRect(0, 0, SPRITE_SHEET_X, SPRITE_SHEET_Y);
-    playerDir = PlayerDirection::DOWN;
+    texture.setSmooth(true);
+    playerPos = sf::Vector2f(0, 0);
+    rectSourceSprite = sf::IntRect(0, 0, playerWidth, playerHeight);
     playerSprite = sf::Sprite(texture, rectSourceSprite);
 }
 
 void Player::update()
 {
-    uint32_t tileUnderPlayerX = round(playerPos.x/SPRITE_SHEET_X);
-    uint32_t tileUnderPlayerY = round(playerPos.y/SPRITE_SHEET_Y);
+    uint32_t tileUnderPlayerX = round(playerPos.x/playerWidth);
+    uint32_t tileUnderPlayerY = round(playerPos.y/playerHeight);
 
     tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
     playerSprite.setPosition(playerPos);
@@ -56,8 +60,9 @@ std::pair<uint32_t, uint32_t> Player::findNextTileFromPlayerDirection(PlayerDire
     //
     // Currently it deems 0-16 tile 1, and 16-48 tile 2, due to rounding behaviour.
     // We want to divide by 16 and floor maybe? but X breaks
-    uint32_t nextTileX = round(nextPlayerX/SPRITE_SHEET_X);
-    uint32_t nextTileY = round(nextPlayerY/SPRITE_SHEET_Y);
+    
+    uint32_t nextTileX = round(nextPlayerX/playerWidth);
+    uint32_t nextTileY = round(nextPlayerY/playerHeight);
     return std::pair<uint32_t, uint32_t>(nextTileX, nextTileY);
 }
 
@@ -75,8 +80,8 @@ void Player::updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight)
     velocity += acceleration;
 
     // TODO REFACTOR ME CAN WE USE tilePosition?
-    uint32_t tileMapWidth = ((levelWidth-1) * SPRITE_SHEET_X);
-    uint32_t tileMapHeight = ((levelHeight-1) * SPRITE_SHEET_Y);
+    uint32_t tileMapWidth = ((levelWidth-1) * playerWidth);
+    uint32_t tileMapHeight = ((levelHeight-1) * playerHeight);
 
     if (playerDir == PlayerDirection::LEFT || playerDir == PlayerDirection::RIGHT)
     {
@@ -110,14 +115,14 @@ void Player::updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, Pl
     sf::Time currentTime = clock.getElapsedTime();
     if (currentTime - animationFrameStartTime >= animationFrameDuration)
     {
-        rectSourceSprite.top = SPRITE_SHEET_X * spriteSheetTopOffset;
-        if (rectSourceSprite.left == LAST_SPRITE_LEFT_POS)
+        rectSourceSprite.top = playerHeight * spriteSheetTopOffset;
+        if (rectSourceSprite.left == (playerWidth*2))
         {
             rectSourceSprite.left = 0;
         }
         else
         {
-            rectSourceSprite.left += SPRITE_SHEET_X;
+            rectSourceSprite.left += playerWidth;
         }
 
         animationFrameStartTime = currentTime;

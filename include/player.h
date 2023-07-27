@@ -13,10 +13,6 @@
 #include <cmath>
 #include <utility>
 
-static uint32_t SPRITE_SHEET_X = 32;
-static uint32_t SPRITE_SHEET_Y = 32;
-static uint32_t LAST_SPRITE_LEFT_POS = 64;
-
 enum class PlayerDirection { 
     DOWN = 0,
     UP = 1,
@@ -27,7 +23,7 @@ enum class PlayerDirection {
 class Player
 {
     public:
-        Player();
+        Player(uint8_t playerWidth, uint8_t playerHeight);
         void update();
         void updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight);
         void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, PlayerDirection newDirection);
@@ -42,12 +38,13 @@ class Player
         sf::Vector2u tilePosition;
 
     private:
-        sf::IntRect rectSourceSprite;
         sf::Vector2f playerPos;
+        PlayerDirection playerDir;
+        uint8_t playerWidth, playerHeight;
+
+        sf::IntRect rectSourceSprite;
         sf::Texture texture;
         sf::Sprite playerSprite;
-
-        PlayerDirection playerDir;
 
         sf::Time animationFrameStartTime{ sf::Time::Zero };
         sf::Time animationFrameDuration{ sf::seconds(1.f / 6.f) }; // 3 frames per second

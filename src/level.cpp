@@ -5,7 +5,7 @@
 
 Level::Level(Player* player)
 {
-    std::ifstream f("resources/level/forest_1.json");
+    std::ifstream f("resources/level/forest_0.json");
     nlohmann::json data = nlohmann::json::parse(f);
     this->world = data["grid"];
     loadLevel();
