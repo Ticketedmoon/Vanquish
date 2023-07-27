@@ -67,26 +67,24 @@ void Level::checkForPlayerMovement(sf::Clock& clock, PlayerDirection dir, uint32
 void Level::chopTree()
 {
     // up
-    uint32_t nextTileY = player->tilePosition.y > 0 ? player->tilePosition.y-1 : player->tilePosition.y;
-    chopTreeForPlayerDirection(PlayerDirection::UP, player->tilePosition.x, nextTileY);
+    chopTreeForPlayerDirection(PlayerDirection::UP);
     // down
-    nextTileY = player->tilePosition.y < world.size()-1 ? player->tilePosition.y+1 : player->tilePosition.y;
-    chopTreeForPlayerDirection(PlayerDirection::DOWN, player->tilePosition.x, nextTileY);
+    chopTreeForPlayerDirection(PlayerDirection::DOWN);
     // left
-    uint32_t nextTileX = player->tilePosition.x > 0 ? player->tilePosition.x-1 : player->tilePosition.x;
-    chopTreeForPlayerDirection(PlayerDirection::LEFT, nextTileX, player->tilePosition.y);
+    chopTreeForPlayerDirection(PlayerDirection::LEFT);
     // right
-    nextTileX = player->tilePosition.x < world.at(0).size()-1 ? player->tilePosition.x+1 : player->tilePosition.x;
-    chopTreeForPlayerDirection(PlayerDirection::RIGHT, nextTileX, player->tilePosition.y);
+    chopTreeForPlayerDirection(PlayerDirection::RIGHT);
 }
 
-void Level::chopTreeForPlayerDirection(PlayerDirection dir, uint32_t tileX, uint32_t tileY)
+void Level::chopTreeForPlayerDirection(PlayerDirection dir)
 {
     if (player->getPlayerDir() == dir)
     {
-        if (world.at(tileY).at(tileX) == 2)
+        // TODO Create a tile object rather than a pair here?
+        std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(dir);
+        if (world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first) == 2)
         {
-            world.at(tileY).at(tileX) = 0;
+            world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first) = 0;
 
             // TODO not ideal, fix me
             loadLevel();
@@ -94,6 +92,7 @@ void Level::chopTreeForPlayerDirection(PlayerDirection dir, uint32_t tileX, uint
     }
 }
 
+// TODO Investigate if getters are conventional in c++
 TileMap Level::getTileMap()
 {
     return map;

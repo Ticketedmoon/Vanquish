@@ -132,7 +132,8 @@ void Engine::displayDebugText(sf::RenderWindow& window, sf::Clock& clock, Player
     float fps = 1.0f / clock.restart().asSeconds();
     debugText.setString(
             "fps: " + std::to_string(fps) + "\n" +
-            "position (x, y): " + "(" + std::to_string(player.tilePosition.x) + ", " + std::to_string(player.tilePosition.y) + ")" + "\n"
+            "window position (x, y): " + "(" + std::to_string(player.getPlayerPos().x) + ", " + std::to_string(player.getPlayerPos().y) + ")" + "\n" +
+            "tile position (x, y): " + "(" + std::to_string(player.tilePosition.x) + ", " + std::to_string(player.tilePosition.y) + ")" + "\n"
     );
 
     sf::Vector2f centerView = window.getView().getCenter();
