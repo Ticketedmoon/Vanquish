@@ -19,6 +19,7 @@ Player::Player(uint8_t playerWidth, uint8_t playerHeight)
     playerPos = sf::Vector2f(0, 0);
     rectSourceSprite = sf::IntRect(0, 0, playerWidth, playerHeight);
     playerSprite = sf::Sprite(texture, rectSourceSprite);
+    playerSprite.scale(0.5, 0.5);
 }
 
 void Player::update()

@@ -4,6 +4,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <cstdint>
 #include <string>
 
 void Engine::initialise()
@@ -17,7 +18,7 @@ void Engine::initialise()
 
     // create a view with its center and size
     sf::View view(sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
-    view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.25f, 1.25f));
+    view.zoom(0.5);
     window.setView(view);
 
     if (USE_VERTICAL_SYNC)
@@ -104,9 +105,42 @@ void Engine::centerViewOnPlayer(sf::RenderWindow& window, Player& player)
 {
     // kee view centred/centered on player
     sf::Vector2f playerPos = player.getPlayerPos();
-    float centreX = (WINDOW_WIDTH / 2) + playerPos.x - (WINDOW_WIDTH / 4);
-    float centreY = (WINDOW_HEIGHT / 2) + playerPos.y - (WINDOW_HEIGHT / 4);
+    float centreX;
+    float centreY;
 
+    if (playerPos.x > WINDOW_WIDTH/4)
+    {
+        if (playerPos.x < WINDOW_WIDTH - (WINDOW_WIDTH/3))
+        {
+            centreX = playerPos.x;
+        }
+        else
+        {
+            centreX = WINDOW_WIDTH - (WINDOW_WIDTH/3);
+        }
+    }
+    else 
+    {
+        centreX = (WINDOW_WIDTH/4);
+    }
+
+
+    if (playerPos.y > WINDOW_HEIGHT/4)
+    {
+        if (playerPos.y< WINDOW_HEIGHT - (WINDOW_HEIGHT/3))
+        {
+            centreY = playerPos.y;
+        }
+        else
+        {
+            centreY = WINDOW_HEIGHT - (WINDOW_HEIGHT/3);
+        }
+    }
+    else 
+    {
+        centreY = (WINDOW_HEIGHT/4);
+    }
+    
     sf::View newView = window.getView();
     newView.setCenter(centreX, centreY);
 
@@ -138,7 +172,7 @@ void Engine::displayDebugText(sf::RenderWindow& window, sf::Clock& clock, Player
 
     sf::Vector2f centerView = window.getView().getCenter();
 
-    float offset = 2.15f;
+    float offset = 4.5f;
     debugText.setPosition(centerView.x - WINDOW_WIDTH / offset, centerView.y - WINDOW_HEIGHT / offset);
 
     window.draw(debugText);
@@ -153,9 +187,9 @@ void Engine::configureTextRendering()
     }
 
     debugText.setFont(font); // font is a sf::Font
-    debugText.setCharacterSize(12); // in pixels, not points!
+    debugText.setCharacterSize(9); // in pixels, not points!
     debugText.setFillColor(sf::Color::Green);
     debugText.setOutlineColor(sf::Color::Black);
-    debugText.setOutlineThickness(3.0f);
+    debugText.setOutlineThickness(2.0f);
     debugText.setLetterSpacing(3.0f);
 }
