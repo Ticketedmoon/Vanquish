@@ -17,6 +17,7 @@ class Level
 
         void update(sf::Clock& clock);
         void interactWithNode();
+        void debug();
 
         TileMap map;
 

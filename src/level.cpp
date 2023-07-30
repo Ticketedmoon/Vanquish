@@ -35,6 +35,13 @@ void Level::update(sf::Clock& clock)
     {
         checkForPlayerMovement(clock, PlayerDirection::RIGHT, 2);
     }
+
+}
+
+void Level::debug()
+{
+    // Move to render function
+    map.highlightPlayerTile(player->tilePosition.x, player->tilePosition.y, world.at(0).size());
 }
 
 void Level::loadLevel()

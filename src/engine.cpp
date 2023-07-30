@@ -69,7 +69,7 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level, Player& pla
             // Debug
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::SemiColon))
             {
-                showDebugText = !showDebugText;
+                debugMode = !debugMode;
             }
         
         }
@@ -111,7 +111,11 @@ void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, 
 
     window.draw(player.getSprite());
 
-    displayDebugText(window, clock, player);
+    if (debugMode)
+    {
+        startDebugMode(window, clock, player, level);
+    }
+
     window.display();
 };
 
@@ -170,13 +174,8 @@ void Engine::centerViewOnPlayer(sf::RenderWindow& window, Player& player)
  * @param window sf::RenderWindow to update
  * @param clock sf::Clock& to track the time.
  */
-void Engine::displayDebugText(sf::RenderWindow& window, sf::Clock& clock, Player& player)
+void Engine::startDebugMode(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level)
 {
-    if (!showDebugText)
-    {
-        return;
-    }
-
     float fps = 1.0f / clock.restart().asSeconds();
     debugText.setString(
             "fps: " + std::to_string(fps) + "\n" +
@@ -190,6 +189,8 @@ void Engine::displayDebugText(sf::RenderWindow& window, sf::Clock& clock, Player
     debugText.setPosition(centerView.x - WINDOW_WIDTH / offset, centerView.y - WINDOW_HEIGHT / offset);
 
     window.draw(debugText);
+
+    level.debug();
 }
 
 void Engine::configureTextRendering()

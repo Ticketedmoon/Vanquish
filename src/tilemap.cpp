@@ -1,4 +1,6 @@
 #include "../include/tilemap.h"
+#include <SFML/Graphics/Color.hpp>
+#include <cstdint>
 
 bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& tiles)
 {
@@ -61,6 +63,28 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std:
     
     return true;
 };
+
+// Debug feature
+// TODO put execution in separate thread and reset tile colours every X seconds.
+void TileMap::highlightPlayerTile(uint32_t tileX, uint32_t tileY, uint32_t levelWidth)
+{
+    uint32_t currTilePos = tileX + (tileY * levelWidth);
+
+    if (previousTilePosition != currTilePos)
+    {
+        for (int i = 0; i < TOTAL_VERTICES_IN_TILE; i++)
+        {
+            m_vertices[previousTilePosition * TOTAL_VERTICES_IN_TILE + i].color = sf::Color::White;
+        }
+    }
+
+    for (int i = 0; i < TOTAL_VERTICES_IN_TILE; i++)
+    {
+        m_vertices[currTilePos * TOTAL_VERTICES_IN_TILE + i].color = sf::Color::White;
+    }
+
+    previousTilePosition = currTilePos;
+}
 
 void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
