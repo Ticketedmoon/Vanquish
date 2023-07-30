@@ -94,7 +94,21 @@ void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, 
     window.clear();
     centerViewOnPlayer(window, player);
 
+    /* TODO Only draw tiles in level that are inside viewport.
+       Example code:
+             sf::View cam = target.getView();
+             sf::FloatRect screenRect(sf::Vector2f(
+                cam.getCenter().x - (cam.getSize().x/2.f),
+                cam.getCenter().y - (cam.getSize().y/2.f)),
+                cam.getSize()
+             );
+             ...
+
+             if (screenRect.intersects(sf::FloatRect(m_map[i][j].x * 32, m_map[i][j].y * 32, 32, 32)))
+    */
+
     window.draw(level.map);
+
     window.draw(player.getSprite());
 
     displayDebugText(window, clock, player);
