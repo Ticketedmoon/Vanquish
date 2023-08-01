@@ -23,7 +23,7 @@ enum class PlayerDirection {
 class Player
 {
     public:
-        Player(uint8_t playerWidth, uint8_t playerHeight);
+        Player();
         void update();
         void updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight);
         void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, PlayerDirection newDirection);
@@ -41,13 +41,14 @@ class Player
         static float constexpr playerScaleX = 0.75;
         static float constexpr playerScaleY = 0.75;
 
-        uint8_t playerWidth, playerHeight;
+        static uint32_t constexpr playerWidth = 32;
+        static uint32_t constexpr playerHeight = 32;
 
         uint32_t playerSpritePositionOffsetX;
         uint32_t playerSpritePositionOffsetY;
 
         sf::Vector2f playerPos;
-        PlayerDirection playerDir;
+        PlayerDirection playerDir = PlayerDirection::DOWN;
 
         sf::IntRect rectSourceSprite;
         sf::Texture texture;

@@ -4,12 +4,8 @@
 #include <SFML/System/Vector2.hpp>
 #include <cstdint>
 
-Player::Player(uint8_t playerWidth, uint8_t playerHeight)
+Player::Player()
 {
-    this->playerWidth = playerWidth;
-    this->playerHeight = playerHeight;
-    playerDir = PlayerDirection::DOWN;
-
     if (!texture.loadFromFile("resources/assets/character_sprite_sheet_v2.png"))
     {
         std::cout << "Failed to load character sprite sheet" << std::endl;
