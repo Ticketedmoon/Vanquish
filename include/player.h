@@ -24,6 +24,7 @@ class Player
 {
     public:
         Player();
+
         void update();
         void updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight);
         void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, PlayerDirection newDirection);

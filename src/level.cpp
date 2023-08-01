@@ -4,13 +4,12 @@
 
 // TODO Investigate if getters are conventional in c++
 
-Level::Level(Player* player)
+Level::Level(Player* player) : player(player)
 {
     std::ifstream f("resources/level/forest_0.json");
     nlohmann::json data = nlohmann::json::parse(f);
     this->world = data["grid"];
     loadLevel();
-    this->player = player;
 }
 
 // TODO MOVE TO ENGINE CLASS NOW THAT IT SIMPLY CHECKS KEYBOARD AND THEN CALLS A FUNC? 
