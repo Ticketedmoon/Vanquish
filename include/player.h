@@ -38,9 +38,16 @@ class Player
         sf::Vector2u tilePosition;
 
     private:
+        static float constexpr playerScaleX = 0.75;
+        static float constexpr playerScaleY = 0.75;
+
+        uint8_t playerWidth, playerHeight;
+
+        uint32_t playerSpritePositionOffsetX;
+        uint32_t playerSpritePositionOffsetY;
+
         sf::Vector2f playerPos;
         PlayerDirection playerDir;
-        uint8_t playerWidth, playerHeight;
 
         sf::IntRect rectSourceSprite;
         sf::Texture texture;

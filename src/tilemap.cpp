@@ -80,7 +80,7 @@ void TileMap::highlightPlayerTile(uint32_t tileX, uint32_t tileY, uint32_t level
 
     for (int i = 0; i < TOTAL_VERTICES_IN_TILE; i++)
     {
-        m_vertices[currTilePos * TOTAL_VERTICES_IN_TILE + i].color = sf::Color::White;
+        m_vertices[currTilePos * TOTAL_VERTICES_IN_TILE + i].color = sf::Color::Black;
     }
 
     previousTilePosition = currTilePos;

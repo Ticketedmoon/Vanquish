@@ -19,13 +19,16 @@ Player::Player(uint8_t playerWidth, uint8_t playerHeight)
     playerPos = sf::Vector2f(0, 0);
     rectSourceSprite = sf::IntRect(0, 0, playerWidth, playerHeight);
     playerSprite = sf::Sprite(texture, rectSourceSprite);
-    playerSprite.scale(0.5, 0.5);
+    playerSprite.scale(playerScaleX, playerScaleX);
+
+    playerSpritePositionOffsetY = floor(playerScaleY * playerHeight);
+    playerSpritePositionOffsetX = playerSpritePositionOffsetY * 0.5f;
 }
 
 void Player::update()
 {
-    uint32_t tileUnderPlayerX = round(playerPos.x/playerWidth);
-    uint32_t tileUnderPlayerY = round(playerPos.y/playerHeight);
+    uint32_t tileUnderPlayerX = floor((playerPos.x+playerSpritePositionOffsetX)/playerWidth);
+    uint32_t tileUnderPlayerY = floor((playerPos.y+playerSpritePositionOffsetY)/playerHeight);
 
     tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
     playerSprite.setPosition(playerPos);
@@ -53,17 +56,9 @@ std::pair<uint32_t, uint32_t> Player::findNextTileFromPlayerDirection(PlayerDire
     {
         nextPlayerX += (velocity.x + 1.5f);
     }
-
-    // TODO ROUND FUNC IS A PROBLEM HERE, MAYBE USE WITHOUT AGG FUNC? 
-    // CASE: 0 - 16 first tilePosition
-    // CASE: 16 - 32 second tilePosition
-    // CASE: 32 - 48 third tilePosition
-    //
-    // Currently it deems 0-16 tile 1, and 16-48 tile 2, due to rounding behaviour.
-    // We want to divide by 16 and floor maybe? but X breaks
     
-    uint32_t nextTileX = round(nextPlayerX/playerWidth);
-    uint32_t nextTileY = round(nextPlayerY/playerHeight);
+    uint32_t nextTileX = floor((nextPlayerX+playerSpritePositionOffsetX)/playerWidth);
+    uint32_t nextTileY = floor((nextPlayerY+playerSpritePositionOffsetY)/playerHeight);
     return std::pair<uint32_t, uint32_t>(nextTileX, nextTileY);
 }
 
