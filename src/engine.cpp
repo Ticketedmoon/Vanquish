@@ -70,6 +70,10 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level, Player& pla
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::SemiColon))
             {
                 debugMode = !debugMode;
+                if (!debugMode)
+                {
+                    level.debug(true);
+                }
             }
         
         }
@@ -190,7 +194,7 @@ void Engine::startDebugMode(sf::RenderWindow& window, sf::Clock& clock, Player& 
 
     window.draw(debugText);
 
-    level.debug();
+    level.debug(false);
 }
 
 void Engine::configureTextRendering()

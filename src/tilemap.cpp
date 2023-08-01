@@ -66,7 +66,7 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std:
 
 // Debug feature
 // TODO put execution in separate thread and reset tile colours every X seconds.
-void TileMap::highlightPlayerTile(uint32_t tileX, uint32_t tileY, uint32_t levelWidth)
+void TileMap::highlightPlayerTile(uint32_t tileX, uint32_t tileY, uint32_t levelWidth, sf::Color tileColour)
 {
     uint32_t currTilePos = tileX + (tileY * levelWidth);
 
@@ -80,7 +80,7 @@ void TileMap::highlightPlayerTile(uint32_t tileX, uint32_t tileY, uint32_t level
 
     for (int i = 0; i < TOTAL_VERTICES_IN_TILE; i++)
     {
-        m_vertices[currTilePos * TOTAL_VERTICES_IN_TILE + i].color = sf::Color::Black;
+        m_vertices[currTilePos * TOTAL_VERTICES_IN_TILE + i].color = tileColour;
     }
 
     previousTilePosition = currTilePos;

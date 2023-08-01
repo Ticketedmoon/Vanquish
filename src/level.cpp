@@ -1,4 +1,5 @@
 #include "../include/level.h"
+#include <SFML/Graphics/Color.hpp>
 #include <cstdint>
 
 // TODO Investigate if getters are conventional in c++
@@ -38,10 +39,17 @@ void Level::update(sf::Clock& clock)
 
 }
 
-void Level::debug()
+void Level::debug(bool shouldClear)
 {
     // Move to render function
-    map.highlightPlayerTile(player->tilePosition.x, player->tilePosition.y, world.at(0).size());
+    if (shouldClear)
+    {
+        map.highlightPlayerTile(player->tilePosition.x, player->tilePosition.y, world.at(0).size(), sf::Color::White);
+    }
+    else
+    {
+        map.highlightPlayerTile(player->tilePosition.x, player->tilePosition.y, world.at(0).size(), sf::Color::Magenta);
+    }
 }
 
 void Level::loadLevel()
