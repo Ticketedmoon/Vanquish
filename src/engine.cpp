@@ -43,6 +43,7 @@ void Engine::initialise()
     {
         listenForEvents(window, level, player);
         update(worldClock, player, level);
+        centerViewOnPlayer(window, player, level.getLevelWidth(), level.getLevelHeight());
         render(window, debugClock, player, level);
     }
 
@@ -96,7 +97,6 @@ void Engine::update(sf::Clock& clock, Player& player, Level& level)
 void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level)
 {
     window.clear();
-    centerViewOnPlayer(window, player);
 
     /* TODO Only draw tiles in level that are inside viewport.
        Example code:
@@ -123,7 +123,7 @@ void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, 
     window.display();
 };
 
-void Engine::centerViewOnPlayer(sf::RenderWindow& window, Player& player)
+void Engine::centerViewOnPlayer(sf::RenderWindow& window, Player& player, uint32_t levelWidth, uint32_t levelHeight)
 {
     // kee view centred/centered on player
     sf::Vector2f playerPos = player.getPlayerPos();
@@ -132,7 +132,7 @@ void Engine::centerViewOnPlayer(sf::RenderWindow& window, Player& player)
 
     if (playerPos.x > WINDOW_WIDTH/4)
     {
-        if (playerPos.x < WINDOW_WIDTH - (WINDOW_WIDTH/3))
+        if (playerPos.x < (player.PLAYER_WIDTH * levelWidth))
         {
             centreX = playerPos.x;
         }
@@ -149,7 +149,7 @@ void Engine::centerViewOnPlayer(sf::RenderWindow& window, Player& player)
 
     if (playerPos.y > WINDOW_HEIGHT/4)
     {
-        if (playerPos.y< WINDOW_HEIGHT - (WINDOW_HEIGHT/3))
+        if (playerPos.y < (player.PLAYER_HEIGHT * levelHeight))
         {
             centreY = playerPos.y;
         }

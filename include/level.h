@@ -20,6 +20,8 @@ class Level
         void debug(bool shouldClear);
 
         TileMap map;
+        uint32_t getLevelWidth();
+        uint32_t getLevelHeight();
 
     private:
         void loadLevel();

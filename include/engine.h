@@ -7,12 +7,14 @@
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/View.hpp>
 
+#include <cstdint>
 #include <stdexcept>
 #include <iostream>
 #include <string.h>
 
 #include "player.h"
 #include "level.h"
+#include "tilemap.h"
 
 static uint32_t WINDOW_WIDTH = 1280;
 static uint32_t WINDOW_HEIGHT = 720;
@@ -31,7 +33,7 @@ class Engine
         void listenForEvents(sf::RenderWindow& window, Level& level, Player& player);
         void update(sf::Clock& clock, Player& player, Level& level);
         void render(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level);
-        void centerViewOnPlayer(sf::RenderWindow& window, Player& player);
+        void centerViewOnPlayer(sf::RenderWindow& window, Player& player, uint32_t levelWidth, uint32_t levelHeight);
 
         void startDebugMode(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level);
         void configureTextRendering();

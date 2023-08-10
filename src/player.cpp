@@ -13,18 +13,18 @@ Player::Player()
 
     texture.setSmooth(true);
     playerPos = sf::Vector2f(0, 0);
-    rectSourceSprite = sf::IntRect(0, 0, playerWidth, playerHeight);
+    rectSourceSprite = sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
     playerSprite = sf::Sprite(texture, rectSourceSprite);
-    playerSprite.scale(playerScaleX, playerScaleX);
+    playerSprite.scale(PLAYER_SCALE_X, PLAYER_SCALE_X);
 
-    playerSpritePositionOffsetY = floor(playerScaleY * playerHeight);
+    playerSpritePositionOffsetY = floor(PLAYER_SCALE_Y * PLAYER_HEIGHT);
     playerSpritePositionOffsetX = playerSpritePositionOffsetY * 0.5f;
 }
 
 void Player::update()
 {
-    uint32_t tileUnderPlayerX = floor((playerPos.x+playerSpritePositionOffsetX)/playerWidth);
-    uint32_t tileUnderPlayerY = floor((playerPos.y+playerSpritePositionOffsetY)/playerHeight);
+    uint32_t tileUnderPlayerX = floor((playerPos.x+playerSpritePositionOffsetX)/PLAYER_WIDTH);
+    uint32_t tileUnderPlayerY = floor((playerPos.y+playerSpritePositionOffsetY)/PLAYER_HEIGHT);
 
     tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
     playerSprite.setPosition(playerPos);
@@ -38,42 +38,41 @@ std::pair<uint32_t, uint32_t> Player::findNextTileFromPlayerDirection(PlayerDire
 
     if (playerDir == PlayerDirection::UP)
     {
-        nextPlayerY += (velocity.y - 1.5f);
+        nextPlayerY += (velocity.y - PLAYER_SPEED);
     }
     if (playerDir == PlayerDirection::DOWN)
     {
-        nextPlayerY += (velocity.y + 1.5f);
+        nextPlayerY += (velocity.y + PLAYER_SPEED);
     }
     if (playerDir == PlayerDirection::LEFT)
     {
-        nextPlayerX += (velocity.x - 1.5f);
+        nextPlayerX += (velocity.x - PLAYER_SPEED);
     }
     if (playerDir == PlayerDirection::RIGHT) 
     {
-        nextPlayerX += (velocity.x + 1.5f);
+        nextPlayerX += (velocity.x + PLAYER_SPEED);
     }
     
-    uint32_t nextTileX = floor((nextPlayerX+playerSpritePositionOffsetX)/playerWidth);
-    uint32_t nextTileY = floor((nextPlayerY+playerSpritePositionOffsetY)/playerHeight);
+    uint32_t nextTileX = floor((nextPlayerX+playerSpritePositionOffsetX)/PLAYER_WIDTH);
+    uint32_t nextTileY = floor((nextPlayerY+playerSpritePositionOffsetY)/PLAYER_HEIGHT);
     return std::pair<uint32_t, uint32_t>(nextTileX, nextTileY);
 }
 
 // TODO REFACTOR ME
 void Player::updatePlayerPosition(uint32_t levelWidth, uint32_t levelHeight)
 {
-    const float dAcc = 1.5f;
     const int sign = playerDir == PlayerDirection::UP || playerDir == PlayerDirection::LEFT ? -1 : 1;
 
-    int xAccel = playerDir == PlayerDirection::LEFT || playerDir == PlayerDirection::RIGHT ? (dAcc * sign) : 0;
-    int yAccel = playerDir == PlayerDirection::UP || playerDir == PlayerDirection::DOWN ? (dAcc * sign) : 0;
+    int xAccel = playerDir == PlayerDirection::LEFT || playerDir == PlayerDirection::RIGHT ? (PLAYER_SPEED * sign) : 0;
+    int yAccel = playerDir == PlayerDirection::UP || playerDir == PlayerDirection::DOWN ? (PLAYER_SPEED * sign) : 0;
     sf::Vector2f acceleration = sf::Vector2f(xAccel, yAccel);
 
     // update velocity through acceleration
     velocity += acceleration;
 
     // TODO REFACTOR ME CAN WE USE tilePosition?
-    uint32_t tileMapWidth = ((levelWidth-1) * playerWidth);
-    uint32_t tileMapHeight = ((levelHeight-1) * playerHeight);
+    uint32_t tileMapWidth = ((levelWidth-1) * PLAYER_WIDTH);
+    uint32_t tileMapHeight = ((levelHeight-1) * PLAYER_HEIGHT);
 
     if (playerDir == PlayerDirection::LEFT || playerDir == PlayerDirection::RIGHT)
     {
@@ -107,14 +106,14 @@ void Player::updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, Pl
     sf::Time currentTime = clock.getElapsedTime();
     if (currentTime - animationFrameStartTime >= animationFrameDuration)
     {
-        rectSourceSprite.top = playerHeight * spriteSheetTopOffset;
-        if (rectSourceSprite.left == (playerWidth*2))
+        rectSourceSprite.top = PLAYER_HEIGHT * spriteSheetTopOffset;
+        if (rectSourceSprite.left == (PLAYER_WIDTH*2))
         {
             rectSourceSprite.left = 0;
         }
         else
         {
-            rectSourceSprite.left += playerWidth;
+            rectSourceSprite.left += PLAYER_WIDTH;
         }
 
         animationFrameStartTime = currentTime;

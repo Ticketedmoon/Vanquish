@@ -6,10 +6,20 @@
 
 Level::Level(Player* player) : player(player)
 {
-    std::ifstream f("resources/level/forest_0.json");
+    std::ifstream f("resources/level/forest_2.json");
     nlohmann::json data = nlohmann::json::parse(f);
     this->world = data["grid"];
     loadLevel();
+}
+
+uint32_t Level::getLevelWidth()
+{
+    return this->world.at(0).size();
+}
+
+uint32_t Level::getLevelHeight()
+{
+    return this->world.size();
 }
 
 // TODO MOVE TO ENGINE CLASS NOW THAT IT SIMPLY CHECKS KEYBOARD AND THEN CALLS A FUNC? 
