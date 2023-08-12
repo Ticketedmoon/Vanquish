@@ -28,22 +28,22 @@ void Level::update(sf::Clock& clock)
     // Cardinal movement directions
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
-        checkForPlayerMovement(clock, PlayerDirection::UP, 3);
+        checkForPlayerMovement(clock, EntityDirection::UP, 3);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     {
-        checkForPlayerMovement(clock, PlayerDirection::DOWN, 0);
+        checkForPlayerMovement(clock, EntityDirection::DOWN, 0);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
-        checkForPlayerMovement(clock, PlayerDirection::LEFT, 1);
+        checkForPlayerMovement(clock, EntityDirection::LEFT, 1);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
-        checkForPlayerMovement(clock, PlayerDirection::RIGHT, 2);
+        checkForPlayerMovement(clock, EntityDirection::RIGHT, 2);
     }
 
 }
@@ -70,7 +70,7 @@ void Level::loadLevel()
     }
 }
 
-void Level::checkForPlayerMovement(sf::Clock& clock, PlayerDirection dir, uint32_t spriteOffset)
+void Level::checkForPlayerMovement(sf::Clock& clock, EntityDirection dir, uint32_t spriteOffset)
 {
     player->updateAnimation(clock, spriteOffset, dir);
 
@@ -84,14 +84,14 @@ void Level::checkForPlayerMovement(sf::Clock& clock, PlayerDirection dir, uint32
         return;
     }
 
-    player->updatePlayerPosition(world.at(0).size(), world.size());
+    player->updatePosition(world.at(0).size(), world.size());
 }
 
 
 void Level::interactWithNode()
 {
     // TODO Create a tile object rather than a pair here?
-    std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(player->getPlayerDir());
+    std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(player->getDirection());
     uint8_t nodeFacingPlayer = world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first);
 
     if (nodeFacingPlayer == 2 || nodeFacingPlayer == 3)

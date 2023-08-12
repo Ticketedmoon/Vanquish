@@ -126,7 +126,7 @@ void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, 
 void Engine::centerViewOnPlayer(sf::RenderWindow& window, Player& player, uint32_t levelWidth, uint32_t levelHeight)
 {
     // kee view centred/centered on player
-    sf::Vector2f playerPos = player.getPlayerPos();
+    sf::Vector2f playerPos = player.getPosition();
     float centreX;
     float centreY;
 
@@ -183,7 +183,7 @@ void Engine::startDebugMode(sf::RenderWindow& window, sf::Clock& clock, Player& 
     float fps = 1.0f / clock.restart().asSeconds();
     debugText.setString(
             "fps: " + std::to_string(fps) + "\n" +
-            "window position (x, y): " + "(" + std::to_string(player.getPlayerPos().x) + ", " + std::to_string(player.getPlayerPos().y) + ")" + "\n" +
+            "window position (x, y): " + "(" + std::to_string(player.getPosition().x) + ", " + std::to_string(player.getPosition().y) + ")" + "\n" +
             "tile position (x, y): " + "(" + std::to_string(player.tilePosition.x) + ", " + std::to_string(player.tilePosition.y) + ")" + "\n"
     );
 
