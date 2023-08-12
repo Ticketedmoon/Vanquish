@@ -1,6 +1,7 @@
 #include "../include/enemy.h"
+#include <cstdint>
 
-Enemy::Enemy()
+Enemy::Enemy(uint32_t x, uint32_t y)
 {
     if (!texture.loadFromFile("resources/assets/character_sprite_sheet_v2.png"))
     {

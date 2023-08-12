@@ -35,21 +35,28 @@ void Engine::initialise()
 
     Player player;
     Level level(&player);
+    std::vector<Enemy> enemies;
+    for (int i = 0; i < 10; i++)
+    {
+        Enemy enemy(i * 10, i * 10);
+        enemies.emplace_back(enemy);
+    }
 
     configureTextRendering();
 
     //std::vector<sf::Drawable> drawables = { player.getSprite(), level.getTileMap() };
     while (window.isOpen())
     {
-        listenForEvents(window, level, player);
-        update(worldClock, player, level);
+        listenForEvents(window, level);
+        update(worldClock, player, level, enemies);
+        render(window, debugClock, player, level, enemies);
+
         centerViewOnPlayer(window, player, level.getLevelWidth(), level.getLevelHeight());
-        render(window, debugClock, player, level);
     }
 
 };
 
-void Engine::listenForEvents(sf::RenderWindow& window, Level& level, Player& player)
+void Engine::listenForEvents(sf::RenderWindow& window, Level& level)
 {
     sf::Event event;
     while (window.pollEvent(event))
@@ -81,10 +88,14 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level, Player& pla
     }
 };
 
-void Engine::update(sf::Clock& clock, Player& player, Level& level)
+void Engine::update(sf::Clock& clock, Player& player, Level& level, std::vector<Enemy> enemies)
 {
     player.update();
     level.update(clock);
+    for (int i = 0; i < enemies.size(); i++)
+    {
+        enemies.at(i).update();
+    }
 };
 
 /* 
@@ -93,27 +104,31 @@ void Engine::update(sf::Clock& clock, Player& player, Level& level)
     {
         window.draw(drawable);
     }
+
+    TODO Only draw tiles in level that are inside viewport.
+    Example code:
+         sf::View cam = target.getView();
+         sf::FloatRect screenRect(sf::Vector2f(
+            cam.getCenter().x - (cam.getSize().x/2.f),
+            cam.getCenter().y - (cam.getSize().y/2.f)),
+            cam.getSize()
+         );
+         ...
+
+         if (screenRect.intersects(sf::FloatRect(m_map[i][j].x * 32, m_map[i][j].y * 32, 32, 32)))
 */
-void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level)
+void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level, std::vector<Enemy> enemies)
 {
     window.clear();
-
-    /* TODO Only draw tiles in level that are inside viewport.
-       Example code:
-             sf::View cam = target.getView();
-             sf::FloatRect screenRect(sf::Vector2f(
-                cam.getCenter().x - (cam.getSize().x/2.f),
-                cam.getCenter().y - (cam.getSize().y/2.f)),
-                cam.getSize()
-             );
-             ...
-
-             if (screenRect.intersects(sf::FloatRect(m_map[i][j].x * 32, m_map[i][j].y * 32, 32, 32)))
-    */
 
     window.draw(level.map);
 
     window.draw(player.getSprite());
+
+    for (int i = 0; i < enemies.size(); i++)
+    {
+        window.draw(enemies.at(i).getSprite());
+    }
 
     if (debugMode)
     {

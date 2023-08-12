@@ -1,7 +1,6 @@
 #include "../include/level.h"
 #include <SFML/Graphics/Color.hpp>
 #include <cstdint>
-
 // TODO Investigate if getters are conventional in c++
 
 Level::Level(Player* player) : player(player)
@@ -86,7 +85,6 @@ void Level::checkForPlayerMovement(sf::Clock& clock, EntityDirection dir, uint32
 
     player->updatePosition(world.at(0).size(), world.size());
 }
-
 
 void Level::interactWithNode()
 {

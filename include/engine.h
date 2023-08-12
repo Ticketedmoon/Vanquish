@@ -11,8 +11,10 @@
 #include <stdexcept>
 #include <iostream>
 #include <string.h>
+#include <vector>
 
 #include "player.h"
+#include "enemy.h"
 #include "level.h"
 #include "tilemap.h"
 
@@ -30,9 +32,9 @@ class Engine
         void initialise();
 
     private:
-        void listenForEvents(sf::RenderWindow& window, Level& level, Player& player);
-        void update(sf::Clock& clock, Player& player, Level& level);
-        void render(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level);
+        void listenForEvents(sf::RenderWindow& window, Level& level);
+        void update(sf::Clock& clock, Player& player, Level& level, std::vector<Enemy> enemies);
+        void render(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level, std::vector<Enemy> enemies);
         void centerViewOnPlayer(sf::RenderWindow& window, Player& player, uint32_t levelWidth, uint32_t levelHeight);
 
         void startDebugMode(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level);

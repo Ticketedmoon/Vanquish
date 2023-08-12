@@ -1,11 +1,12 @@
 #pragma once
 
 #include "game_entity.h"
+#include <cstdint>
 
 class Enemy : public GameEntity
 {
     public:
-        Enemy();
+        Enemy(uint32_t x, uint32_t y);
 
         void update() override;
         void updatePosition(uint32_t levelWidth, uint32_t levelHeight) override;
