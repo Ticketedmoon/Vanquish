@@ -9,11 +9,11 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <cstdint>
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <vector>
 
-// Two tringles
+// Two triangles
 const uint32_t TOTAL_VERTICES_IN_TILE = 6;
 
 class TileMap : public sf::Drawable, public sf::Transformable
@@ -23,7 +23,7 @@ class TileMap : public sf::Drawable, public sf::Transformable
         void highlightPlayerTile(uint32_t tileX, uint32_t tileY, uint32_t levelWidth, sf::Color tileColour);
 
     private:
-        virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
         sf::VertexArray m_vertices;
         sf::Texture m_tileset;

@@ -1,15 +1,14 @@
 #include "../include/enemy.h"
-#include <cstdint>
 
-Enemy::Enemy(uint32_t x, uint32_t y)
+Enemy::Enemy(float x, float y)
 {
     if (!texture.loadFromFile("resources/assets/character_sprite_sheet_v2.png"))
     {
-        std::cout << "Failed to load character sprite sheet" << std::endl;
+        std::cout << "Failed to load character sprite sheet, current path: "  << std::filesystem::current_path() << std::endl;
     }
 
     texture.setSmooth(true);
-    position = sf::Vector2f(0, 0);
+    position = sf::Vector2f(x, y);
     rectSourceEntity = sf::IntRect(0, 0, ENEMY_WIDTH, ENEMY_HEIGHT);
     entitySprite = sf::Sprite(texture, rectSourceEntity);
     entitySprite.scale(ENEMY_SCALE_X, ENEMY_SCALE_X);

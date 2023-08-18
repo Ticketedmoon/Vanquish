@@ -1,10 +1,11 @@
 #pragma once
 
-#include <math.h>
+#include <filesystem>
+#include <cmath>
 #include <cstdint>
 #include <stdexcept>
 #include <iostream>
-#include <string.h>
+#include <cstring>
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>

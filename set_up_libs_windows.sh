@@ -1,7 +1,6 @@
-mkdir build
-cd build
+mkdir build && cd build
 git clone https://github.com/SFML/SFML.git
+
 cd SFML/
-mkdir -p build
-cd ./build
+mkdir build && cd ./build
 cmake ..

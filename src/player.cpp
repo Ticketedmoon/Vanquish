@@ -4,7 +4,7 @@ Player::Player()
 {
     if (!texture.loadFromFile("resources/assets/character_sprite_sheet_v2.png"))
     {
-        std::cout << "Failed to load character sprite sheet" << std::endl;
+        std::cout << "Failed to load character sprite sheet, current path: "  << std::filesystem::current_path() << std::endl;
     }
 
     texture.setSmooth(true);

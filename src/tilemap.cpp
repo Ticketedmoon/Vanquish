@@ -1,6 +1,5 @@
 #include "../include/tilemap.h"
 #include <SFML/Graphics/Color.hpp>
-#include <cstdint>
 
 bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& tiles)
 {
@@ -21,7 +20,7 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std:
     m_vertices.resize(levelWidth * levelHeight * TOTAL_VERTICES_IN_TILE);
 
     std::cout << "vertice size: " << m_vertices.getVertexCount() << std::endl;
-    std::cout << "Tileset match tilesize: " << ((m_tileset.getSize().x % tileSize.x == 0) && (m_tileset.getSize().y % tileSize.y == 0)) << std::endl;
+    std::cout << "Tileset match tile size: " << ((m_tileset.getSize().x % tileSize.x == 0) && (m_tileset.getSize().y % tileSize.y == 0)) << std::endl;
     std::cout << "Tile Map Height: " << tiles.size() << std::endl;
     std::cout << "Tile Map Width: " << tiles.at(0).size() << std::endl;
 
@@ -91,9 +90,9 @@ void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
     // apply the transform
     states.transform *= getTransform();
 
-    // apply the tileset texture
+    // apply the tile set texture
     states.texture = &m_tileset;
 
     // draw the vertex array
     target.draw(m_vertices, states);
-};
+}

@@ -4,13 +4,12 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
-#include <cstdint>
 #include <string>
 
 void Engine::initialise()
 {
-    float screenWidth = sf::VideoMode::getDesktopMode().width;
-    float screenHeight = sf::VideoMode::getDesktopMode().height;
+    uint32_t screenWidth = sf::VideoMode::getDesktopMode().width;
+    uint32_t screenHeight = sf::VideoMode::getDesktopMode().height;
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "vanquish");
 
@@ -38,7 +37,7 @@ void Engine::initialise()
     std::vector<Enemy> enemies;
     for (int i = 0; i < 10; i++)
     {
-        Enemy enemy(i * 10, i * 10);
+        Enemy enemy(i * 10.0, i * 10.0);
         enemies.emplace_back(enemy);
     }
 
@@ -54,7 +53,7 @@ void Engine::initialise()
         centerViewOnPlayer(window, player, level.getLevelWidth(), level.getLevelHeight());
     }
 
-};
+}
 
 void Engine::listenForEvents(sf::RenderWindow& window, Level& level)
 {
@@ -86,7 +85,7 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level)
         
         }
     }
-};
+}
 
 void Engine::update(sf::Clock& clock, Player& player, Level& level, std::vector<Enemy> enemies)
 {
@@ -96,7 +95,7 @@ void Engine::update(sf::Clock& clock, Player& player, Level& level, std::vector<
     {
         enemies.at(i).update();
     }
-};
+}
 
 /* 
  * Consider polymorphic approach:
@@ -125,9 +124,9 @@ void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, 
 
     window.draw(player.getSprite());
 
-    for (int i = 0; i < enemies.size(); i++)
+    for (auto &enemy : enemies)
     {
-        window.draw(enemies.at(i).getSprite());
+        window.draw(enemy.getSprite());
     }
 
     if (debugMode)
@@ -136,7 +135,7 @@ void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, 
     }
 
     window.display();
-};
+}
 
 void Engine::centerViewOnPlayer(sf::RenderWindow& window, Player& player, uint32_t levelWidth, uint32_t levelHeight)
 {
