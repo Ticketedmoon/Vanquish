@@ -27,18 +27,25 @@ class GameEntity
         virtual void update() = 0;
         virtual void updatePosition(uint32_t levelWidth, uint32_t levelHeight) = 0;
         // TODO Should this be virtual?
-        virtual void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, EntityDirection newDirection) = 0;
+        virtual void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset) = 0;
+
+        void setDirection(EntityDirection dir);
 
         sf::Vector2f getPosition();
         sf::Sprite getSprite();
         EntityDirection getDirection();
 
+        sf::Vector2f velocity;
+        sf::Vector2u tilePosition;
+
     protected:
         sf::Vector2f position;
         EntityDirection direction = EntityDirection::DOWN;
-        sf::Time animationFrameStartTime{ sf::Time::Zero };
-        sf::Time animationFrameDuration{ sf::seconds(1.f / 6.f) }; // 3 frames per second
+
         sf::IntRect rectSourceEntity;
         sf::Texture texture;
         sf::Sprite entitySprite;
+
+        sf::Time animationFrameStartTime{ sf::Time::Zero };
+        sf::Time animationFrameDuration{ sf::seconds(1.f / 6.f) }; // 3 frames per second
 };

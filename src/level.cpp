@@ -1,7 +1,4 @@
 #include "../include/level.h"
-#include <SFML/Graphics/Color.hpp>
-#include <cstdint>
-// TODO Investigate if getters are conventional in c++
 
 Level::Level(Player* player) : player(player)
 {
@@ -71,7 +68,8 @@ void Level::loadLevel()
 
 void Level::checkForPlayerMovement(sf::Clock& clock, EntityDirection dir, uint32_t spriteOffset)
 {
-    player->updateAnimation(clock, spriteOffset, dir);
+    player->updateAnimation(clock, spriteOffset);
+    player->setDirection(dir);
 
     // TODO Create a tile object rather than a pair here?
     std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(dir);

@@ -1,6 +1,6 @@
 #include "../include/enemy.h"
 
-Enemy::Enemy(float x, float y)
+Enemy::Enemy(uint32_t x, uint32_t y)
 {
     if (!texture.loadFromFile("resources/assets/character_sprite_sheet_v2.png"))
     {
@@ -9,12 +9,14 @@ Enemy::Enemy(float x, float y)
 
     texture.setSmooth(true);
     position = sf::Vector2f(x, y);
-    rectSourceEntity = sf::IntRect(0, 0, ENEMY_WIDTH, ENEMY_HEIGHT);
+    rectSourceEntity = sf::IntRect(x, y, ENEMY_WIDTH, ENEMY_HEIGHT);
     entitySprite = sf::Sprite(texture, rectSourceEntity);
-    entitySprite.scale(ENEMY_SCALE_X, ENEMY_SCALE_X);
+    entitySprite.scale(ENEMY_SCALE_X , ENEMY_SCALE_X);
 
-    enemySpritePositionOffsetY = floor(ENEMY_SCALE_Y * ENEMY_HEIGHT);
+    enemySpritePositionOffsetY = std::floor(ENEMY_SCALE_Y * ENEMY_HEIGHT);
     enemySpritePositionOffsetX = enemySpritePositionOffsetY * 0.5f;
+
+    std::cout << "Created enemy at position: " << x << ", " << y << std::endl;
 }
 
 void Enemy::update()
@@ -31,7 +33,6 @@ void Enemy::update()
 void Enemy::updatePosition(uint32_t levelWidth, uint32_t levelHeight)
 {
     const int sign = direction == EntityDirection::UP || direction == EntityDirection::LEFT ? -1 : 1;
-
     int xAccel = direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT ? (ENEMY_SPEED * sign) : 0;
     int yAccel = direction == EntityDirection::UP || direction == EntityDirection::DOWN ? (ENEMY_SPEED * sign) : 0;
     sf::Vector2f acceleration = sf::Vector2f(xAccel, yAccel);
@@ -70,23 +71,14 @@ void Enemy::updatePosition(uint32_t levelWidth, uint32_t levelHeight)
     }
 }
 
-void Enemy::updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, EntityDirection newDirection)
+void Enemy::updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset)
 {
     sf::Time currentTime = clock.getElapsedTime();
     if (currentTime - animationFrameStartTime >= animationFrameDuration)
     {
         rectSourceEntity.top = ENEMY_HEIGHT * spriteSheetTopOffset;
-        if (rectSourceEntity.left == (ENEMY_WIDTH*2))
-        {
-            rectSourceEntity.left = 0;
-        }
-        else
-        {
-            rectSourceEntity.left += ENEMY_WIDTH;
-        }
-
+        rectSourceEntity.left = (rectSourceEntity.left == (ENEMY_WIDTH*2)) ? 0 : (rectSourceEntity.left + ENEMY_WIDTH);
         animationFrameStartTime = currentTime;
     }
-    direction = newDirection;
 }
 

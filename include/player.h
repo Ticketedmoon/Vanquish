@@ -13,12 +13,9 @@ class Player : public GameEntity
 
         void update() override;
         void updatePosition(uint32_t levelWidth, uint32_t levelHeight) override;
-        void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, EntityDirection newDirection) override;
+        void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset) override;
 
         std::pair<uint32_t, uint32_t> findNextTileFromPlayerDirection(EntityDirection playerDir);
-
-        sf::Vector2f velocity;
-        sf::Vector2u tilePosition;
 
         static uint32_t constexpr PLAYER_WIDTH = 32;
         static uint32_t constexpr PLAYER_HEIGHT = 32;

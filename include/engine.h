@@ -33,9 +33,9 @@ class Engine
 
     private:
         void listenForEvents(sf::RenderWindow& window, Level& level);
-        void update(sf::Clock& clock, Player& player, Level& level, std::vector<Enemy> enemies);
-        void render(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level, std::vector<Enemy> enemies);
-        void centerViewOnPlayer(sf::RenderWindow& window, Player& player, uint32_t levelWidth, uint32_t levelHeight);
+        void render(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level, std::vector<Enemy>& enemies);
+        static void update(sf::Clock& clock, Player& player, Level& level, std::vector<Enemy>& enemies);
+        static void centerViewOnPlayer(sf::RenderWindow& window, Player& player, uint32_t levelWidth, uint32_t levelHeight);
 
         void startDebugMode(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level);
         void configureTextRendering();

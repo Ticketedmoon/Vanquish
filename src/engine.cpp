@@ -87,13 +87,13 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level)
     }
 }
 
-void Engine::update(sf::Clock& clock, Player& player, Level& level, std::vector<Enemy> enemies)
+void Engine::update(sf::Clock& clock, Player& player, Level& level, std::vector<Enemy>& enemies)
 {
     player.update();
     level.update(clock);
-    for (int i = 0; i < enemies.size(); i++)
+    for (auto & enemy : enemies)
     {
-        enemies.at(i).update();
+        enemy.update();
     }
 }
 
@@ -116,12 +116,11 @@ void Engine::update(sf::Clock& clock, Player& player, Level& level, std::vector<
 
          if (screenRect.intersects(sf::FloatRect(m_map[i][j].x * 32, m_map[i][j].y * 32, 32, 32)))
 */
-void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level, std::vector<Enemy> enemies)
+void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level, std::vector<Enemy>& enemies)
 {
     window.clear();
 
     window.draw(level.map);
-
     window.draw(player.getSprite());
 
     for (auto &enemy : enemies)

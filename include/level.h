@@ -2,6 +2,8 @@
 
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Clock.hpp>
+#include <SFML/Graphics/Color.hpp>
+
 #include <cstdint>
 #include <vector>
 #include <json.hpp>
@@ -13,7 +15,7 @@
 class Level
 {
     public:
-        Level(Player* player);
+        explicit Level(Player* player);
 
         void update(sf::Clock& clock);
         void interactWithNode();
@@ -29,6 +31,4 @@ class Level
 
         std::vector<std::vector<uint32_t>> world;
         Player* player;
-
-        uint32_t spriteSheetX;
 };

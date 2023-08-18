@@ -1,19 +1,15 @@
 #pragma once
 
 #include "game_entity.h"
-#include <cstdint>
 
 class Enemy : public GameEntity
 {
     public:
-        Enemy(float x, float y);
+        Enemy(uint32_t x, uint32_t y);
 
         void update() override;
         void updatePosition(uint32_t levelWidth, uint32_t levelHeight) override;
-        void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, EntityDirection newDirection) override;
-
-        sf::Vector2f velocity;
-        sf::Vector2u tilePosition;
+        void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset) override;
 
         static uint32_t constexpr ENEMY_WIDTH = 32;
         static uint32_t constexpr ENEMY_HEIGHT = 32;

@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "../include/player.h"
 
 Player::Player()
@@ -13,7 +15,7 @@ Player::Player()
     entitySprite = sf::Sprite(texture, rectSourceEntity);
     entitySprite.scale(PLAYER_SCALE_X, PLAYER_SCALE_X);
 
-    playerSpritePositionOffsetY = floor(PLAYER_SCALE_Y * PLAYER_HEIGHT);
+    playerSpritePositionOffsetY = std::floor(PLAYER_SCALE_Y * PLAYER_HEIGHT);
     playerSpritePositionOffsetX = playerSpritePositionOffsetY * 0.5f;
 }
 
@@ -49,8 +51,8 @@ std::pair<uint32_t, uint32_t> Player::findNextTileFromPlayerDirection(EntityDire
         nextPlayerX += (velocity.x + PLAYER_SPEED);
     }
     
-    uint32_t nextTileX = floor((nextPlayerX+playerSpritePositionOffsetX)/PLAYER_WIDTH);
-    uint32_t nextTileY = floor((nextPlayerY+playerSpritePositionOffsetY)/PLAYER_HEIGHT);
+    uint32_t nextTileX = std::floor((nextPlayerX+playerSpritePositionOffsetX)/PLAYER_WIDTH);
+    uint32_t nextTileY = std::floor((nextPlayerY+playerSpritePositionOffsetY)/PLAYER_HEIGHT);
     return std::pair<uint32_t, uint32_t>(nextTileX, nextTileY);
 }
 
@@ -97,22 +99,13 @@ void Player::updatePosition(uint32_t levelWidth, uint32_t levelHeight)
     }
 }
 
-void Player::updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset, EntityDirection newDirection)
+void Player::updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset)
 {
     sf::Time currentTime = clock.getElapsedTime();
     if (currentTime - animationFrameStartTime >= animationFrameDuration)
     {
         rectSourceEntity.top = PLAYER_HEIGHT * spriteSheetTopOffset;
-        if (rectSourceEntity.left == (PLAYER_WIDTH*2))
-        {
-            rectSourceEntity.left = 0;
-        }
-        else
-        {
-            rectSourceEntity.left += PLAYER_WIDTH;
-        }
-
+        rectSourceEntity.left = (rectSourceEntity.left == (PLAYER_WIDTH*2)) ? 0 : (rectSourceEntity.left + PLAYER_WIDTH);
         animationFrameStartTime = currentTime;
     }
-    direction = newDirection;
 }
