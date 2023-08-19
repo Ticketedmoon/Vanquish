@@ -34,11 +34,22 @@ void Engine::initialise()
 
     Player player;
     Level level(&player);
+
+    uint32_t TOTAL_ENEMIES = 8;
     std::vector<Enemy> enemies;
-    for (int i = 0; i < 10; i++)
-    {
-        Enemy enemy(i * 10.0, i * 10.0);
-        enemies.emplace_back(enemy);
+    enemies.reserve(TOTAL_ENEMIES);
+
+    // Load all characters on sprite sheet into memory.
+    for (uint32_t rows = 0; rows < (TOTAL_ENEMIES / 4); rows++) {
+        for (uint32_t cols = 0; cols < (TOTAL_ENEMIES / 2); cols++) {
+            uint32_t enemyX = (cols+1) * 64;
+            uint32_t enemyY = (rows+1) * 64;
+
+            uint32_t enemyRectLeft = Enemy::ENEMY_WIDTH * (3 * cols);
+            uint32_t enemyRectTop = Enemy::ENEMY_HEIGHT * (4 * rows);
+
+            enemies.emplace_back(enemyX, enemyY, enemyRectLeft, enemyRectTop);
+        }
     }
 
     configureTextRendering();
@@ -90,11 +101,11 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level)
 void Engine::update(sf::Clock& clock, Player& player, Level& level, std::vector<Enemy>& enemies)
 {
     player.update();
-    level.update(clock);
     for (auto & enemy : enemies)
     {
         enemy.update();
     }
+    level.update(clock);
 }
 
 /* 
@@ -121,12 +132,14 @@ void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, 
     window.clear();
 
     window.draw(level.map);
-    window.draw(player.getSprite());
 
     for (auto &enemy : enemies)
     {
-        window.draw(enemy.getSprite());
+        const sf::Sprite& sprite = enemy.getSprite();
+        window.draw(sprite);
     }
+
+    window.draw(player.getSprite());
 
     if (debugMode)
     {

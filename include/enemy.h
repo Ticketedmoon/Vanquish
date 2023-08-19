@@ -5,7 +5,7 @@
 class Enemy : public GameEntity
 {
     public:
-        Enemy(uint32_t x, uint32_t y);
+        explicit Enemy(uint32_t posX, uint32_t posY, int rectLeft, int rectTop);
 
         void update() override;
         void updatePosition(uint32_t levelWidth, uint32_t levelHeight) override;

@@ -1,6 +1,6 @@
 #include "../include/enemy.h"
 
-Enemy::Enemy(uint32_t x, uint32_t y)
+Enemy::Enemy(uint32_t posX, uint32_t posY, int rectLeft, int rectTop)
 {
     if (!texture.loadFromFile("resources/assets/character_sprite_sheet_v2.png"))
     {
@@ -8,15 +8,14 @@ Enemy::Enemy(uint32_t x, uint32_t y)
     }
 
     texture.setSmooth(true);
-    position = sf::Vector2f(x, y);
-    rectSourceEntity = sf::IntRect(x, y, ENEMY_WIDTH, ENEMY_HEIGHT);
+    position = sf::Vector2f(posX, posY);
+
+    rectSourceEntity = sf::IntRect(rectLeft, rectTop, ENEMY_WIDTH, ENEMY_HEIGHT);
     entitySprite = sf::Sprite(texture, rectSourceEntity);
     entitySprite.scale(ENEMY_SCALE_X , ENEMY_SCALE_X);
 
     enemySpritePositionOffsetY = std::floor(ENEMY_SCALE_Y * ENEMY_HEIGHT);
     enemySpritePositionOffsetX = enemySpritePositionOffsetY * 0.5f;
-
-    std::cout << "Created enemy at position: " << x << ", " << y << std::endl;
 }
 
 void Enemy::update()

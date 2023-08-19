@@ -1,5 +1,3 @@
-#include <cmath>
-
 #include "../include/player.h"
 
 Player::Player()

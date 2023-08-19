@@ -21,6 +21,7 @@ enum class EntityDirection
     RIGHT = 3
 };
 
+// TODO EXTEND FROM sf::sprite?
 class GameEntity
 {
     public:
@@ -32,7 +33,7 @@ class GameEntity
         void setDirection(EntityDirection dir);
 
         sf::Vector2f getPosition();
-        sf::Sprite getSprite();
+        sf::Sprite& getSprite();
         EntityDirection getDirection();
 
         sf::Vector2f velocity;

@@ -8,16 +8,6 @@ Level::Level(Player* player) : player(player)
     loadLevel();
 }
 
-uint32_t Level::getLevelWidth()
-{
-    return this->world.at(0).size();
-}
-
-uint32_t Level::getLevelHeight()
-{
-    return this->world.size();
-}
-
 // TODO MOVE TO ENGINE CLASS NOW THAT IT SIMPLY CHECKS KEYBOARD AND THEN CALLS A FUNC? 
 void Level::update(sf::Clock& clock)
 {
@@ -42,6 +32,21 @@ void Level::update(sf::Clock& clock)
         checkForPlayerMovement(clock, EntityDirection::RIGHT, 2);
     }
 
+}
+
+void Level::interactWithNode()
+{
+    // TODO Create a tile object rather than a pair here?
+    std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(player->getDirection());
+    uint8_t nodeFacingPlayer = world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first);
+
+    if (nodeFacingPlayer == 2 || nodeFacingPlayer == 3)
+    {
+        world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first) = 0;
+
+        // TODO not ideal, fix me
+        loadLevel();
+    }
 }
 
 void Level::debug(bool shouldClear)
@@ -84,17 +89,12 @@ void Level::checkForPlayerMovement(sf::Clock& clock, EntityDirection dir, uint32
     player->updatePosition(world.at(0).size(), world.size());
 }
 
-void Level::interactWithNode()
+uint32_t Level::getLevelWidth()
 {
-    // TODO Create a tile object rather than a pair here?
-    std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(player->getDirection());
-    uint8_t nodeFacingPlayer = world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first);
+    return this->world.at(0).size();
+}
 
-    if (nodeFacingPlayer == 2 || nodeFacingPlayer == 3)
-    {
-        world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first) = 0;
-
-        // TODO not ideal, fix me
-        loadLevel();
-    }
+uint32_t Level::getLevelHeight()
+{
+    return this->world.size();
 }

@@ -10,7 +10,7 @@ EntityDirection GameEntity::getDirection()
     return direction;
 }
 
-sf::Sprite GameEntity::getSprite()
+sf::Sprite& GameEntity::getSprite()
 {
     return entitySprite;
 }
@@ -18,4 +18,3 @@ sf::Sprite GameEntity::getSprite()
 void GameEntity::setDirection(EntityDirection dir) {
     this->direction = dir;
 }
-
