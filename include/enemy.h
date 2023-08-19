@@ -1,5 +1,6 @@
 #pragma once
 
+#include <experimental/random>
 #include "game_entity.h"
 
 class Enemy : public GameEntity
@@ -10,9 +11,14 @@ class Enemy : public GameEntity
         void update() override;
         void updatePosition(uint32_t levelWidth, uint32_t levelHeight) override;
         void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset) override;
+        void updateEntityToRandomDirection();
 
         static uint32_t constexpr ENEMY_WIDTH = 32;
         static uint32_t constexpr ENEMY_HEIGHT = 32;
+
+        // TODO REFACTOR
+        int entityWaitTimeBeforeMovement = std::experimental::randint(5000, 10000);
+        int directionIndex = std::experimental::randint(0, 3);
 
     private:
         static float constexpr ENEMY_SCALE_X = 0.75;

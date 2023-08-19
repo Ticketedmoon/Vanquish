@@ -98,14 +98,33 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level)
     }
 }
 
-void Engine::update(sf::Clock& clock, Player& player, Level& level, std::vector<Enemy>& enemies)
+void Engine::update(sf::Clock& worldClock, Player& player, Level& level, std::vector<Enemy>& enemies)
 {
+    // Player
     player.update();
+
+    // Update enemies
     for (auto & enemy : enemies)
     {
         enemy.update();
+        // TODO MOVE ALL THIS LOGIC BELOW TO A BETTER PLACE
+        int milliseconds = worldClock.getElapsedTime().asMilliseconds();
+        if (milliseconds > enemy.entityWaitTimeBeforeMovement)
+        {
+            // TODO REFACTOR
+            enemy.updateEntityToRandomDirection();
+            enemy.updatePosition(level.getLevelWidth(), level.getLevelHeight());
+            if (milliseconds > (enemy.entityWaitTimeBeforeMovement + 250))
+            {
+                enemy.entityWaitTimeBeforeMovement = std::experimental::randint(milliseconds + 5000,
+                                                                                milliseconds + 10000);
+                enemy.directionIndex = std::experimental::randint(0, 3);
+            }
+        }
     }
-    level.update(clock);
+
+    // Update level/map
+    level.update(worldClock);
 }
 
 /* 

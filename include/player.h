@@ -4,7 +4,6 @@
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Time.hpp>
-#include <SFML/System/Vector2.hpp>
 
 class Player : public GameEntity
 {

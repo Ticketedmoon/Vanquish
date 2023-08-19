@@ -81,3 +81,13 @@ void Enemy::updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset)
     }
 }
 
+void Enemy::updateEntityToRandomDirection()
+{
+    EntityDirection newDir = directionIndex == 0
+            ? EntityDirection::UP : directionIndex == 1
+            ? EntityDirection::RIGHT : directionIndex == 2
+            ? EntityDirection::DOWN : EntityDirection::LEFT;
+
+    this->setDirection(newDir);
+}
+
