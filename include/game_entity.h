@@ -21,14 +21,15 @@ enum class EntityDirection
     RIGHT = 3
 };
 
-// TODO EXTEND FROM sf::sprite?
+// TODO EXTEND FROM sf::sprite and sf::drawable?
 class GameEntity
 {
     public:
-        virtual void update() = 0;
-        virtual void updatePosition(uint32_t levelWidth, uint32_t levelHeight) = 0;
-        // TODO Should this be virtual?
-        virtual void updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset) = 0;
+        virtual ~GameEntity() = default;
+
+        virtual void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) = 0;
+        virtual void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) = 0;
+        virtual void updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTopOffset) = 0;
 
         void setDirection(EntityDirection dir);
 

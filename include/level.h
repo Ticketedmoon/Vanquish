@@ -15,10 +15,10 @@
 class Level
 {
     public:
-        explicit Level(Player* player);
+        explicit Level(std::shared_ptr<Player>& player);
 
-        void update(sf::Clock& clock);
-        void interactWithNode();
+        void update(sf::Time& deltaTime, sf::Clock& worldClock);
+        void interactWithNode(sf::Time& deltaTime);
         void debug(bool shouldClear);
 
         TileMap map;
@@ -27,8 +27,9 @@ class Level
 
     private:
         void loadLevel();
-        void checkForPlayerMovement(sf::Clock& clock, EntityDirection dir, uint32_t spriteOffset);
+        void checkForPlayerMovement(sf::Time& deltaTime, sf::Clock& worldClock,
+                                    EntityDirection dir, uint32_t spriteOffset);
 
         std::vector<std::vector<uint32_t>> world;
-        Player* player;
+        std::shared_ptr<Player>& player;
 };

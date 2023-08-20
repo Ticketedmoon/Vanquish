@@ -1,6 +1,6 @@
 #include "../include/level.h"
 
-Level::Level(Player* player) : player(player)
+Level::Level(std::shared_ptr<Player>& player) : player(player)
 {
     std::ifstream f("resources/level/forest_2.json");
     nlohmann::json data = nlohmann::json::parse(f);
@@ -9,35 +9,35 @@ Level::Level(Player* player) : player(player)
 }
 
 // TODO MOVE TO ENGINE CLASS NOW THAT IT SIMPLY CHECKS KEYBOARD AND THEN CALLS A FUNC? 
-void Level::update(sf::Clock& clock)
+void Level::update(sf::Time& deltaTime, sf::Clock& worldClock)
 {
     // Cardinal movement directions
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
-        checkForPlayerMovement(clock, EntityDirection::UP, 3);
+        checkForPlayerMovement(deltaTime, worldClock, EntityDirection::UP, 3);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     {
-        checkForPlayerMovement(clock, EntityDirection::DOWN, 0);
+        checkForPlayerMovement(deltaTime, worldClock, EntityDirection::DOWN, 0);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
-        checkForPlayerMovement(clock, EntityDirection::LEFT, 1);
+        checkForPlayerMovement(deltaTime, worldClock, EntityDirection::LEFT, 1);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
-        checkForPlayerMovement(clock, EntityDirection::RIGHT, 2);
+        checkForPlayerMovement(deltaTime, worldClock, EntityDirection::RIGHT, 2);
     }
 
 }
 
-void Level::interactWithNode()
+void Level::interactWithNode(sf::Time& deltaTime)
 {
     // TODO Create a tile object rather than a pair here?
-    std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(player->getDirection());
+    std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(deltaTime, player->getDirection());
     uint8_t nodeFacingPlayer = world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first);
 
     if (nodeFacingPlayer == 2 || nodeFacingPlayer == 3)
@@ -71,13 +71,13 @@ void Level::loadLevel()
     }
 }
 
-void Level::checkForPlayerMovement(sf::Clock& clock, EntityDirection dir, uint32_t spriteOffset)
+void Level::checkForPlayerMovement(sf::Time& deltaTime, sf::Clock& worldClock, EntityDirection dir, uint32_t spriteOffset)
 {
-    player->updateAnimation(clock, spriteOffset);
+    player->updateAnimation(worldClock, spriteOffset);
     player->setDirection(dir);
 
     // TODO Create a tile object rather than a pair here?
-    std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(dir);
+    std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(deltaTime, dir);
 
     if (world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first))
     {
@@ -86,7 +86,7 @@ void Level::checkForPlayerMovement(sf::Clock& clock, EntityDirection dir, uint32
         return;
     }
 
-    player->updatePosition(world.at(0).size(), world.size());
+    player->updatePosition(deltaTime, world.at(0).size(), world.size());
 }
 
 uint32_t Level::getLevelWidth()

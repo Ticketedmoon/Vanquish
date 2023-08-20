@@ -2,11 +2,9 @@
 
 int main()
 {
-    std::cout << "Application Setup!" << std::endl;
-
+    std::cout << "Setting up application..." << std::endl;
     Engine engine;
     engine.initialise();
-
 
     return 0;
 }

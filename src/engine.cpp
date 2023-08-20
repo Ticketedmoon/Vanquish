@@ -8,10 +8,41 @@
 
 void Engine::initialise()
 {
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_TITLE);
+    configureGameWindow(window);
+
+    sf::Clock worldClock;
+    sf::Clock debugClock;
+    sf::Clock deltaClock;
+
+    sf::Time deltaTime = deltaClock.getElapsedTime();
+
+    std::shared_ptr<Player> player = std::make_shared<Player>();
+    Level level(player);
+
+    std::vector<std::shared_ptr<GameEntity>> gameEntities;
+    gameEntities.reserve(TOTAL_PLAYERS + TOTAL_ENEMIES);
+    initialiseGameEntities(player, gameEntities);
+
+    configureTextRendering();
+
+    //std::vector<sf::Drawable> drawables = { player.getSprite(), level.getTileMap() };
+    while (window.isOpen())
+    {
+        listenForEvents(window, level, deltaTime);
+        update(deltaTime, worldClock, level, gameEntities);
+        render(window, debugClock, player, level, gameEntities);
+        centerViewOnPlayer(window, player, level.getLevelWidth(), level.getLevelHeight());
+
+        deltaTime = deltaClock.restart();
+    }
+
+}
+
+void Engine::configureGameWindow(sf::RenderWindow& window)
+{
     uint32_t screenWidth = sf::VideoMode::getDesktopMode().width;
     uint32_t screenHeight = sf::VideoMode::getDesktopMode().height;
-
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "vanquish");
 
     window.setPosition(sf::Vector2i((screenWidth - WINDOW_WIDTH)/2, (screenHeight - WINDOW_HEIGHT)/2));
 
@@ -24,20 +55,14 @@ void Engine::initialise()
     {
         window.setVerticalSyncEnabled(true);
     }
-    else 
+    else
     {
         window.setFramerateLimit(APP_FRAME_RATE);
     }
+}
 
-    sf::Clock worldClock;
-    sf::Clock debugClock;
-
-    Player player;
-    Level level(&player);
-
-    uint32_t TOTAL_ENEMIES = 8;
-    std::vector<Enemy> enemies;
-    enemies.reserve(TOTAL_ENEMIES);
+void Engine::initialiseGameEntities(std::shared_ptr<Player>& player, std::vector<std::shared_ptr<GameEntity>>& gameEntities) {
+    gameEntities.push_back(player);
 
     // Load all characters on sprite sheet into memory.
     for (uint32_t rows = 0; rows < (TOTAL_ENEMIES / 4); rows++) {
@@ -48,25 +73,13 @@ void Engine::initialise()
             uint32_t enemyRectLeft = Enemy::ENEMY_WIDTH * (3 * cols);
             uint32_t enemyRectTop = Enemy::ENEMY_HEIGHT * (4 * rows);
 
-            enemies.emplace_back(enemyX, enemyY, enemyRectLeft, enemyRectTop);
+            Enemy enemy(enemyX, enemyY, enemyRectLeft, enemyRectTop);
+            gameEntities.emplace_back(std::make_shared<Enemy>(enemyX, enemyY, enemyRectLeft, enemyRectTop));
         }
     }
-
-    configureTextRendering();
-
-    //std::vector<sf::Drawable> drawables = { player.getSprite(), level.getTileMap() };
-    while (window.isOpen())
-    {
-        listenForEvents(window, level);
-        update(worldClock, player, level, enemies);
-        render(window, debugClock, player, level, enemies);
-
-        centerViewOnPlayer(window, player, level.getLevelWidth(), level.getLevelHeight());
-    }
-
 }
 
-void Engine::listenForEvents(sf::RenderWindow& window, Level& level)
+void Engine::listenForEvents(sf::RenderWindow& window, Level& level, sf::Time& deltaTime)
 {
     sf::Event event;
     while (window.pollEvent(event))
@@ -81,7 +94,7 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level)
             // General player operations
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
             {
-                level.interactWithNode();
+                level.interactWithNode(deltaTime);
             }
 
             // Debug
@@ -98,33 +111,16 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level)
     }
 }
 
-void Engine::update(sf::Clock& worldClock, Player& player, Level& level, std::vector<Enemy>& enemies)
+// TODO Combine deltaTime and worldClock and debugCLock into single class
+void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level, std::vector<std::shared_ptr<GameEntity>>& gameEntities)
 {
-    // Player
-    player.update();
-
-    // Update enemies
-    for (auto & enemy : enemies)
+    for (auto& entity : gameEntities)
     {
-        enemy.update();
-        // TODO MOVE ALL THIS LOGIC BELOW TO A BETTER PLACE
-        int milliseconds = worldClock.getElapsedTime().asMilliseconds();
-        if (milliseconds > enemy.entityWaitTimeBeforeMovement)
-        {
-            // TODO REFACTOR
-            enemy.updateEntityToRandomDirection();
-            enemy.updatePosition(level.getLevelWidth(), level.getLevelHeight());
-            if (milliseconds > (enemy.entityWaitTimeBeforeMovement + 250))
-            {
-                enemy.entityWaitTimeBeforeMovement = std::experimental::randint(milliseconds + 5000,
-                                                                                milliseconds + 10000);
-                enemy.directionIndex = std::experimental::randint(0, 3);
-            }
-        }
+        entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
     }
 
     // Update level/map
-    level.update(worldClock);
+    level.update(deltaTime, worldClock);
 }
 
 /* 
@@ -146,19 +142,16 @@ void Engine::update(sf::Clock& worldClock, Player& player, Level& level, std::ve
 
          if (screenRect.intersects(sf::FloatRect(m_map[i][j].x * 32, m_map[i][j].y * 32, 32, 32)))
 */
-void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level, std::vector<Enemy>& enemies)
+void Engine::render(sf::RenderWindow& window, sf::Clock& clock, std::shared_ptr<Player>& player, Level& level, std::vector<std::shared_ptr<GameEntity>>& gameEntities)
 {
     window.clear();
 
     window.draw(level.map);
 
-    for (auto &enemy : enemies)
+    for (auto& entity : gameEntities)
     {
-        const sf::Sprite& sprite = enemy.getSprite();
-        window.draw(sprite);
+        window.draw(entity->getSprite());
     }
-
-    window.draw(player.getSprite());
 
     if (debugMode)
     {
@@ -168,16 +161,16 @@ void Engine::render(sf::RenderWindow& window, sf::Clock& clock, Player& player, 
     window.display();
 }
 
-void Engine::centerViewOnPlayer(sf::RenderWindow& window, Player& player, uint32_t levelWidth, uint32_t levelHeight)
+void Engine::centerViewOnPlayer(sf::RenderWindow& window, std::shared_ptr<Player>& player, uint32_t levelWidth, uint32_t levelHeight)
 {
     // kee view centred/centered on player
-    sf::Vector2f playerPos = player.getPosition();
+    sf::Vector2f playerPos = player->getPosition();
     float centreX;
     float centreY;
 
     if (playerPos.x > WINDOW_WIDTH/4)
     {
-        if (playerPos.x < (player.PLAYER_WIDTH * levelWidth))
+        if (playerPos.x < (player->PLAYER_WIDTH * levelWidth))
         {
             centreX = playerPos.x;
         }
@@ -194,7 +187,7 @@ void Engine::centerViewOnPlayer(sf::RenderWindow& window, Player& player, uint32
 
     if (playerPos.y > WINDOW_HEIGHT/4)
     {
-        if (playerPos.y < (player.PLAYER_HEIGHT * levelHeight))
+        if (playerPos.y < (player->PLAYER_HEIGHT * levelHeight))
         {
             centreY = playerPos.y;
         }
@@ -223,20 +216,19 @@ void Engine::centerViewOnPlayer(sf::RenderWindow& window, Player& player, uint32
  * @param window sf::RenderWindow to update
  * @param clock sf::Clock& to track the time.
  */
-void Engine::startDebugMode(sf::RenderWindow& window, sf::Clock& clock, Player& player, Level& level)
+void Engine::startDebugMode(sf::RenderWindow& window, sf::Clock& clock, std::shared_ptr<Player>& player, Level& level)
 {
     float fps = 1.0f / clock.restart().asSeconds();
     debugText.setString(
             "fps: " + std::to_string(fps) + "\n" +
-            "window position (x, y): " + "(" + std::to_string(player.getPosition().x) + ", " + std::to_string(player.getPosition().y) + ")" + "\n" +
-            "tile position (x, y): " + "(" + std::to_string(player.tilePosition.x) + ", " + std::to_string(player.tilePosition.y) + ")" + "\n"
+            "window position (x, y): " + "(" + std::to_string(player->getPosition().x) + ", " + std::to_string(player->getPosition().y) + ")" + "\n" +
+            "tile position (x, y): " + "(" + std::to_string(player->tilePosition.x) + ", " + std::to_string(player->tilePosition.y) + ")" + "\n"
     );
 
     sf::Vector2f centerView = window.getView().getCenter();
 
     float offset = 4.5f;
     debugText.setPosition(centerView.x - WINDOW_WIDTH / offset, centerView.y - WINDOW_HEIGHT / offset);
-
     window.draw(debugText);
 
     level.debug(false);

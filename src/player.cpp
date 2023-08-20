@@ -17,45 +17,46 @@ Player::Player()
     playerSpritePositionOffsetX = playerSpritePositionOffsetY * 0.5f;
 }
 
-void Player::update()
+void Player::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
 {
     uint32_t tileUnderPlayerX = floor((position.x+playerSpritePositionOffsetX)/PLAYER_WIDTH);
     uint32_t tileUnderPlayerY = floor((position.y+playerSpritePositionOffsetY)/PLAYER_HEIGHT);
 
     tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
+
     entitySprite.setPosition(position);
     entitySprite.setTextureRect(rectSourceEntity);
 }
 
-std::pair<uint32_t, uint32_t> Player::findNextTileFromPlayerDirection(EntityDirection direction)
+std::pair<uint32_t, uint32_t> Player::findNextTileFromPlayerDirection(sf::Time& deltaTime, EntityDirection direction)
 {
     float nextPlayerX = position.x;
     float nextPlayerY = position.y;
 
     if (direction == EntityDirection::UP)
     {
-        nextPlayerY += (velocity.y - PLAYER_SPEED);
+        nextPlayerY += (velocity.y - PLAYER_SPEED) * deltaTime.asSeconds();
     }
     if (direction == EntityDirection::DOWN)
     {
-        nextPlayerY += (velocity.y + PLAYER_SPEED);
+        nextPlayerY += (velocity.y + PLAYER_SPEED) * deltaTime.asSeconds();
     }
     if (direction == EntityDirection::LEFT)
     {
-        nextPlayerX += (velocity.x - PLAYER_SPEED);
+        nextPlayerX += (velocity.x - PLAYER_SPEED) * deltaTime.asSeconds();
     }
     if (direction == EntityDirection::RIGHT) 
     {
-        nextPlayerX += (velocity.x + PLAYER_SPEED);
+        nextPlayerX += (velocity.x + PLAYER_SPEED) * deltaTime.asSeconds();
     }
     
     uint32_t nextTileX = std::floor((nextPlayerX+playerSpritePositionOffsetX)/PLAYER_WIDTH);
     uint32_t nextTileY = std::floor((nextPlayerY+playerSpritePositionOffsetY)/PLAYER_HEIGHT);
-    return std::pair<uint32_t, uint32_t>(nextTileX, nextTileY);
+    return std::pair{nextTileX, nextTileY};
 }
 
 // TODO REFACTOR ME
-void Player::updatePosition(uint32_t levelWidth, uint32_t levelHeight)
+void Player::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
 {
     const int sign = direction == EntityDirection::UP || direction == EntityDirection::LEFT ? -1 : 1;
 
@@ -72,10 +73,11 @@ void Player::updatePosition(uint32_t levelWidth, uint32_t levelHeight)
 
     if (direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT)
     {
-        if ((position.x+velocity.x >= 0) && (position.x+velocity.x < tileMapWidth))
+        float positionDeltaX = position.x + (velocity.x * deltaTime.asSeconds());
+        if (positionDeltaX >= 0 && positionDeltaX < static_cast<float>(tileMapWidth))
         {
-            position.x += velocity.x;
-            velocity.x = 0.5f * velocity.x;
+            position.x = positionDeltaX;
+            velocity.x *= 0.5f;
         }
         else 
         {
@@ -85,25 +87,27 @@ void Player::updatePosition(uint32_t levelWidth, uint32_t levelHeight)
 
     if (direction == EntityDirection::UP || direction == EntityDirection::DOWN)
     {
-        if ((position.y+velocity.y >= 0) && (position.y+velocity.y <= tileMapHeight))
+        float positionDeltaY = position.y + (velocity.y * deltaTime.asSeconds());
+        if (positionDeltaY >= 0 && positionDeltaY < static_cast<float>(tileMapHeight))
         {
-            position.y += velocity.y;
-            velocity.y = 0.5f * velocity.y;
+            position.y = positionDeltaY;
+            velocity.y *= 0.5f;
         }
         else
         {
             velocity.y = 0;
         }
+
     }
 }
 
-void Player::updateAnimation(sf::Clock& clock, uint32_t spriteSheetTopOffset)
+void Player::updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset)
 {
-    sf::Time currentTime = clock.getElapsedTime();
-    if (currentTime - animationFrameStartTime >= animationFrameDuration)
+    sf::Time currentWorldTime = worldClock.getElapsedTime();
+    if (currentWorldTime - animationFrameStartTime >= animationFrameDuration)
     {
         rectSourceEntity.top = PLAYER_HEIGHT * spriteSheetTopOffset;
         rectSourceEntity.left = (rectSourceEntity.left == (PLAYER_WIDTH*2)) ? 0 : (rectSourceEntity.left + PLAYER_WIDTH);
-        animationFrameStartTime = currentTime;
+        animationFrameStartTime = currentWorldTime;
     }
 }
