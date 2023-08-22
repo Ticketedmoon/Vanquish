@@ -7,12 +7,20 @@
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/View.hpp>
 
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
+
+#include <string>
 #include <cstdint>
 #include <stdexcept>
 #include <iostream>
 #include <cstring>
 #include <vector>
 
+#include "texture_manager.h"
 #include "user_interface_manager.h"
 #include "player.h"
 #include "enemy.h"
@@ -33,24 +41,32 @@ static constexpr size_t TOTAL_ENTITIES = TOTAL_PLAYERS + TOTAL_ENEMIES + TOTAL_U
 
 static const std::string FONT_PATH = "resources/fonts/calibri.ttf";
 
-class Engine
-{
-    public:
-        void initialise();
+class Engine {
+public:
+    void initialise();
 
-    private:
-        void listenForEvents(sf::RenderWindow& window, Level& level, sf::Time& deltaTime);
-        void render(sf::RenderWindow& window, sf::Clock& clock, std::shared_ptr<Player>& player, Level& level,
-                    std::vector<std::shared_ptr<GameEntity>>& gameEntities);
-        static void update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level, std::vector<std::shared_ptr<GameEntity>>& gameEntities);
-        static void centerViewOnPlayer(sf::RenderWindow& window, std::shared_ptr<Player>& player, uint32_t levelWidth, uint32_t levelHeight);
-        static void initialiseGameEntities(std::shared_ptr<Player>& player, std::vector<std::shared_ptr<GameEntity>>& gameEntities);
-        static void configureGameWindow(sf::RenderWindow& window);
+private:
+    void listenForEvents(sf::RenderWindow &window, Level &level, sf::Time &deltaTime);
 
-        void startDebugMode(sf::RenderWindow& window, sf::Clock& clock, std::shared_ptr<Player>& player, Level& level);
-        void configureTextRendering();
+    void render(sf::RenderWindow &window, sf::Clock &clock, std::shared_ptr<Player> &player, Level &level,
+                std::vector<std::shared_ptr<GameEntity>> &gameEntities);
 
-        sf::Font font;
-        sf::Text debugText;
-        bool debugMode = false;
+    static void update(sf::Time &deltaTime, sf::Clock &worldClock, Level &level,
+                       std::vector<std::shared_ptr<GameEntity>> &gameEntities);
+
+    static void centerViewOnPlayer(sf::RenderWindow &window, std::shared_ptr<Player> &player, uint32_t levelWidth,
+                                   uint32_t levelHeight);
+
+    static void initialiseGameEntities(TextureManager& textureManager, std::shared_ptr<Player>& player,
+                                       std::vector<std::shared_ptr<GameEntity>>& gameEntities);
+
+    static void configureGameWindow(sf::RenderWindow &window);
+
+    void startDebugMode(sf::RenderWindow &window, sf::Clock &clock, std::shared_ptr<Player> &player, Level &level);
+
+    void configureTextRendering();
+
+    sf::Font font;
+    sf::Text debugText;
+    bool debugMode = false;
 };

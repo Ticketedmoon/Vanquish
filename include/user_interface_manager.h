@@ -10,7 +10,7 @@
 class UserInterfaceManager : public GameEntity
 {
     public:
-        explicit UserInterfaceManager(std::shared_ptr<Player> player);
+        explicit UserInterfaceManager(std::shared_ptr<Player>& player);
 
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;

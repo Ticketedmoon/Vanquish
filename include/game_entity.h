@@ -47,7 +47,6 @@ class GameEntity : public sf::Drawable
         EntityDirection direction = EntityDirection::DOWN;
 
         sf::IntRect rectSourceEntity;
-        sf::Texture texture;
         sf::Sprite entitySprite;
 
         sf::Time animationFrameStartTime{ sf::Time::Zero };

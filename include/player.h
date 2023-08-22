@@ -1,14 +1,15 @@
 #pragma once
 
-#include "game_entity.h"
-
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Time.hpp>
+
+#include "game_entity.h"
+#include "texture_manager.h"
 
 class Player : public GameEntity
 {
     public:
-        Player();
+        explicit Player(TextureManager& textureManager);
         Player(Player& enemy) : GameEntity(enemy)
         {
             std::cout << "DEBUG: copy constructor called for `Player` GameEntity object: " << &enemy << std::endl;

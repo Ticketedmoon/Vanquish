@@ -1,17 +1,13 @@
 #include "../include/enemy.h"
 
-Enemy::Enemy(std::shared_ptr<Player> player, uint32_t posX, uint32_t posY, int rectLeft, int rectTop) : player(player)
+Enemy::Enemy(TextureManager& textureManager, std::shared_ptr<Player>& player, uint32_t posX, uint32_t posY, int rectLeft, int rectTop) : player(player)
 {
-    if (!texture.loadFromFile("resources/assets/character_sprite_sheet_v2.png"))
-    {
-        std::cout << "Failed to load character sprite sheet, current path: "  << std::filesystem::current_path() << std::endl;
-    }
-
-    texture.setSmooth(true);
     spawnPosition = sf::Vector2f(posX, posY);
     position = spawnPosition;
 
     rectSourceEntity = sf::IntRect(rectLeft, rectTop, ENEMY_WIDTH, ENEMY_HEIGHT);
+
+    sf::Texture& texture = *(textureManager.getTexture("test"));
     entitySprite = sf::Sprite(texture, rectSourceEntity);
     entitySprite.scale(ENEMY_SCALE_X , ENEMY_SCALE_X);
 

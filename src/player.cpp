@@ -1,15 +1,11 @@
 #include "../include/player.h"
 
-Player::Player()
+Player::Player(TextureManager& textureManager)
 {
-    if (!texture.loadFromFile("resources/assets/character_sprite_sheet_v2.png"))
-    {
-        std::cout << "Failed to load character sprite sheet, current path: "  << std::filesystem::current_path() << std::endl;
-    }
-
-    texture.setSmooth(true);
     position = sf::Vector2f(300, 150);
     rectSourceEntity = sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
+
+    sf::Texture& texture = *textureManager.getTexture("test");
     entitySprite = sf::Sprite(texture, rectSourceEntity);
     entitySprite.scale(PLAYER_SCALE_X, PLAYER_SCALE_X);
 

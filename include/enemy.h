@@ -1,14 +1,16 @@
 #pragma once
 
-#include "game_entity.h"
-#include "player.h"
-
 #include <experimental/random>
+
+#include "game_entity.h"
+#include "texture_manager.h"
+#include "player.h"
 
 class Enemy : public GameEntity
 {
     public:
-        explicit Enemy(std::shared_ptr<Player> player, uint32_t posX, uint32_t posY, int rectLeft, int rectTop);
+        explicit Enemy(TextureManager& textureManager, std::shared_ptr<Player>& player,
+                       uint32_t posX, uint32_t posY, int rectLeft, int rectTop);
 
         Enemy(Enemy& enemy) : GameEntity(enemy)
         {

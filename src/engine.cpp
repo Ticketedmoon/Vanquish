@@ -1,10 +1,4 @@
 #include "../include/engine.h"
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Window/Event.hpp>
-#include <SFML/Window/Keyboard.hpp>
-#include <string>
 
 void Engine::initialise()
 {
@@ -17,14 +11,17 @@ void Engine::initialise()
 
     sf::Time deltaTime = deltaClock.getElapsedTime();
 
-    std::shared_ptr<Player> player = std::make_shared<Player>();
+    // TODO BETTER KEY STRUCTURE
+    TextureManager textureManager("test", "resources/assets/character_sprite_sheet_v2.png");
+    std::shared_ptr<Player> player = std::make_shared<Player>(textureManager);
     Level level(player);
 
     std::vector<std::shared_ptr<GameEntity>> gameEntities;
     gameEntities.reserve(TOTAL_ENTITIES);
 
     gameEntities.emplace_back(std::make_unique<UserInterfaceManager>(player));
-    initialiseGameEntities(player, gameEntities);
+
+    initialiseGameEntities(textureManager, player, gameEntities);
 
     configureTextRendering();
 
@@ -65,7 +62,8 @@ void Engine::configureGameWindow(sf::RenderWindow& window)
     }
 }
 
-void Engine::initialiseGameEntities(std::shared_ptr<Player>& player, std::vector<std::shared_ptr<GameEntity>>& gameEntities) {
+void Engine::initialiseGameEntities(TextureManager& textureManager, std::shared_ptr<Player>& player,
+                                    std::vector<std::shared_ptr<GameEntity>>& gameEntities) {
     gameEntities.push_back(player);
 
     // Load all characters on sprite sheet into memory.
@@ -77,7 +75,7 @@ void Engine::initialiseGameEntities(std::shared_ptr<Player>& player, std::vector
             uint32_t enemyRectLeft = Enemy::ENEMY_WIDTH * (3 * cols);
             uint32_t enemyRectTop = Enemy::ENEMY_HEIGHT * (4 * rows);
 
-            gameEntities.emplace_back(std::make_shared<Enemy>(player, enemyX, enemyY, enemyRectLeft, enemyRectTop));
+            gameEntities.emplace_back(std::make_shared<Enemy>(textureManager, player, enemyX, enemyY, enemyRectLeft, enemyRectTop));
         }
     }
 }

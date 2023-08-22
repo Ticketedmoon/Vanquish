@@ -1,8 +1,6 @@
 #include "user_interface_manager.h"
 
-#include <utility>
-
-UserInterfaceManager::UserInterfaceManager(std::shared_ptr<Player> player) : player(std::move(player))
+UserInterfaceManager::UserInterfaceManager(std::shared_ptr<Player>& player) : player(player)
 {
     healthBar = sf::RectangleShape(sf::Vector2f(150, 15));
     healthBar.setPosition(sf::Vector2f(20, 20));
