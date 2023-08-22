@@ -1,6 +1,6 @@
 #include "../include/enemy.h"
 
-Enemy::Enemy(uint32_t posX, uint32_t posY, int rectLeft, int rectTop)
+Enemy::Enemy(std::shared_ptr<Player> player, uint32_t posX, uint32_t posY, int rectLeft, int rectTop) : player(player)
 {
     if (!texture.loadFromFile("resources/assets/character_sprite_sheet_v2.png"))
     {
@@ -8,7 +8,8 @@ Enemy::Enemy(uint32_t posX, uint32_t posY, int rectLeft, int rectTop)
     }
 
     texture.setSmooth(true);
-    position = sf::Vector2f(posX, posY);
+    spawnPosition = sf::Vector2f(posX, posY);
+    position = spawnPosition;
 
     rectSourceEntity = sf::IntRect(rectLeft, rectTop, ENEMY_WIDTH, ENEMY_HEIGHT);
     entitySprite = sf::Sprite(texture, rectSourceEntity);
@@ -31,24 +32,74 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
     int milliseconds = worldClock.getElapsedTime().asMilliseconds();
     if (milliseconds > entityWaitTimeBeforeMovement)
     {
-        updateEntityToRandomDirection();
-        updatePosition(deltaTime, levelWidth, levelHeight);
-        if (milliseconds > (entityWaitTimeBeforeMovement + 250))
+        // TODO FIX MAGIC NUM
+        if (isEnemyInProximityOfTarget(player->getPosition().x, player->getPosition().y,
+                                       position.x, position.y, WANDER_DISTANCE))
         {
-            entityWaitTimeBeforeMovement = std::experimental::randint(milliseconds + 5000,milliseconds + 10000);
-            directionIndex = std::experimental::randint(0, 3);
+            moveToDestination(deltaTime, player->getPosition().x, player->getPosition().y);
+        }
+        else
+        {
+            if (isEnemyInProximityOfTarget(position.x, position.y, spawnPosition.x,
+                                           spawnPosition.y, WANDER_DISTANCE))
+            {
+                // Move randomly
+                updateEntityToRandomDirection();
+                updatePosition(deltaTime, levelWidth, levelHeight);
+                if (milliseconds > (entityWaitTimeBeforeMovement + 250))
+                {
+                    entityWaitTimeBeforeMovement = std::experimental::randint(milliseconds + 5000,milliseconds + 10000);
+                    directionIndex = std::experimental::randint(0, 3);
+                }
+            }
+            else
+            {
+                // Return to spawn area if too far away.
+                moveToDestination(deltaTime, spawnPosition.x, spawnPosition.y);
+            }
+
         }
     }
+}
 
+void Enemy::render(sf::RenderWindow& window)
+{
+    window.draw(entitySprite);
+}
+
+void Enemy::moveToDestination(const sf::Time &deltaTime, float destinationX, float destinationY) {
+    velocity += sf::Vector2f(ENEMY_SPEED, ENEMY_SPEED);
+
+    bool isEnemyToLeftOfDestination = position.x < destinationX;
+    float positionDeltaX = isEnemyToLeftOfDestination
+            ? (position.x + (velocity.x * deltaTime.asSeconds()))
+            : (position.x - (velocity.x * deltaTime.asSeconds()));
+
+    bool isEnemyAboveDestination = position.y < destinationY;
+    float positionDeltaY = isEnemyAboveDestination
+            ? (position.y + (velocity.y * deltaTime.asSeconds()))
+            : (position.y - (velocity.y * deltaTime.asSeconds()));
+
+    position.x = positionDeltaX;
+    position.y = positionDeltaY;
+
+    velocity.x *= 0.15;
+    velocity.y *= 0.15;
+}
+
+bool Enemy::isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX, float targetLocationY,
+                                       uint32_t distance)
+{
+    return sqrt(pow(sourceLocationX - targetLocationX, 2) + pow(sourceLocationY - targetLocationY, 2) * 1.0) < distance;
 }
 
 // TODO REFACTOR ME
 // TODO SAME AS method in player.h, can be centralised.
 void Enemy::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
 {
-    const int sign = direction == EntityDirection::UP || direction == EntityDirection::LEFT ? -1 : 1;
-    int xAccel = direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT ? (ENEMY_SPEED * sign) : 0;
-    int yAccel = direction == EntityDirection::UP || direction == EntityDirection::DOWN ? (ENEMY_SPEED * sign) : 0;
+    const float sign = direction == EntityDirection::UP || direction == EntityDirection::LEFT ? -1.0f : 1.0f;
+    float xAccel = direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT ? (ENEMY_SPEED * sign) : 0;
+    float yAccel = direction == EntityDirection::UP || direction == EntityDirection::DOWN ? (ENEMY_SPEED * sign) : 0;
     sf::Vector2f acceleration = sf::Vector2f(xAccel, yAccel);
 
     // update velocity through acceleration
@@ -61,7 +112,7 @@ void Enemy::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t le
     if (direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT)
     {
         float positionDeltaX = position.x + (velocity.x * deltaTime.asSeconds());
-        if (positionDeltaX >= 0 && positionDeltaX < static_cast<float>(tileMapWidth))
+        if (positionDeltaX >= 0 && positionDeltaX <static_cast<float>(tileMapWidth))
         {
             position.x = positionDeltaX;
             velocity.x *= 0.5f;
@@ -75,7 +126,7 @@ void Enemy::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t le
     if (direction == EntityDirection::UP || direction == EntityDirection::DOWN)
     {
         float positionDeltaY = position.y + (velocity.y * deltaTime.asSeconds());
-        if (positionDeltaY >= 0 && positionDeltaY < static_cast<float>(tileMapHeight))
+        if (positionDeltaY >= 0 && positionDeltaY <static_cast<float>(tileMapHeight))
         {
             position.y = positionDeltaY;
             velocity.y *= 0.5f;

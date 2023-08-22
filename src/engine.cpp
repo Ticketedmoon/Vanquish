@@ -8,7 +8,7 @@
 
 void Engine::initialise()
 {
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_TITLE);
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_TITLE.data());
     configureGameWindow(window);
 
     sf::Clock worldClock;
@@ -21,7 +21,9 @@ void Engine::initialise()
     Level level(player);
 
     std::vector<std::shared_ptr<GameEntity>> gameEntities;
-    gameEntities.reserve(TOTAL_PLAYERS + TOTAL_ENEMIES);
+    gameEntities.reserve(TOTAL_ENTITIES);
+
+    gameEntities.emplace_back(std::make_unique<UserInterfaceManager>(player));
     initialiseGameEntities(player, gameEntities);
 
     configureTextRendering();
@@ -47,6 +49,8 @@ void Engine::configureGameWindow(sf::RenderWindow& window)
     window.setPosition(sf::Vector2i((screenWidth - WINDOW_WIDTH)/2, (screenHeight - WINDOW_HEIGHT)/2));
 
     // create a view with its center and size
+    // TODO: We should have 2 views, one for UI elements and one for moving for game world .
+    //  https://en.sfml-dev.org/forums/index.php?topic=21660.0
     sf::View view(sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
     view.zoom(0.5);
     window.setView(view);
@@ -73,8 +77,7 @@ void Engine::initialiseGameEntities(std::shared_ptr<Player>& player, std::vector
             uint32_t enemyRectLeft = Enemy::ENEMY_WIDTH * (3 * cols);
             uint32_t enemyRectTop = Enemy::ENEMY_HEIGHT * (4 * rows);
 
-            Enemy enemy(enemyX, enemyY, enemyRectLeft, enemyRectTop);
-            gameEntities.emplace_back(std::make_shared<Enemy>(enemyX, enemyY, enemyRectLeft, enemyRectTop));
+            gameEntities.emplace_back(std::make_shared<Enemy>(player, enemyX, enemyY, enemyRectLeft, enemyRectTop));
         }
     }
 }
@@ -150,7 +153,7 @@ void Engine::render(sf::RenderWindow& window, sf::Clock& clock, std::shared_ptr<
 
     for (auto& entity : gameEntities)
     {
-        window.draw(entity->getSprite());
+        entity->render(window);
     }
 
     if (debugMode)

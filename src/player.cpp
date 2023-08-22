@@ -8,7 +8,7 @@ Player::Player()
     }
 
     texture.setSmooth(true);
-    position = sf::Vector2f(0, 0);
+    position = sf::Vector2f(300, 150);
     rectSourceEntity = sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
     entitySprite = sf::Sprite(texture, rectSourceEntity);
     entitySprite.scale(PLAYER_SCALE_X, PLAYER_SCALE_X);
@@ -26,6 +26,11 @@ void Player::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWi
 
     entitySprite.setPosition(position);
     entitySprite.setTextureRect(rectSourceEntity);
+}
+
+void Player::render(sf::RenderWindow& window)
+{
+    window.draw(entitySprite);
 }
 
 std::pair<uint32_t, uint32_t> Player::findNextTileFromPlayerDirection(sf::Time& deltaTime, EntityDirection direction)

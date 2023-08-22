@@ -12,6 +12,7 @@
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 enum class EntityDirection 
 {
@@ -28,6 +29,7 @@ class GameEntity
         virtual ~GameEntity() = default;
 
         virtual void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) = 0;
+        virtual void render(sf::RenderWindow& window) = 0;
         virtual void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) = 0;
         virtual void updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTopOffset) = 0;
 
