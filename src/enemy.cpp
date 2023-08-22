@@ -62,9 +62,9 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
     }
 }
 
-void Enemy::render(sf::RenderWindow& window)
+void Enemy::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 {
-    window.draw(entitySprite);
+    renderTarget.draw(entitySprite);
 }
 
 void Enemy::moveToDestination(const sf::Time &deltaTime, float destinationX, float destinationY) {

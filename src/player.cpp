@@ -28,9 +28,9 @@ void Player::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWi
     entitySprite.setTextureRect(rectSourceEntity);
 }
 
-void Player::render(sf::RenderWindow& window)
+void Player::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 {
-    window.draw(entitySprite);
+    renderTarget.draw(entitySprite);
 }
 
 std::pair<uint32_t, uint32_t> Player::findNextTileFromPlayerDirection(sf::Time& deltaTime, EntityDirection direction)

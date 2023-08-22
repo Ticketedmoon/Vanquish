@@ -22,14 +22,14 @@ enum class EntityDirection
     RIGHT = 3
 };
 
-// TODO EXTEND FROM sf::sprite and sf::drawable?
-class GameEntity
+class GameEntity : public sf::Drawable
 {
     public:
-        virtual ~GameEntity() = default;
+        ~GameEntity() override = default;
 
+        // Not necessary to add virtual here ti maintain pure-virtual function as parent method is pure-virtual.
+        void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override = 0;
         virtual void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) = 0;
-        virtual void render(sf::RenderWindow& window) = 0;
         virtual void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) = 0;
         virtual void updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTopOffset) = 0;
 

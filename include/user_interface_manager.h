@@ -10,12 +10,12 @@
 class UserInterfaceManager : public GameEntity
 {
     public:
-        UserInterfaceManager(std::shared_ptr<Player> player);
+        explicit UserInterfaceManager(std::shared_ptr<Player> player);
 
-        void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) ;
-        void render(sf::RenderWindow& window);
-        void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight);
-        void updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTopOffset);
+        void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
+        void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
+        void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
+        void updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTopOffset) override;
 
     private:
         std::shared_ptr<Player> player;

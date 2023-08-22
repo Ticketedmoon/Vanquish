@@ -84,7 +84,7 @@ void Engine::initialiseGameEntities(std::shared_ptr<Player>& player, std::vector
 
 void Engine::listenForEvents(sf::RenderWindow& window, Level& level, sf::Time& deltaTime)
 {
-    sf::Event event;
+    sf::Event event{};
     while (window.pollEvent(event))
     {
         if (event.type == sf::Event::Closed)
@@ -94,13 +94,11 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level, sf::Time& d
 
         if (event.type == sf::Event::KeyPressed)
         {
-            // General player operations
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
             {
                 level.interactWithNode(deltaTime);
             }
 
-            // Debug
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::SemiColon))
             {
                 debugMode = !debugMode;
@@ -126,26 +124,8 @@ void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level, st
     level.update(deltaTime, worldClock);
 }
 
-/* 
- * Consider polymorphic approach:
-    for (auto& drawable : drawables)    
-    {
-        window.draw(drawable);
-    }
-
-    TODO Only draw tiles in level that are inside viewport.
-    Example code:
-         sf::View cam = target.getView();
-         sf::FloatRect screenRect(sf::Vector2f(
-            cam.getCenter().x - (cam.getSize().x/2.f),
-            cam.getCenter().y - (cam.getSize().y/2.f)),
-            cam.getSize()
-         );
-         ...
-
-         if (screenRect.intersects(sf::FloatRect(m_map[i][j].x * 32, m_map[i][j].y * 32, 32, 32)))
-*/
-void Engine::render(sf::RenderWindow& window, sf::Clock& clock, std::shared_ptr<Player>& player, Level& level, std::vector<std::shared_ptr<GameEntity>>& gameEntities)
+void Engine::render(sf::RenderWindow& window, sf::Clock& clock, std::shared_ptr<Player>& player, Level& level,
+                    std::vector<std::shared_ptr<GameEntity>>& gameEntities)
 {
     window.clear();
 
@@ -153,7 +133,7 @@ void Engine::render(sf::RenderWindow& window, sf::Clock& clock, std::shared_ptr<
 
     for (auto& entity : gameEntities)
     {
-        entity->render(window);
+        entity->draw(window, sf::RenderStates::Default);
     }
 
     if (debugMode)
@@ -210,15 +190,6 @@ void Engine::centerViewOnPlayer(sf::RenderWindow& window, std::shared_ptr<Player
     window.setView(newView);
 }
 
-/**
- * Display an FPS counter on the screen.
- *
- * This will be updated every second rather than every render call.
- * This will be done via sf::Clock.
- *
- * @param window sf::RenderWindow to update
- * @param clock sf::Clock& to track the time.
- */
 void Engine::startDebugMode(sf::RenderWindow& window, sf::Clock& clock, std::shared_ptr<Player>& player, Level& level)
 {
     float fps = 1.0f / clock.restart().asSeconds();

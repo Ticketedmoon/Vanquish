@@ -16,9 +16,9 @@ void UserInterfaceManager::update(sf::Clock& worldClock, sf::Time& deltaTime, ui
 
 }
 
-void UserInterfaceManager::render(sf::RenderWindow& window)
+void UserInterfaceManager::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 {
-    window.draw(healthBar);
+    renderTarget.draw(healthBar);
 }
 
 void UserInterfaceManager::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) {};

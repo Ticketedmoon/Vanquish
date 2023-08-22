@@ -40,7 +40,8 @@ class Engine
 
     private:
         void listenForEvents(sf::RenderWindow& window, Level& level, sf::Time& deltaTime);
-        void render(sf::RenderWindow& window, sf::Clock& clock, std::shared_ptr<Player>& player, Level& level, std::vector<std::shared_ptr<GameEntity>>& gameEntities);
+        void render(sf::RenderWindow& window, sf::Clock& clock, std::shared_ptr<Player>& player, Level& level,
+                    std::vector<std::shared_ptr<GameEntity>>& gameEntities);
         static void update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level, std::vector<std::shared_ptr<GameEntity>>& gameEntities);
         static void centerViewOnPlayer(sf::RenderWindow& window, std::shared_ptr<Player>& player, uint32_t levelWidth, uint32_t levelHeight);
         static void initialiseGameEntities(std::shared_ptr<Player>& player, std::vector<std::shared_ptr<GameEntity>>& gameEntities);

@@ -20,9 +20,8 @@ class Enemy : public GameEntity
         }
 
         // TODO ADD DELTATIME TO CONSTRUCTOR RATHER THAN NEEDING TO PASS IT IN EACH METHOD
+        void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
-        void render(sf::RenderWindow& window) override;
-
         void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
         void updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset) override;
 
