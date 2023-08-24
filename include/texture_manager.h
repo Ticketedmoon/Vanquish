@@ -12,7 +12,6 @@ class TextureManager
 {
     public:
         TextureManager();
-        TextureManager(const std::string &id, const std::string& pathToTextureFile);
 
         void addTexture(const std::string& id, const std::string& texturePath);
         std::shared_ptr<sf::Texture> getTexture(const std::string &id);

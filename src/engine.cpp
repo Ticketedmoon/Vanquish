@@ -6,8 +6,11 @@ void Engine::initialise()
     configureGameWindow(window);
 
     // TODO BETTER KEY STRUCTURE
-    TextureManager textureManager("test", "resources/assets/character_sprite_sheet_v2.png");
+    TextureManager textureManager;
+    textureManager.addTexture("test", HUMAN_CHARACTER_SPRITE_SHEET_A);
+
     std::shared_ptr<Player> player = std::make_shared<Player>(textureManager);
+
     Level level(player);
 
     std::vector<std::shared_ptr<GameEntity>> gameEntities;
