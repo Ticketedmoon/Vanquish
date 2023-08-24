@@ -7,7 +7,7 @@ Enemy::Enemy(TextureManager& textureManager, std::shared_ptr<Player>& player, ui
 
     rectSourceEntity = sf::IntRect(rectLeft, rectTop, ENEMY_WIDTH, ENEMY_HEIGHT);
 
-    sf::Texture& texture = *(textureManager.getTexture("test"));
+    sf::Texture& texture = *(textureManager.getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY));
     entitySprite = sf::Sprite(texture, rectSourceEntity);
     entitySprite.scale(ENEMY_SCALE_X , ENEMY_SCALE_X);
 

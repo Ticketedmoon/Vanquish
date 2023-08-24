@@ -7,7 +7,7 @@ void Engine::initialise()
 
     // TODO BETTER KEY STRUCTURE
     TextureManager textureManager;
-    textureManager.addTexture("test", HUMAN_CHARACTER_SPRITE_SHEET_A);
+    textureManager.addTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY, HUMAN_CHARACTER_SPRITE_SHEET_A_FILE_PATH);
 
     std::shared_ptr<Player> player = std::make_shared<Player>(textureManager);
 

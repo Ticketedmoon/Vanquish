@@ -5,7 +5,7 @@ Player::Player(TextureManager& textureManager)
     position = sf::Vector2f(300, 150);
     rectSourceEntity = sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
 
-    sf::Texture& texture = *textureManager.getTexture("test");
+    sf::Texture& texture = *textureManager.getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY);
     entitySprite = sf::Sprite(texture, rectSourceEntity);
     entitySprite.scale(PLAYER_SCALE_X, PLAYER_SCALE_X);
 

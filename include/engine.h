@@ -26,6 +26,7 @@
 #include "enemy.h"
 #include "level.h"
 #include "tilemap.h"
+#include "common_constants.h"
 
 static uint32_t WINDOW_WIDTH = 1280;
 static uint32_t WINDOW_HEIGHT = 720;
@@ -41,7 +42,6 @@ static constexpr size_t TOTAL_UI_COMPONENTS = 8;
 static constexpr size_t TOTAL_GAME_ENTITIES = TOTAL_PLAYERS + TOTAL_ENEMIES;
 
 static const std::string FONT_PATH = "resources/fonts/calibri.ttf";
-static const std::string HUMAN_CHARACTER_SPRITE_SHEET_A = "resources/assets/character_sprite_sheet_v2.png";
 
 class Engine {
 public:

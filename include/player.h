@@ -5,6 +5,7 @@
 
 #include "game_entity.h"
 #include "texture_manager.h"
+#include "common_constants.h"
 
 class Player : public GameEntity
 {
