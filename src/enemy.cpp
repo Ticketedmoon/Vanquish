@@ -28,7 +28,6 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
     int milliseconds = worldClock.getElapsedTime().asMilliseconds();
     if (milliseconds > entityWaitTimeBeforeMovement)
     {
-        // TODO FIX MAGIC NUM
         if (isEnemyInProximityOfTarget(player->getPosition().x, player->getPosition().y,
                                        position.x, position.y, WANDER_DISTANCE))
         {

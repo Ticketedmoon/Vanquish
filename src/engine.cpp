@@ -5,7 +5,6 @@ void Engine::initialise()
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_TITLE.data());
     configureGameWindow(window);
 
-    // TODO BETTER KEY STRUCTURE
     TextureManager textureManager;
     textureManager.addTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY, HUMAN_CHARACTER_SPRITE_SHEET_A_FILE_PATH);
 
@@ -82,7 +81,7 @@ void Engine::initialiseGameEntities(TextureManager& textureManager, std::shared_
     // Load all characters on sprite sheet into memory.
     for (uint32_t rows = 0; rows < (TOTAL_ENEMIES / 4); rows++) {
         for (uint32_t cols = 0; cols < (TOTAL_ENEMIES / 2); cols++) {
-            // TODO These positions are temporary, so magic numbers aren't concerning for now.
+            // Note: These positions are temporary, so magic numbers aren't concerning for now.
             uint32_t enemyX = (cols+1) * 64;
             uint32_t enemyY = (rows+1) * 64;
 

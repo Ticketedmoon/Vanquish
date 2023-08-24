@@ -64,7 +64,7 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std:
 };
 
 // Debug feature
-// TODO put execution in separate thread and reset tile colours every X seconds.
+// TODO put execution in separate thread?
 void TileMap::highlightPlayerTile(uint32_t tileX, uint32_t tileY, uint32_t levelWidth, sf::Color tileColour)
 {
     uint32_t currTilePos = tileX + (tileY * levelWidth);
