@@ -59,6 +59,7 @@ void Engine::startGameLoop(sf::RenderWindow& window, Level& level, std::shared_p
 
         if (isGameOver || player->isDead())
         {
+            // TODO INSTEAD OF ALL THESE RESTARTS AND RESETS CAN WE JUST RECREATE ALL OBJECTS
             worldClock.restart();
             debugClock.restart();
             deltaClock.restart();
