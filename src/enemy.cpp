@@ -1,18 +1,19 @@
 #include "../include/enemy.h"
 
-Enemy::Enemy(TextureManager& textureManager, std::shared_ptr<Player>& player, uint32_t posX, uint32_t posY, int rectLeft, int rectTop) : player(player)
+Enemy::Enemy(TextureManager& textureManager, std::shared_ptr<Player>& player, uint32_t posX, uint32_t posY, int rectLeft, int rectTop)
+    : player(player),
+      enemySpritePositionOffsetX((std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT) * 0.5f)),
+      enemySpritePositionOffsetY((std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT)))
 {
     spawnPosition = sf::Vector2f(posX, posY);
     position = spawnPosition;
+    startingAnimationPosition = sf::Vector2f(rectLeft, rectTop);
 
-    rectSourceEntity = sf::IntRect(rectLeft, rectTop, ENEMY_WIDTH, ENEMY_HEIGHT);
+    rectSourceEntity = sf::IntRect(startingAnimationPosition.x, startingAnimationPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT);
 
     sf::Texture& texture = *(textureManager.getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY));
     entitySprite = sf::Sprite(texture, rectSourceEntity);
-    entitySprite.scale(ENEMY_SCALE_X , ENEMY_SCALE_X);
-
-    enemySpritePositionOffsetY = std::floor(ENEMY_SCALE_Y * ENEMY_HEIGHT);
-    enemySpritePositionOffsetX = enemySpritePositionOffsetY * 0.5f;
+    entitySprite.scale(ENEMY_SCALE_FACTOR , ENEMY_SCALE_FACTOR);
 }
 
 void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
@@ -28,10 +29,18 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
     int milliseconds = worldClock.getElapsedTime().asMilliseconds();
     if (milliseconds > entityWaitTimeBeforeMovement)
     {
-        if (isEnemyInProximityOfTarget(player->getPosition().x, player->getPosition().y,
-                                       position.x, position.y, WANDER_DISTANCE))
+        if (isEnemyInProximityOfTarget(position.x, position.y,player->getPosition().x, player->getPosition().y,
+                                       WANDER_DISTANCE))
         {
             moveToDestination(deltaTime, player->getPosition().x, player->getPosition().y);
+            if (isEnemyInProximityOfTarget(position.x, position.y, player->getPosition().x, player->getPosition().y, 24)) {
+                uint16_t playerHealth = player->getHealth();
+                if (playerHealth > 0) {
+                    // TODO IMPROVE CALCULATION + DELTA TIME
+                    uint16_t newHealth = playerHealth - 1;
+                    player->setHealth(newHealth);
+                }
+            }
         }
         else
         {
@@ -154,3 +163,9 @@ void Enemy::updateEntityToRandomDirection()
     this->setDirection(newDir);
 }
 
+void Enemy::reset() {
+    GameEntity::reset();
+    rectSourceEntity = sf::IntRect(startingAnimationPosition.x, startingAnimationPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT);
+    enemySpritePositionOffsetY = std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT);
+    enemySpritePositionOffsetX = enemySpritePositionOffsetY * 0.5f;
+}

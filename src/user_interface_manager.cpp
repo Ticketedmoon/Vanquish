@@ -1,17 +1,16 @@
 #include "user_interface_manager.h"
 
-UserInterfaceManager::UserInterfaceManager(std::shared_ptr<Player>& player) : player(player)
+UserInterfaceManager::UserInterfaceManager(std::shared_ptr<Player>& player) : player(player), healthBar(
+        HealthBar(sf::Vector2f(player->getHealth(), 15), sf::Vector2f(20, 20), sf::Color::Green,
+                  sf::Color::Black, 2.0f)
+        )
 {
-    healthBar = sf::RectangleShape(sf::Vector2f(150, 15));
-    healthBar.setPosition(sf::Vector2f(20, 20));
-    healthBar.setFillColor(sf::Color::Green);
-    healthBar.setOutlineColor(sf::Color::Black);
-    healthBar.setOutlineThickness(2.0);
+
 }
 
 void UserInterfaceManager::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
 {
-
+    healthBar.update(player->getHealth());
 }
 
 void UserInterfaceManager::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
@@ -19,5 +18,12 @@ void UserInterfaceManager::draw(sf::RenderTarget& renderTarget, sf::RenderStates
     renderTarget.draw(healthBar);
 }
 
-void UserInterfaceManager::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) {};
-void UserInterfaceManager::updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTopOffset) {};
+
+void UserInterfaceManager::reset()
+{
+    this->healthBar = HealthBar(sf::Vector2f(player->getHealth(), 15), sf::Vector2f(20, 20), sf::Color::Green,
+            sf::Color::Black, 2.0f);
+}
+
+void UserInterfaceManager::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) {}
+void UserInterfaceManager::updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTopOffset) {}

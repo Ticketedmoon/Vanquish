@@ -27,6 +27,7 @@ class Enemy : public GameEntity
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
         void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
         void updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset) override;
+        void reset() override;
 
         void updateEntityToRandomDirection();
 
@@ -44,11 +45,8 @@ class Enemy : public GameEntity
 
         std::shared_ptr<Player> player;
 
-        sf::Vector2f spawnPosition = sf::Vector2f(position.x, position.y);
-
         static constexpr uint32_t WANDER_DISTANCE = 256;
-        static float constexpr ENEMY_SCALE_X = 0.75;
-        static float constexpr ENEMY_SCALE_Y = 0.75;
+        static float constexpr ENEMY_SCALE_FACTOR = 0.75;
         static float constexpr ENEMY_SPEED = 45.0f;
 
         // TODO Move me to parent class?

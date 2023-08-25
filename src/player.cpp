@@ -1,16 +1,18 @@
 #include "../include/player.h"
 
 Player::Player(TextureManager& textureManager)
+    : playerSpritePositionOffsetX((std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT) * 0.5f)),
+      playerSpritePositionOffsetY((std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT)))
 {
-    position = sf::Vector2f(300, 150);
-    rectSourceEntity = sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
+    spawnPosition = sf::Vector2f(300, 150);
+    position = spawnPosition;
+    startingAnimationPosition = sf::Vector2f(0, 0);
+
+    rectSourceEntity = sf::IntRect(startingAnimationPosition.x, startingAnimationPosition.y, PLAYER_WIDTH, PLAYER_HEIGHT);
 
     sf::Texture& texture = *textureManager.getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY);
     entitySprite = sf::Sprite(texture, rectSourceEntity);
-    entitySprite.scale(PLAYER_SCALE_X, PLAYER_SCALE_X);
-
-    playerSpritePositionOffsetY = std::floor(PLAYER_SCALE_Y * PLAYER_HEIGHT);
-    playerSpritePositionOffsetX = playerSpritePositionOffsetY * 0.5f;
+    entitySprite.scale(PLAYER_SCALE_FACTOR, PLAYER_SCALE_FACTOR);
 }
 
 void Player::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
@@ -72,6 +74,7 @@ void Player::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t l
     uint32_t tileMapWidth = ((levelWidth-1) * PLAYER_WIDTH);
     uint32_t tileMapHeight = ((levelHeight-1) * PLAYER_HEIGHT);
 
+    // TODO CENTRALISE TWO COMMON BLOCKS BELOW
     if (direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT)
     {
         float positionDeltaX = position.x + (velocity.x * deltaTime.asSeconds());
@@ -111,4 +114,26 @@ void Player::updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffse
         rectSourceEntity.left = (rectSourceEntity.left == (PLAYER_WIDTH*2)) ? 0 : (rectSourceEntity.left + PLAYER_WIDTH);
         animationFrameStartTime = currentWorldTime;
     }
+}
+
+uint16_t Player::getHealth() const
+{
+    return this->health;
+}
+
+void Player::setHealth(uint16_t newHealth)
+{
+    this->health = newHealth;
+}
+
+bool Player::isDead() const
+{
+    return this->health == 0;
+}
+
+void Player::reset()
+{
+    GameEntity::reset();
+    rectSourceEntity = sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
+    this->health = STARTING_PLAYER_HEALTH;
 }

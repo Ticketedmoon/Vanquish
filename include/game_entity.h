@@ -32,11 +32,11 @@ class GameEntity : public sf::Drawable
         virtual void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) = 0;
         virtual void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) = 0;
         virtual void updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTopOffset) = 0;
+        virtual void reset() = 0;
 
         void setDirection(EntityDirection dir);
 
         sf::Vector2f getPosition();
-        sf::Sprite& getSprite();
         EntityDirection getDirection();
 
         sf::Vector2f velocity;
@@ -44,6 +44,8 @@ class GameEntity : public sf::Drawable
 
     protected:
         sf::Vector2f position;
+        sf::Vector2f spawnPosition = sf::Vector2f(position.x, position.y);
+        sf::Vector2f startingAnimationPosition;
         EntityDirection direction = EntityDirection::DOWN;
 
         sf::IntRect rectSourceEntity;

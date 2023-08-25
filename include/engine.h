@@ -44,36 +44,40 @@ static constexpr size_t TOTAL_GAME_ENTITIES = TOTAL_PLAYERS + TOTAL_ENEMIES;
 static const std::string FONT_PATH = "resources/fonts/calibri.ttf";
 
 class Engine {
-public:
-    void initialise();
+    public:
+        void initialise();
 
-private:
-    // Set up
-    static void listenForEvents(sf::RenderWindow& window, Level& level, sf::Time& deltaTime);
-    static void configureGameWindow(sf::RenderWindow& window);
-    static void initialiseGameEntities(TextureManager& textureManager, std::shared_ptr<Player>& player,
-                                       std::vector<std::shared_ptr<GameEntity>>& gameEntities);
-    void configureTextRendering();
+    private:
+        // Set up
+        void listenForEvents(sf::RenderWindow& window, std::shared_ptr<Player>& player, Level& level, sf::Time& deltaTime);
+        static void configureGameWindow(sf::RenderWindow& window);
+        static void initialiseGameEntities(TextureManager& textureManager, std::shared_ptr<Player>& player,
+                                           std::vector<std::shared_ptr<GameEntity>>& gameEntities);
+        void configureTextRendering();
 
-    // Game loop logic
-    void startGameLoop(sf::RenderWindow& window, Level& level, std::shared_ptr<Player>& player,
-                              std::vector<std::shared_ptr<GameEntity>>& gameEntities,
-                              std::vector<std::shared_ptr<GameEntity>>& uiComponents);
-    static void update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
-                       std::vector<std::shared_ptr<GameEntity>>& gameEntities);
-    static void render(sf::RenderWindow &window, std::vector<std::shared_ptr<GameEntity>>& gameEntities);
+        // Game loop logic
+        void startGameLoop(sf::RenderWindow& window, Level& level, std::shared_ptr<Player>& player,
+                                  std::vector<std::shared_ptr<GameEntity>>& gameEntities,
+                                  std::vector<std::shared_ptr<GameEntity>>& uiComponents);
+        static void update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
+                           std::vector<std::shared_ptr<GameEntity>>& gameEntities,
+                           std::vector<std::shared_ptr<GameEntity>>& uiComponents);
+        static void render(sf::RenderWindow &window, std::vector<std::shared_ptr<GameEntity>>& gameEntities);
 
-    static void centerViewOnPlayer(sf::RenderWindow& window, std::shared_ptr<Player>& player,
-                                   uint32_t levelWidth,uint32_t levelHeight);
-    static float getViewCentreForCoordinate(float playerCoordinatePosition, float levelDimension,
-                                            float windowDimensionValue,float playerDimensionValue);
+        static void centerViewOnPlayer(sf::RenderWindow& window, std::shared_ptr<Player>& player,
+                                       uint32_t levelWidth,uint32_t levelHeight);
+        static float getViewCentreForCoordinate(float playerCoordinatePosition, float levelDimension,
+                                                float windowDimensionValue,float playerDimensionValue);
+        void showGameOverScreen(sf::RenderWindow &window) const;
 
-    // Debug
-    void startDebugMode(sf::RenderWindow& window, sf::Clock& debugClock, std::shared_ptr<Player>& player, Level& level);
-    void renderDebugInfo(sf::RenderWindow& window, sf::Clock& debugClock, std::shared_ptr<Player>& player, Level& level);
+        // Debug
+        void startDebugMode(sf::RenderWindow& window, sf::Clock& debugClock, std::shared_ptr<Player>& player, Level& level);
+        void renderDebugInfo(sf::RenderWindow& window, sf::Clock& debugClock, std::shared_ptr<Player>& player, Level& level);
 
-    sf::Font font;
-    sf::Text debugText;
-    inline static bool debugMode = false;
+        bool isGameOver = false;
+        sf::Font font;
 
+        // Debug
+        sf::Text debugText;
+        inline static bool debugMode = false;
 };

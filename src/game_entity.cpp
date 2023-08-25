@@ -10,11 +10,13 @@ EntityDirection GameEntity::getDirection()
     return direction;
 }
 
-sf::Sprite& GameEntity::getSprite()
+void GameEntity::setDirection(EntityDirection dir)
 {
-    return entitySprite;
+    this->direction = dir;
 }
 
-void GameEntity::setDirection(EntityDirection dir) {
-    this->direction = dir;
+void GameEntity::reset()
+{
+    animationFrameStartTime = sf::Time::Zero;
+    position = spawnPosition;
 }

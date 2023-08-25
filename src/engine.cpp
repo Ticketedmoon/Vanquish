@@ -8,19 +8,20 @@ void Engine::initialise()
     TextureManager textureManager;
     textureManager.addTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY, HUMAN_CHARACTER_SPRITE_SHEET_A_FILE_PATH);
 
-    std::shared_ptr<Player> player = std::make_shared<Player>(textureManager);
+    configureTextRendering();
 
+    std::shared_ptr<Player> player = std::make_shared<Player>(textureManager);
     Level level(player);
 
     std::vector<std::shared_ptr<GameEntity>> gameEntities;
+    gameEntities.clear();
     gameEntities.reserve(TOTAL_GAME_ENTITIES);
     initialiseGameEntities(textureManager, player, gameEntities);
 
     std::vector<std::shared_ptr<GameEntity>> uiComponents;
-    gameEntities.reserve(TOTAL_UI_COMPONENTS);
+    uiComponents.clear();
+    uiComponents.reserve(TOTAL_UI_COMPONENTS);
     uiComponents.emplace_back(std::make_unique<UserInterfaceManager>(player));
-
-    configureTextRendering();
 
     startGameLoop(window, level, player, gameEntities, uiComponents);
 }
@@ -53,23 +54,40 @@ void Engine::startGameLoop(sf::RenderWindow& window, Level& level, std::shared_p
     while (window.isOpen())
     {
         sf::Time deltaTime = deltaClock.restart();
-
-        listenForEvents(window, level, deltaTime);
-        update(deltaTime, worldClock, level, gameEntities);
-
+        listenForEvents(window, player, level, deltaTime);
         window.clear();
-        centerViewOnPlayer(window, player, level.getLevelWidth(), level.getLevelHeight());
 
-        // map/entities
-        window.draw(level.map);
-        render(window, gameEntities);
+        if (isGameOver || player->isDead())
+        {
+            worldClock.restart();
+            debugClock.restart();
+            deltaClock.restart();
 
-        // Update view to default and render UI
-        window.setView(window.getDefaultView());
-        render(window, uiComponents);
+            for (auto& entity : gameEntities)
+            {
+                entity->reset();
+            }
+            showGameOverScreen(window);
+            isGameOver = true;
+        }
+        else
+        {
+            update(deltaTime, worldClock, level, gameEntities, uiComponents);
 
-        // Debug
-        renderDebugInfo(window, debugClock, player, level);
+            centerViewOnPlayer(window, player, level.getLevelWidth(), level.getLevelHeight());
+
+            // map/entities
+            window.draw(level.map);
+            render(window, gameEntities);
+
+            // Update view to default and render UI
+            window.setView(window.getDefaultView());
+            render(window, uiComponents);
+
+            // Debug
+            renderDebugInfo(window, debugClock, player, level);
+        }
+
         window.display();
     }
 }
@@ -95,7 +113,7 @@ void Engine::initialiseGameEntities(TextureManager& textureManager, std::shared_
 
 // TODO We could make a nice improvement here where we take a map of {Keyboard::Key -> function ptr} and we simply
 //      iterate over each during inner loop.
-void Engine::listenForEvents(sf::RenderWindow& window, Level& level, sf::Time& deltaTime)
+void Engine::listenForEvents(sf::RenderWindow& window, std::shared_ptr<Player>& player, Level& level, sf::Time& deltaTime)
 {
     sf::Event event{};
     while (window.pollEvent(event))
@@ -120,15 +138,31 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level, sf::Time& d
                     level.debug(true);
                 }
             }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+            {
+                if (isGameOver)
+                {
+                    isGameOver = false;
+                }
+            }
         
         }
     }
 }
 
 // TODO Combine deltaTime and worldClock and debugCLock into single class
-void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level, std::vector<std::shared_ptr<GameEntity>>& gameEntities)
+void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
+                    std::vector<std::shared_ptr<GameEntity>>& gameEntities,
+                    std::vector<std::shared_ptr<GameEntity>>& uiComponents)
 {
     for (auto& entity : gameEntities)
+    {
+        entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
+    }
+
+    // TODO CHANGE UI_COMPONENT TYPE: GameEntity is temporary
+    for (auto& entity : uiComponents)
     {
         entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
     }
@@ -156,8 +190,8 @@ void Engine::centerViewOnPlayer(sf::RenderWindow& window, std::shared_ptr<Player
 {
     // kee view centred/centered on player
     sf::Vector2f playerPos = player->getPosition();
-    float centreX = getViewCentreForCoordinate(playerPos.x, levelWidth, WINDOW_WIDTH, player->PLAYER_WIDTH);
-    float centreY = getViewCentreForCoordinate(playerPos.y, levelHeight, WINDOW_HEIGHT, player->PLAYER_HEIGHT);
+    float centreX = getViewCentreForCoordinate(playerPos.x, levelWidth, WINDOW_WIDTH, PLAYER_WIDTH);
+    float centreY = getViewCentreForCoordinate(playerPos.y, levelHeight, WINDOW_HEIGHT, PLAYER_HEIGHT);
 
     sf::View newView = window.getView();
     newView.zoom(VIEW_ZOOM_FACTOR);
@@ -220,4 +254,15 @@ void Engine::configureTextRendering()
     debugText.setOutlineColor(sf::Color::Black);
     debugText.setOutlineThickness(2.0f);
     debugText.setLetterSpacing(3.0f);
+}
+
+void Engine::showGameOverScreen(sf::RenderWindow &window) const {
+    sf::Text sf_text = sf::Text("You have died!\nPress [SPACE] to restart", font);
+    window.clear(sf::Color::Red);
+    sf_text.setFillColor(sf::Color::White);
+    sf_text.setCharacterSize(64); // in pixels, not points!
+    sf_text.setStyle(sf::Text::Bold | sf::Text::Underlined);
+    sf::FloatRect bounds = sf_text.getLocalBounds();
+    sf_text.setPosition(WINDOW_WIDTH/2 - bounds.width/2, 225);
+    window.draw(sf_text);
 }
