@@ -21,14 +21,9 @@ class Player : public GameEntity
         {
             std::cout << "DEBUG: copy constructor called for `Player` GameEntity object: " << &enemy << std::endl;
         }
-        Player(Player&& enemy)  noexcept
-        {
-            std::cout << "DEBUG: copy constructor called for `Player` GameEntity object: " << &enemy << std::endl;
-        }
 
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
-        void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
         void updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset) override;
         void reset() override;
 

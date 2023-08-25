@@ -49,7 +49,7 @@ class Engine {
 
     private:
         // Set up
-        void listenForEvents(sf::RenderWindow& window, std::shared_ptr<Player>& player, Level& level, sf::Time& deltaTime);
+        void listenForEvents(sf::RenderWindow& window, Level& level, sf::Time& deltaTime);
         static void configureGameWindow(sf::RenderWindow& window);
         static void initialiseGameEntities(TextureManager& textureManager, std::shared_ptr<Player>& player,
                                            std::vector<std::shared_ptr<GameEntity>>& gameEntities);
@@ -58,11 +58,12 @@ class Engine {
         // Game loop logic
         void startGameLoop(sf::RenderWindow& window, Level& level, std::shared_ptr<Player>& player,
                                   std::vector<std::shared_ptr<GameEntity>>& gameEntities,
-                                  std::vector<std::shared_ptr<GameEntity>>& uiComponents);
+                                  std::vector<std::shared_ptr<GameComponent>>& uiComponents);
         static void update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
                            std::vector<std::shared_ptr<GameEntity>>& gameEntities,
-                           std::vector<std::shared_ptr<GameEntity>>& uiComponents);
-        static void render(sf::RenderWindow &window, std::vector<std::shared_ptr<GameEntity>>& gameEntities);
+                           std::vector<std::shared_ptr<GameComponent>>& uiComponents);
+        static void render(sf::RenderWindow &window, std::vector<std::shared_ptr<GameEntity>>& gameEntities,
+                           std::vector<std::shared_ptr<GameComponent>>& uiComponents);
 
         static void centerViewOnPlayer(sf::RenderWindow& window, std::shared_ptr<Player>& player,
                                        uint32_t levelWidth,uint32_t levelHeight);

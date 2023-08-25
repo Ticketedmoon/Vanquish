@@ -17,15 +17,10 @@ class Enemy : public GameEntity
         {
             std::cout << "DEBUG: copy constructor called for `Enemy` GameEntity object: " << &enemy << std::endl;
         }
-        Enemy(Enemy&& enemy)  noexcept
-        {
-            std::cout << "DEBUG: copy constructor called for `Enemy` GameEntity object: " << &enemy << std::endl;
-        }
 
         // TODO ADD DELTA TIME TO CONSTRUCTOR RATHER THAN NEEDING TO PASS IT IN EACH METHOD
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
-        void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
         void updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset) override;
         void reset() override;
 
@@ -49,7 +44,7 @@ class Enemy : public GameEntity
         static constexpr uint32_t WANDER_DISTANCE = 256;
 
         // TODO IMPROVE THIS, MAKE MORE DYNAMIC
-        int damage = std::experimental::randint(10, 30);
+        int damage = std::experimental::randint(5, 20);
 
         static float constexpr ENEMY_SCALE_FACTOR = 0.75;
         static float constexpr ENEMY_SPEED = 45.0f;

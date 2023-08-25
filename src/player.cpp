@@ -1,17 +1,14 @@
 #include "../include/player.h"
 
 Player::Player(TextureManager& textureManager)
-    : playerSpritePositionOffsetX((std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT) * 0.5f)),
+    : GameEntity(PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, sf::Vector2f(300, 150),
+                 sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT),
+                 sf::Vector2f(0, 0)),
+      playerSpritePositionOffsetX((std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT) * 0.5f)),
       playerSpritePositionOffsetY((std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT)))
 {
-    spawnPosition = sf::Vector2f(300, 150);
-    position = spawnPosition;
-    startingAnimationPosition = sf::Vector2f(0, 0);
-
-    rectSourceEntity = sf::IntRect(startingAnimationPosition.x, startingAnimationPosition.y, PLAYER_WIDTH, PLAYER_HEIGHT);
-
     sf::Texture& texture = *textureManager.getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY);
-    entitySprite = sf::Sprite(texture, rectSourceEntity);
+    entitySprite = sf::Sprite(texture, entityDimRect);
     entitySprite.scale(PLAYER_SCALE_FACTOR, PLAYER_SCALE_FACTOR);
 }
 
@@ -23,7 +20,7 @@ void Player::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWi
     tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
 
     entitySprite.setPosition(position);
-    entitySprite.setTextureRect(rectSourceEntity);
+    entitySprite.setTextureRect(entityDimRect);
 }
 
 void Player::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
@@ -58,60 +55,13 @@ std::pair<uint32_t, uint32_t> Player::findNextTileFromPlayerDirection(sf::Time& 
     return std::pair{nextTileX, nextTileY};
 }
 
-// TODO REFACTOR ME
-void Player::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
-{
-    const int sign = direction == EntityDirection::UP || direction == EntityDirection::LEFT ? -1 : 1;
-
-    int xAccel = direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT ? (PLAYER_SPEED * sign) : 0;
-    int yAccel = direction == EntityDirection::UP || direction == EntityDirection::DOWN ? (PLAYER_SPEED * sign) : 0;
-    sf::Vector2f acceleration = sf::Vector2f(xAccel, yAccel);
-
-    // update velocity through acceleration
-    velocity += acceleration;
-
-    // TODO REFACTOR ME CAN WE USE tilePosition?
-    uint32_t tileMapWidth = ((levelWidth-1) * PLAYER_WIDTH);
-    uint32_t tileMapHeight = ((levelHeight-1) * PLAYER_HEIGHT);
-
-    // TODO CENTRALISE TWO COMMON BLOCKS BELOW
-    if (direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT)
-    {
-        float positionDeltaX = position.x + (velocity.x * deltaTime.asSeconds());
-        if (positionDeltaX >= 0 && positionDeltaX < static_cast<float>(tileMapWidth))
-        {
-            position.x = positionDeltaX;
-            velocity.x *= 0.5f;
-        }
-        else 
-        {
-            velocity.x = 0;
-        }
-    }
-
-    if (direction == EntityDirection::UP || direction == EntityDirection::DOWN)
-    {
-        float positionDeltaY = position.y + (velocity.y * deltaTime.asSeconds());
-        if (positionDeltaY >= 0 && positionDeltaY < static_cast<float>(tileMapHeight))
-        {
-            position.y = positionDeltaY;
-            velocity.y *= 0.5f;
-        }
-        else
-        {
-            velocity.y = 0;
-        }
-
-    }
-}
-
 void Player::updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset)
 {
     sf::Time currentWorldTime = worldClock.getElapsedTime();
     if (currentWorldTime - animationFrameStartTime >= animationFrameDuration)
     {
-        rectSourceEntity.top = PLAYER_HEIGHT * spriteSheetTopOffset;
-        rectSourceEntity.left = (rectSourceEntity.left == (PLAYER_WIDTH*2)) ? 0 : (rectSourceEntity.left + PLAYER_WIDTH);
+        entityDimRect.top = PLAYER_HEIGHT * spriteSheetTopOffset;
+        entityDimRect.left = (entityDimRect.left == (PLAYER_WIDTH * 2)) ? 0 : (entityDimRect.left + PLAYER_WIDTH);
         animationFrameStartTime = currentWorldTime;
     }
 }
@@ -134,6 +84,6 @@ bool Player::isDead() const
 void Player::reset()
 {
     GameEntity::reset();
-    rectSourceEntity = sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
+    entityDimRect = sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
     this->health = STARTING_PLAYER_HEALTH;
 }

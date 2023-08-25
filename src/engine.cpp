@@ -18,7 +18,7 @@ void Engine::initialise()
     gameEntities.reserve(TOTAL_GAME_ENTITIES);
     initialiseGameEntities(textureManager, player, gameEntities);
 
-    std::vector<std::shared_ptr<GameEntity>> uiComponents;
+    std::vector<std::shared_ptr<GameComponent>> uiComponents;
     uiComponents.clear();
     uiComponents.reserve(TOTAL_UI_COMPONENTS);
     uiComponents.emplace_back(std::make_unique<UserInterfaceManager>(player));
@@ -45,7 +45,7 @@ void Engine::configureGameWindow(sf::RenderWindow& window)
 
 void Engine::startGameLoop(sf::RenderWindow& window, Level& level, std::shared_ptr<Player>& player,
                            std::vector<std::shared_ptr<GameEntity>>& gameEntities,
-                           std::vector<std::shared_ptr<GameEntity>>& uiComponents)
+                           std::vector<std::shared_ptr<GameComponent>>& uiComponents)
 {
     sf::Clock worldClock;
     sf::Clock debugClock;
@@ -54,7 +54,7 @@ void Engine::startGameLoop(sf::RenderWindow& window, Level& level, std::shared_p
     while (window.isOpen())
     {
         sf::Time deltaTime = deltaClock.restart();
-        listenForEvents(window, player, level, deltaTime);
+        listenForEvents(window, level, deltaTime);
         window.clear();
 
         if (isGameOver || player->isDead())
@@ -77,13 +77,9 @@ void Engine::startGameLoop(sf::RenderWindow& window, Level& level, std::shared_p
 
             centerViewOnPlayer(window, player, level.getLevelWidth(), level.getLevelHeight());
 
-            // map/entities
+            // render map/entities/ui
             window.draw(level.map);
-            render(window, gameEntities);
-
-            // Update view to default and render UI
-            window.setView(window.getDefaultView());
-            render(window, uiComponents);
+            render(window, gameEntities, uiComponents);
 
             // Debug
             renderDebugInfo(window, debugClock, player, level);
@@ -114,7 +110,7 @@ void Engine::initialiseGameEntities(TextureManager& textureManager, std::shared_
 
 // TODO We could make a nice improvement here where we take a map of {Keyboard::Key -> function ptr} and we simply
 //      iterate over each during inner loop.
-void Engine::listenForEvents(sf::RenderWindow& window, std::shared_ptr<Player>& player, Level& level, sf::Time& deltaTime)
+void Engine::listenForEvents(sf::RenderWindow& window, Level& level, sf::Time& deltaTime)
 {
     sf::Event event{};
     while (window.pollEvent(event))
@@ -155,14 +151,13 @@ void Engine::listenForEvents(sf::RenderWindow& window, std::shared_ptr<Player>& 
 // TODO Combine deltaTime and worldClock and debugCLock into single class
 void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
                     std::vector<std::shared_ptr<GameEntity>>& gameEntities,
-                    std::vector<std::shared_ptr<GameEntity>>& uiComponents)
+                    std::vector<std::shared_ptr<GameComponent>>& uiComponents)
 {
     for (auto& entity : gameEntities)
     {
         entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
     }
 
-    // TODO CHANGE UI_COMPONENT TYPE: GameEntity is temporary
     for (auto& entity : uiComponents)
     {
         entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
@@ -171,9 +166,18 @@ void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
     level.update(deltaTime, worldClock);
 }
 
-void Engine::render(sf::RenderWindow& window, std::vector<std::shared_ptr<GameEntity>>& gameEntities)
+void Engine::render(sf::RenderWindow& window, std::vector<std::shared_ptr<GameEntity>>& gameEntities,
+                    std::vector<std::shared_ptr<GameComponent>>& uiComponents)
 {
     for (auto& entity : gameEntities)
+    {
+        entity->draw(window, sf::RenderStates::Default);
+    }
+
+    // Update view to default and render UI
+    window.setView(window.getDefaultView());
+
+    for (auto& entity : uiComponents)
     {
         entity->draw(window, sf::RenderStates::Default);
     }

@@ -1,29 +1,26 @@
 #include "../include/enemy.h"
 
 Enemy::Enemy(TextureManager& textureManager, std::shared_ptr<Player>& player, uint32_t posX, uint32_t posY, int rectLeft, int rectTop)
-    : player(player),
+    : GameEntity(ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY_SPEED, sf::Vector2f(posX, posY),
+                 sf::IntRect(rectLeft, rectTop, ENEMY_WIDTH, ENEMY_HEIGHT),
+                 sf::Vector2f(rectLeft, rectTop)),
+      player(player),
       enemySpritePositionOffsetX((std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT) * 0.5f)),
       enemySpritePositionOffsetY((std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT)))
 {
-    spawnPosition = sf::Vector2f(posX, posY);
-    position = spawnPosition;
-    startingAnimationPosition = sf::Vector2f(rectLeft, rectTop);
-
-    rectSourceEntity = sf::IntRect(startingAnimationPosition.x, startingAnimationPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT);
-
     sf::Texture& texture = *(textureManager.getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY));
-    entitySprite = sf::Sprite(texture, rectSourceEntity);
+    entitySprite = sf::Sprite(texture, entityDimRect);
     entitySprite.scale(ENEMY_SCALE_FACTOR , ENEMY_SCALE_FACTOR);
 }
 
 void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
 {
-    uint32_t tileUnderEnemyX = floor((position.x+enemySpritePositionOffsetX)/ENEMY_WIDTH);
-    uint32_t tileUnderEnemyY = floor((position.y+enemySpritePositionOffsetY)/ENEMY_HEIGHT);
+    uint32_t tileUnderEnemyX = floor((position.x + enemySpritePositionOffsetX) / ENEMY_WIDTH);
+    uint32_t tileUnderEnemyY = floor((position.y + enemySpritePositionOffsetY) / ENEMY_HEIGHT);
 
     tilePosition = sf::Vector2u(tileUnderEnemyX, tileUnderEnemyY);
     entitySprite.setPosition(position);
-    entitySprite.setTextureRect(rectSourceEntity);
+    entitySprite.setTextureRect(entityDimRect);
 
     // TODO REFACTOR BELOW
     int milliseconds = worldClock.getElapsedTime().asMilliseconds();
@@ -100,58 +97,13 @@ bool Enemy::isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocati
     return sqrt(pow(sourceLocationX - targetLocationX, 2) + pow(sourceLocationY - targetLocationY, 2) * 1.0) < distance;
 }
 
-// TODO REFACTOR ME
-// TODO SAME AS method in player.h, can be centralised.
-void Enemy::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
-{
-    const float sign = direction == EntityDirection::UP || direction == EntityDirection::LEFT ? -1.0f : 1.0f;
-    float xAccel = direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT ? (ENEMY_SPEED * sign) : 0;
-    float yAccel = direction == EntityDirection::UP || direction == EntityDirection::DOWN ? (ENEMY_SPEED * sign) : 0;
-    sf::Vector2f acceleration = sf::Vector2f(xAccel, yAccel);
-
-    // update velocity through acceleration
-    velocity += acceleration;
-
-    // TODO REFACTOR ME CAN WE USE tilePosition?
-    uint32_t tileMapWidth = ((levelWidth-1) * ENEMY_WIDTH);
-    uint32_t tileMapHeight = ((levelHeight-1) * ENEMY_HEIGHT);
-
-    if (direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT)
-    {
-        float positionDeltaX = position.x + (velocity.x * deltaTime.asSeconds());
-        if (positionDeltaX >= 0 && positionDeltaX <static_cast<float>(tileMapWidth))
-        {
-            position.x = positionDeltaX;
-            velocity.x *= 0.5f;
-        }
-        else
-        {
-            velocity.x = 0;
-        }
-    }
-
-    if (direction == EntityDirection::UP || direction == EntityDirection::DOWN)
-    {
-        float positionDeltaY = position.y + (velocity.y * deltaTime.asSeconds());
-        if (positionDeltaY >= 0 && positionDeltaY <static_cast<float>(tileMapHeight))
-        {
-            position.y = positionDeltaY;
-            velocity.y *= 0.5f;
-        }
-        else
-        {
-            velocity.y = 0;
-        }
-    }
-}
-
 void Enemy::updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset)
 {
     sf::Time currentTime = worldClock.getElapsedTime();
     if (currentTime - animationFrameStartTime >= animationFrameDuration)
     {
-        rectSourceEntity.top = ENEMY_HEIGHT * spriteSheetTopOffset;
-        rectSourceEntity.left = (rectSourceEntity.left == (ENEMY_WIDTH*2)) ? 0 : (rectSourceEntity.left + ENEMY_WIDTH);
+        entityDimRect.top = ENEMY_HEIGHT * spriteSheetTopOffset;
+        entityDimRect.left = (entityDimRect.left == (ENEMY_WIDTH * 2)) ? 0 : (entityDimRect.left + ENEMY_WIDTH);
         animationFrameStartTime = currentTime;
     }
 }
@@ -168,7 +120,7 @@ void Enemy::updateEntityToRandomDirection()
 
 void Enemy::reset() {
     GameEntity::reset();
-    rectSourceEntity = sf::IntRect(startingAnimationPosition.x, startingAnimationPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT);
+    entityDimRect = sf::IntRect(startingAnimationPosition.x, startingAnimationPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT);
     enemySpritePositionOffsetY = std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT);
     enemySpritePositionOffsetX = enemySpritePositionOffsetY * 0.5f;
 }

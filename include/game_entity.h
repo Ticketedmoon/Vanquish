@@ -14,6 +14,8 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
+#include "game_component.h"
+
 enum class EntityDirection 
 {
     DOWN = 0,
@@ -22,35 +24,49 @@ enum class EntityDirection
     RIGHT = 3
 };
 
-class GameEntity : public sf::Drawable
+class GameEntity : public GameComponent
 {
     public:
+        GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position, sf::IntRect entityDimRect,
+                   sf::Vector2f startingAnimationPosition);
         ~GameEntity() override = default;
 
-        // Not necessary to add virtual here ti maintain pure-virtual function as parent method is pure-virtual.
+        // Not necessary to add virtual here to maintain pure-virtual function as parent method is pure-virtual.
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override = 0;
-        virtual void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) = 0;
-        virtual void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) = 0;
-        virtual void updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTopOffset) = 0;
-        virtual void reset() = 0;
+        void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override = 0;
+        void reset() override = 0;
 
+        virtual void updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTopOffset) = 0;
+
+        void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight);
         void setDirection(EntityDirection dir);
 
         sf::Vector2f getPosition();
         EntityDirection getDirection();
 
-        sf::Vector2f velocity;
         sf::Vector2u tilePosition;
+        sf::Vector2f velocity;
 
     protected:
+        uint8_t width;
+        uint8_t height;
+        float speed;
+
         sf::Vector2f position;
         sf::Vector2f spawnPosition = sf::Vector2f(position.x, position.y);
-        sf::Vector2f startingAnimationPosition;
+
         EntityDirection direction = EntityDirection::DOWN;
 
-        sf::IntRect rectSourceEntity;
+        sf::IntRect entityDimRect;
         sf::Sprite entitySprite;
 
+        sf::Vector2f startingAnimationPosition;
         sf::Time animationFrameStartTime{ sf::Time::Zero };
         sf::Time animationFrameDuration{ sf::seconds(1.f / 6.f) }; // 3 frames per second
+
+    private:
+        static std::pair<float, float> getNextCoordinatePositionWithNextVelocity(const sf::Time &deltaTime,
+                                                                          uint32_t tileMapWidth,
+                                                                          float positionForCoordinate,
+                                                                          float velocityForCoordinate);
 };
