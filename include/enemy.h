@@ -37,6 +37,7 @@ class Enemy : public GameEntity
         // TODO REFACTOR
         int entityWaitTimeBeforeMovement = std::experimental::randint(5000, 10000);
         int directionIndex = std::experimental::randint(0, 3);
+        int lastTimePlayerWasHitSeconds = 0;
 
     private:
         static bool isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX, float targetLocationY,
@@ -46,6 +47,10 @@ class Enemy : public GameEntity
         std::shared_ptr<Player> player;
 
         static constexpr uint32_t WANDER_DISTANCE = 256;
+
+        // TODO IMPROVE THIS, MAKE MORE DYNAMIC
+        int damage = std::experimental::randint(10, 30);
+
         static float constexpr ENEMY_SCALE_FACTOR = 0.75;
         static float constexpr ENEMY_SPEED = 45.0f;
 

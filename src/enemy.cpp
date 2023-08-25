@@ -35,10 +35,13 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
             moveToDestination(deltaTime, player->getPosition().x, player->getPosition().y);
             if (isEnemyInProximityOfTarget(position.x, position.y, player->getPosition().x, player->getPosition().y, 24)) {
                 uint16_t playerHealth = player->getHealth();
-                if (playerHealth > 0) {
-                    // TODO IMPROVE CALCULATION + DELTA TIME
-                    uint16_t newHealth = playerHealth - 1;
+                int timeNowSeconds = static_cast<int>(worldClock.getElapsedTime().asSeconds());
+                bool hasPlayerBeenAttackedWithinValidTimeWindow = (timeNowSeconds < 3 || timeNowSeconds - lastTimePlayerWasHitSeconds >= 3);
+                if (playerHealth > 0 && hasPlayerBeenAttackedWithinValidTimeWindow) {
+                    // TODO RESEARCH IF WE NEED DELTA TIME SINCE WE ARE ALREADY USING WORLD CLOCK
+                    uint16_t newHealth = playerHealth - damage > 0 ? playerHealth - damage : 0;
                     player->setHealth(newHealth);
+                    lastTimePlayerWasHitSeconds = timeNowSeconds;
                 }
             }
         }
