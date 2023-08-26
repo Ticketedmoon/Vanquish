@@ -7,6 +7,12 @@
 #include "player.h"
 #include "common_constants.h"
 
+static constexpr uint8_t ENEMY_WIDTH = 32;
+static constexpr uint8_t ENEMY_HEIGHT = 32;
+static constexpr uint32_t WANDER_DISTANCE = 256;
+static constexpr float ENEMY_SCALE_FACTOR = 0.75;
+static constexpr float ENEMY_SPEED = 45.0f;
+
 class Enemy : public GameEntity
 {
     public:
@@ -26,9 +32,6 @@ class Enemy : public GameEntity
 
         void updateEntityToRandomDirection();
 
-        static uint32_t constexpr ENEMY_WIDTH = 32;
-        static uint32_t constexpr ENEMY_HEIGHT = 32;
-
         // TODO REFACTOR
         int entityWaitTimeBeforeMovement = std::experimental::randint(5000, 10000);
         int directionIndex = std::experimental::randint(0, 3);
@@ -41,13 +44,8 @@ class Enemy : public GameEntity
 
         std::shared_ptr<Player> player;
 
-        static constexpr uint32_t WANDER_DISTANCE = 256;
-
         // TODO IMPROVE THIS, MAKE MORE DYNAMIC
         int damage = std::experimental::randint(5, 20);
-
-        static float constexpr ENEMY_SCALE_FACTOR = 0.75;
-        static float constexpr ENEMY_SPEED = 45.0f;
 
         // TODO Move me to parent class?
         uint32_t enemySpritePositionOffsetX{};

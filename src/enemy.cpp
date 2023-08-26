@@ -61,8 +61,14 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
                 // Return to spawn area if too far away.
                 moveToDestination(deltaTime, spawnPosition.x, spawnPosition.y);
             }
-
         }
+
+        uint32_t spriteSheetTop = startingAnimationPosition.y + (ENEMY_HEIGHT * getSpriteSheetAnimationOffset(direction));
+        uint32_t spriteSheetLeft = entityDimRect.left == (startingAnimationPosition.x + (ENEMY_WIDTH * 2))
+                ? startingAnimationPosition.x
+                : entityDimRect.left + ENEMY_WIDTH;
+        std::cout << spriteSheetTop << ", " << spriteSheetLeft << '\n';
+        updateAnimation(worldClock, spriteSheetTop, spriteSheetLeft);
     }
 }
 
@@ -83,6 +89,10 @@ void Enemy::moveToDestination(const sf::Time &deltaTime, float destinationX, flo
     float positionDeltaY = isEnemyAboveDestination
             ? (position.y + (velocity.y * deltaTime.asSeconds()))
             : (position.y - (velocity.y * deltaTime.asSeconds()));
+
+    // TODO FIX THIS + INCLUDE DIAGONALS IN DIRECTION ENUM
+    direction = isEnemyToLeftOfDestination ? EntityDirection::RIGHT : EntityDirection::LEFT;
+    direction = isEnemyAboveDestination ? EntityDirection::DOWN : EntityDirection::UP;
 
     position.x = positionDeltaX;
     position.y = positionDeltaY;

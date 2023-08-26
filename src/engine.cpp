@@ -90,20 +90,29 @@ void Engine::startGameLoop(sf::RenderWindow& window, Level& level, std::shared_p
 }
 
 void Engine::initialiseGameEntities(TextureManager& textureManager, std::shared_ptr<Player>& player,
-                                    std::vector<std::shared_ptr<GameEntity>>& gameEntities) {
+                                    std::vector<std::shared_ptr<GameEntity>>& gameEntities)
+{
     gameEntities.push_back(player);
 
     // Load all characters on sprite sheet into memory.
-    for (uint32_t rows = 0; rows < (TOTAL_ENEMIES / 4); rows++) {
-        for (uint32_t cols = 0; cols < (TOTAL_ENEMIES / 2); cols++) {
+    double rowCountByTotalEnemies = ceil(TOTAL_ENEMIES / 4.0f);
+    size_t totalRows = std::max(rowCountByTotalEnemies, static_cast<double>(1));
+    size_t totalCols = totalRows == 1 ? TOTAL_ENEMIES : ceil(TOTAL_ENEMIES/2.0);
+    std::cout << "Loading enemies from sprite sheet [rows: " << totalRows << ", cols: " << totalCols << "]\n";
+
+    for (uint32_t rows = 0; rows < totalRows; rows++) {
+        for (uint32_t cols = 0; cols < totalCols; cols++) {
+            if ((rows*4) + cols >= TOTAL_ENEMIES) return;
+
             // Note: These positions are temporary, so magic numbers aren't concerning for now.
-            uint32_t enemyX = (cols+1) * 64;
-            uint32_t enemyY = (rows+1) * 64;
+            uint32_t enemyX = (cols + 1) * 64;
+            uint32_t enemyY = (rows + 1) * 64;
 
-            uint32_t enemyRectLeft = Enemy::ENEMY_WIDTH * (3 * cols);
-            uint32_t enemyRectTop = Enemy::ENEMY_HEIGHT * (4 * rows);
+            uint32_t enemyRectLeft = ENEMY_WIDTH * (3 * cols);
+            uint32_t enemyRectTop = ENEMY_HEIGHT * (4 * rows);
 
-            gameEntities.emplace_back(std::make_shared<Enemy>(textureManager, player, enemyX, enemyY, enemyRectLeft, enemyRectTop));
+            gameEntities.emplace_back(
+                    std::make_shared<Enemy>(textureManager, player, enemyX, enemyY, enemyRectLeft, enemyRectTop));
         }
     }
 }

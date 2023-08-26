@@ -11,6 +11,7 @@ Level::Level(std::shared_ptr<Player>& player) : player(player)
 // TODO MOVE TO ENGINE CLASS NOW THAT IT SIMPLY CHECKS KEYBOARD AND THEN CALLS A FUNC? 
 void Level::update(sf::Time& deltaTime, sf::Clock& worldClock)
 {
+    // TODO REFACTOR
     // Cardinal movement directions
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {

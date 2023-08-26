@@ -43,6 +43,7 @@ class GameEntity : public GameComponent
 
         sf::Vector2f getPosition();
         EntityDirection getDirection();
+        uint8_t getSpriteSheetAnimationOffset(EntityDirection dir);
 
         sf::Vector2u tilePosition;
         sf::Vector2f velocity;

@@ -7,8 +7,8 @@
 #include "texture_manager.h"
 #include "common_constants.h"
 
-inline static constexpr uint32_t PLAYER_WIDTH = 32;
-inline static constexpr uint32_t PLAYER_HEIGHT = 32;
+inline static constexpr uint8_t PLAYER_WIDTH = 32;
+inline static constexpr uint8_t PLAYER_HEIGHT = 32;
 inline static constexpr float PLAYER_SCALE_FACTOR = 0.75;
 inline static constexpr float PLAYER_SPEED = 50.0f;
 inline static constexpr uint16_t STARTING_PLAYER_HEALTH = 200;

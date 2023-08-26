@@ -80,3 +80,26 @@ std::pair<float, float> GameEntity::getNextCoordinatePositionWithNextVelocity(co
 
     return std::make_pair(positionForCoordinate, velocityForCoordinate);
 }
+
+uint8_t GameEntity::getSpriteSheetAnimationOffset(EntityDirection dir)
+{
+    if (dir == EntityDirection::DOWN)
+    {
+        return 0;
+    }
+
+    if (dir == EntityDirection::LEFT)
+    {
+        return 1;
+    }
+
+    if (dir == EntityDirection::RIGHT)
+    {
+        return 2;
+    }
+
+    if (dir == EntityDirection::UP)
+    {
+        return 3;
+    }
+}
