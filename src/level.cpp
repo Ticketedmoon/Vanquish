@@ -73,7 +73,9 @@ void Level::loadLevel()
 
 void Level::checkForPlayerMovement(sf::Time& deltaTime, sf::Clock& worldClock, EntityDirection dir, uint32_t spriteOffset)
 {
-    player->updateAnimation(worldClock, spriteOffset);
+    uint32_t spriteSheetTop = PLAYER_HEIGHT * spriteOffset;
+    uint32_t spriteSheetLeft = (player->entityDimRect.left == (PLAYER_WIDTH * 2)) ? 0 : (player->entityDimRect.left + PLAYER_WIDTH);
+    player->updateAnimation(worldClock, spriteSheetTop, spriteSheetLeft);
     player->setDirection(dir);
 
     // TODO Create a tile object rather than a pair here?

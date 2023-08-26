@@ -36,7 +36,7 @@ class GameEntity : public GameComponent
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override = 0;
         void reset() override = 0;
 
-        virtual void updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTopOffset) = 0;
+        virtual void updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTop, uint32_t spriteSheetLeft) = 0;
 
         void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight);
         void setDirection(EntityDirection dir);
@@ -46,6 +46,7 @@ class GameEntity : public GameComponent
 
         sf::Vector2u tilePosition;
         sf::Vector2f velocity;
+        sf::IntRect entityDimRect;
 
     protected:
         uint8_t width;
@@ -57,7 +58,6 @@ class GameEntity : public GameComponent
 
         EntityDirection direction = EntityDirection::DOWN;
 
-        sf::IntRect entityDimRect;
         sf::Sprite entitySprite;
 
         sf::Vector2f startingAnimationPosition;

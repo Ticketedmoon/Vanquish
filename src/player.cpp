@@ -55,13 +55,13 @@ std::pair<uint32_t, uint32_t> Player::findNextTileFromPlayerDirection(sf::Time& 
     return std::pair{nextTileX, nextTileY};
 }
 
-void Player::updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset)
+void Player::updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTop, uint32_t spriteSheetLeft)
 {
     sf::Time currentWorldTime = worldClock.getElapsedTime();
     if (currentWorldTime - animationFrameStartTime >= animationFrameDuration)
     {
-        entityDimRect.top = PLAYER_HEIGHT * spriteSheetTopOffset;
-        entityDimRect.left = (entityDimRect.left == (PLAYER_WIDTH * 2)) ? 0 : (entityDimRect.left + PLAYER_WIDTH);
+        entityDimRect.top = spriteSheetTop;
+        entityDimRect.left = spriteSheetLeft;
         animationFrameStartTime = currentWorldTime;
     }
 }

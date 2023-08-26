@@ -91,19 +91,19 @@ void Enemy::moveToDestination(const sf::Time &deltaTime, float destinationX, flo
     velocity.y *= 0.15;
 }
 
-bool Enemy::isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX, float targetLocationY,
-                                       uint32_t distance)
+bool Enemy::isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX,
+                                       float targetLocationY, uint32_t distance)
 {
-    return sqrt(pow(sourceLocationX - targetLocationX, 2) + pow(sourceLocationY - targetLocationY, 2) * 1.0) < distance;
+    return sqrt(pow(sourceLocationX - targetLocationX, 2) + pow(sourceLocationY - targetLocationY, 2)) < distance;
 }
 
-void Enemy::updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset)
+void Enemy::updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset, uint32_t spriteSheetLeftOffset)
 {
     sf::Time currentTime = worldClock.getElapsedTime();
     if (currentTime - animationFrameStartTime >= animationFrameDuration)
     {
         entityDimRect.top = ENEMY_HEIGHT * spriteSheetTopOffset;
-        entityDimRect.left = (entityDimRect.left == (ENEMY_WIDTH * 2)) ? 0 : (entityDimRect.left + ENEMY_WIDTH);
+        entityDimRect.left = spriteSheetLeftOffset;
         animationFrameStartTime = currentTime;
     }
 }

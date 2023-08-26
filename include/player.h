@@ -24,7 +24,7 @@ class Player : public GameEntity
 
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
-        void updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset) override;
+        void updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTop, uint32_t spriteSheetLeft) override;
         void reset() override;
 
         bool isDead() const;
