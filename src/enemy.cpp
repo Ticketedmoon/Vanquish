@@ -26,20 +26,12 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
     int milliseconds = worldClock.getElapsedTime().asMilliseconds();
     if (milliseconds > entityWaitTimeBeforeMovement)
     {
-        if (isEnemyInProximityOfTarget(position.x, position.y,player->getPosition().x, player->getPosition().y,
+        if (isEnemyInProximityOfTarget(position.x, position.y, player->getPosition().x, player->getPosition().y,
                                        WANDER_DISTANCE))
         {
             moveToDestination(deltaTime, player->getPosition().x, player->getPosition().y);
             if (isEnemyInProximityOfTarget(position.x, position.y, player->getPosition().x, player->getPosition().y, 24)) {
-                uint16_t playerHealth = player->getHealth();
-                int timeNowSeconds = static_cast<int>(worldClock.getElapsedTime().asSeconds());
-                bool hasPlayerBeenAttackedWithinValidTimeWindow = (timeNowSeconds < 3 || timeNowSeconds - lastTimePlayerWasHitSeconds >= 3);
-                if (playerHealth > 0 && hasPlayerBeenAttackedWithinValidTimeWindow) {
-                    // TODO RESEARCH IF WE NEED DELTA TIME SINCE WE ARE ALREADY USING WORLD CLOCK
-                    uint16_t newHealth = playerHealth - damage > 0 ? playerHealth - damage : 0;
-                    player->setHealth(newHealth);
-                    lastTimePlayerWasHitSeconds = timeNowSeconds;
-                }
+                damagePlayer(worldClock);
             }
         }
         else
@@ -67,8 +59,22 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
         uint32_t spriteSheetLeft = entityDimRect.left == (startingAnimationPosition.x + (ENEMY_WIDTH * 2))
                 ? startingAnimationPosition.x
                 : entityDimRect.left + ENEMY_WIDTH;
-        std::cout << spriteSheetTop << ", " << spriteSheetLeft << '\n';
         updateAnimation(worldClock, spriteSheetTop, spriteSheetLeft);
+    }
+}
+
+void Enemy::damagePlayer(const sf::Clock& worldClock)
+{
+    uint16_t playerHealth = player->getHealth();
+    int timeNowSeconds = static_cast<int>(worldClock.getElapsedTime().asSeconds());
+    bool hasPlayerBeenAttackedWithinValidTimeWindow = (timeNowSeconds < 3
+            || timeNowSeconds - lastTimePlayerWasHitSeconds >= 3);
+
+    if (playerHealth > 0 && hasPlayerBeenAttackedWithinValidTimeWindow) {
+        // TODO RESEARCH IF WE NEED DELTA TIME SINCE WE ARE ALREADY USING WORLD CLOCK
+        uint16_t newHealth = playerHealth - damage > 0 ? playerHealth - damage : 0;
+        player->setHealth(newHealth);
+        lastTimePlayerWasHitSeconds = timeNowSeconds;
     }
 }
 
@@ -90,9 +96,17 @@ void Enemy::moveToDestination(const sf::Time &deltaTime, float destinationX, flo
             ? (position.y + (velocity.y * deltaTime.asSeconds()))
             : (position.y - (velocity.y * deltaTime.asSeconds()));
 
-    // TODO FIX THIS + INCLUDE DIAGONALS IN DIRECTION ENUM
-    direction = isEnemyToLeftOfDestination ? EntityDirection::RIGHT : EntityDirection::LEFT;
-    direction = isEnemyAboveDestination ? EntityDirection::DOWN : EntityDirection::UP;
+    bool isEnemyWithinRangeOfPlayerOnYAxis =
+            abs(position.y - player->getPosition().y) < HORIZONTAL_DIRECTION_WINDOW_SIZE_FOR_ENEMY_ANIMATION;
+
+    if (isEnemyWithinRangeOfPlayerOnYAxis)
+    {
+        direction = isEnemyToLeftOfDestination ? EntityDirection::RIGHT : EntityDirection::LEFT;
+    }
+    else
+    {
+        direction = isEnemyAboveDestination ? EntityDirection::DOWN : EntityDirection::UP;
+    }
 
     position.x = positionDeltaX;
     position.y = positionDeltaY;

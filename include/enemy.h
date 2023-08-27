@@ -12,6 +12,7 @@ static constexpr uint8_t ENEMY_HEIGHT = 32;
 static constexpr uint32_t WANDER_DISTANCE = 256;
 static constexpr float ENEMY_SCALE_FACTOR = 0.75;
 static constexpr float ENEMY_SPEED = 45.0f;
+static constexpr int HORIZONTAL_DIRECTION_WINDOW_SIZE_FOR_ENEMY_ANIMATION = 20;
 
 class Enemy : public GameEntity
 {
@@ -41,6 +42,7 @@ class Enemy : public GameEntity
         static bool isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX, float targetLocationY,
                                         uint32_t distance);
         void moveToDestination(const sf::Time &deltaTime, float destinationX, float destinationY);
+        void damagePlayer(const sf::Clock& worldClock);
 
         std::shared_ptr<Player> player;
 
@@ -50,4 +52,5 @@ class Enemy : public GameEntity
         // TODO Move me to parent class?
         uint32_t enemySpritePositionOffsetX{};
         uint32_t enemySpritePositionOffsetY{};
+
 };
