@@ -112,7 +112,7 @@ void Enemy::updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset
     sf::Time currentTime = worldClock.getElapsedTime();
     if (currentTime - animationFrameStartTime >= animationFrameDuration)
     {
-        entityDimRect.top = ENEMY_HEIGHT * spriteSheetTopOffset;
+        entityDimRect.top = spriteSheetTopOffset;
         entityDimRect.left = spriteSheetLeftOffset;
         animationFrameStartTime = currentTime;
     }
