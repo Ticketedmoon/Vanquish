@@ -31,7 +31,7 @@ class Player : public GameEntity
         uint16_t getHealth() const;
         void setHealth(uint16_t newHealth);
 
-        std::pair<uint32_t, uint32_t> findNextTileFromPlayerDirection(sf::Time& deltaTime, EntityDirection playerDir);
+        sf::Vector2<uint32_t> findNextTileFromPlayerDirection(sf::Time& deltaTime, EntityDirection playerDir);
 
     private:
         uint16_t health = STARTING_PLAYER_HEALTH;

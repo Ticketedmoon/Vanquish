@@ -28,7 +28,7 @@ void Player::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
     renderTarget.draw(entitySprite);
 }
 
-std::pair<uint32_t, uint32_t> Player::findNextTileFromPlayerDirection(sf::Time& deltaTime, EntityDirection direction)
+sf::Vector2<uint32_t> Player::findNextTileFromPlayerDirection(sf::Time& deltaTime, EntityDirection direction)
 {
     float nextPlayerX = position.x;
     float nextPlayerY = position.y;
@@ -52,7 +52,7 @@ std::pair<uint32_t, uint32_t> Player::findNextTileFromPlayerDirection(sf::Time& 
     
     uint32_t nextTileX = std::floor((nextPlayerX+playerSpritePositionOffsetX)/PLAYER_WIDTH);
     uint32_t nextTileY = std::floor((nextPlayerY+playerSpritePositionOffsetY)/PLAYER_HEIGHT);
-    return std::pair{nextTileX, nextTileY};
+    return {nextTileX, nextTileY};
 }
 
 void Player::updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTop, uint32_t spriteSheetLeft)

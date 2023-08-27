@@ -66,8 +66,14 @@ class GameEntity : public GameComponent
         sf::Time animationFrameDuration{ sf::seconds(1.f / 6.f) }; // 3 frames per second
 
     private:
-        static std::pair<float, float> getNextCoordinatePositionWithNextVelocity(const sf::Time &deltaTime,
-                                                                          uint32_t tileMapWidth,
-                                                                          float positionForCoordinate,
-                                                                          float velocityForCoordinate);
+        struct NextCoordinateVelocityPair
+        {
+            float coordinatePosition;
+            float velocity;
+        };
+
+        static NextCoordinateVelocityPair getNextCoordinatePositionWithNextVelocity(const sf::Time &deltaTime,
+                                                                                    uint32_t tileMapWidth,
+                                                                                    float positionForCoordinate,
+                                                                                    float velocityForCoordinate);
 };

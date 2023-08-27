@@ -48,25 +48,25 @@ void GameEntity::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32
 
     if (direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT)
     {
-        std::pair<float, float> nextXCoordinateWithVelocity =
+        NextCoordinateVelocityPair nextCoordinatePair =
                 getNextCoordinatePositionWithNextVelocity(deltaTime, tileMapWidth, position.x, velocity.x);
-        position.x = nextXCoordinateWithVelocity.first;
-        velocity.x = nextXCoordinateWithVelocity.second;
+        position.x = nextCoordinatePair.coordinatePosition;
+        velocity.x = nextCoordinatePair.velocity;
     }
 
     if (direction == EntityDirection::UP || direction == EntityDirection::DOWN)
     {
-        std::pair<float, float> nextYCoordinateWithVelocity =
+        NextCoordinateVelocityPair nextCoordinatePair =
                 getNextCoordinatePositionWithNextVelocity(deltaTime, tileMapHeight, position.y, velocity.y);
-        position.y = nextYCoordinateWithVelocity.first;
-        velocity.y = nextYCoordinateWithVelocity.second;
+        position.y = nextCoordinatePair.coordinatePosition;
+        velocity.y = nextCoordinatePair.velocity;
     }
 }
 
-std::pair<float, float> GameEntity::getNextCoordinatePositionWithNextVelocity(const sf::Time &deltaTime,
-                                                                              uint32_t tileMapWidth,
-                                                                              float positionForCoordinate,
-                                                                              float velocityForCoordinate) {
+GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWithNextVelocity(const sf::Time &deltaTime,
+                                                                                             uint32_t tileMapWidth,
+                                                                                             float positionForCoordinate,
+                                                                                             float velocityForCoordinate) {
     float positionDeltaX = positionForCoordinate + (velocityForCoordinate * deltaTime.asSeconds());
     if (positionDeltaX >= 0 && positionDeltaX <static_cast<float>(tileMapWidth))
     {
@@ -78,7 +78,7 @@ std::pair<float, float> GameEntity::getNextCoordinatePositionWithNextVelocity(co
         positionForCoordinate = 0;
     }
 
-    return std::make_pair(positionForCoordinate, velocityForCoordinate);
+    return NextCoordinateVelocityPair(positionForCoordinate, velocityForCoordinate);
 }
 
 uint8_t GameEntity::getSpriteSheetAnimationOffset(EntityDirection dir)

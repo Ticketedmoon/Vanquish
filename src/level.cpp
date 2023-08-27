@@ -38,12 +38,12 @@ void Level::update(sf::Time& deltaTime, sf::Clock& worldClock)
 void Level::interactWithNode(sf::Time& deltaTime)
 {
     // TODO Create a tile object rather than a pair here?
-    std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(deltaTime, player->getDirection());
-    uint8_t nodeFacingPlayer = world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first);
+    sf::Vector2u nextPlayerFacingTile = player->findNextTileFromPlayerDirection(deltaTime, player->getDirection());
+    uint8_t nodeFacingPlayer = world.at(nextPlayerFacingTile.y).at(nextPlayerFacingTile.x);
 
     if (nodeFacingPlayer == 2 || nodeFacingPlayer == 3)
     {
-        world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first) = 0;
+        world.at(nextPlayerFacingTile.y).at(nextPlayerFacingTile.x) = 0;
 
         // TODO not ideal, fix me
         loadLevel();
@@ -80,9 +80,9 @@ void Level::checkForPlayerMovement(sf::Time& deltaTime, sf::Clock& worldClock, E
     player->setDirection(dir);
 
     // TODO Create a tile object rather than a pair here?
-    std::pair<uint32_t, uint32_t> nextPlayerFacingTile = player->findNextTileFromPlayerDirection(deltaTime, dir);
+    sf::Vector2u nextPlayerFacingTile = player->findNextTileFromPlayerDirection(deltaTime, dir);
 
-    if (world.at(nextPlayerFacingTile.second).at(nextPlayerFacingTile.first))
+    if (world.at(nextPlayerFacingTile.y).at(nextPlayerFacingTile.x))
     {
         // Reset player velocity if they bump into an obstacle;
         player->velocity = sf::Vector2f(0, 0);
