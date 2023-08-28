@@ -26,6 +26,16 @@ void GameEntity::setDirection(EntityDirection dir)
     this->direction = dir;
 }
 
+uint8_t GameEntity::getWidth() const
+{
+    return width;
+}
+
+uint8_t GameEntity::getHeight() const
+{
+    return height;
+}
+
 void GameEntity::reset()
 {
     animationFrameStartTime = sf::Time::Zero;

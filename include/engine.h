@@ -26,6 +26,7 @@
 #include "enemy.h"
 #include "level.h"
 #include "tilemap.h"
+#include "collision_manager.h"
 #include "common_constants.h"
 
 static uint32_t WINDOW_WIDTH = 1280;
@@ -60,7 +61,7 @@ class Engine {
                                   std::vector<std::shared_ptr<GameEntity>>& gameEntities,
                                   std::vector<std::shared_ptr<GameComponent>>& uiComponents);
         static void update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
-                           std::vector<std::shared_ptr<GameEntity>>& gameEntities,
+                           std::vector<std::shared_ptr<GameEntity>>& enemies,
                            std::vector<std::shared_ptr<GameComponent>>& uiComponents);
         static void render(sf::RenderWindow &window, std::vector<std::shared_ptr<GameEntity>>& gameEntities,
                            std::vector<std::shared_ptr<GameComponent>>& uiComponents);

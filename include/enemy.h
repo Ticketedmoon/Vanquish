@@ -28,15 +28,18 @@ class Enemy : public GameEntity
         // TODO ADD DELTA TIME TO CONSTRUCTOR RATHER THAN NEEDING TO PASS IT IN EACH METHOD
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
-        void updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset, uint32_t spriteSheetLeftOffset) override;
         void reset() override;
+
+        void updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset, uint32_t spriteSheetLeftOffset) override;
+        EntityType getType() override;
+        uint32_t getDamage() override;
 
         void updateEntityToRandomDirection();
 
         // TODO REFACTOR
         int entityWaitTimeBeforeMovement = std::experimental::randint(5000, 10000);
         int directionIndex = std::experimental::randint(0, 3);
-        int lastTimePlayerWasHitSeconds = 0;
+        int lastTimeEnemyAttacked = 0;
 
     private:
         static bool isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX, float targetLocationY,
@@ -47,7 +50,7 @@ class Enemy : public GameEntity
         std::shared_ptr<Player> player;
 
         // TODO IMPROVE THIS, MAKE MORE DYNAMIC
-        int damage = std::experimental::randint(5, 20);
+        uint16_t damage = std::experimental::randint(5, 20);
 
         // TODO Move me to parent class?
         uint32_t enemySpritePositionOffsetX{};

@@ -87,3 +87,14 @@ void Player::reset()
     entityDimRect = sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
     this->health = STARTING_PLAYER_HEALTH;
 }
+
+uint32_t Player::getDamage()
+{
+    // NOT IMPLEMENTED YET
+    return 0;
+}
+
+EntityType Player::getType()
+{
+    return EntityType::PLAYER;
+}

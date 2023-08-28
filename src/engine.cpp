@@ -164,6 +164,19 @@ void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
 {
     for (auto& entity : gameEntities)
     {
+        const std::shared_ptr<GameEntity>& collidedEntity = CollisionManager::compareCollisionWithEnemies(entity, gameEntities);
+        if (entity != collidedEntity && collidedEntity != nullptr)
+        {
+            if (collidedEntity->getType() == EntityType::PLAYER)
+            {
+                std::cout << "Player->Enemy collision!" << '\n';
+            }
+            else if (collidedEntity->getType() == EntityType::ENEMY)
+            {
+                std::cout << "Enemy->Enemy collision!" << '\n';
+            }
+        }
+
         entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
     }
 
@@ -172,6 +185,7 @@ void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
         entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
     }
 
+    // TODO INVESTIGATE IF WE CAN MOVE THE PLAYER UPDATE LOGIC OUT OF LEVEL
     level.update(deltaTime, worldClock);
 }
 

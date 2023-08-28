@@ -24,6 +24,12 @@ enum class EntityDirection
     RIGHT = 3
 };
 
+enum class EntityType
+{
+    PLAYER,
+    ENEMY
+};
+
 class GameEntity : public GameComponent
 {
     public:
@@ -37,6 +43,8 @@ class GameEntity : public GameComponent
         void reset() override = 0;
 
         virtual void updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTop, uint32_t spriteSheetLeft) = 0;
+        virtual EntityType getType() = 0;
+        virtual uint32_t getDamage() = 0;
 
         void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight);
         void setDirection(EntityDirection dir);
@@ -44,6 +52,9 @@ class GameEntity : public GameComponent
         sf::Vector2f getPosition();
         EntityDirection getDirection();
         uint8_t getSpriteSheetAnimationOffset(EntityDirection dir);
+
+        uint8_t getWidth() const;
+        uint8_t getHeight() const;
 
         sf::Vector2u tilePosition;
         sf::Vector2f velocity;

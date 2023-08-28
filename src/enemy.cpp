@@ -11,6 +11,13 @@ Enemy::Enemy(TextureManager& textureManager, std::shared_ptr<Player>& player, ui
     sf::Texture& texture = *(textureManager.getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY));
     entitySprite = sf::Sprite(texture, entityDimRect);
     entitySprite.scale(ENEMY_SCALE_FACTOR , ENEMY_SCALE_FACTOR);
+
+    // TEMPORARY, NICE VISUAL QUE BUT WHAT WE WANT LONG-TERM
+    // INSTEAD HIGHLIGHT THE GROUND OR NAMEPLATE OF THE ENEMY TO INDICATE POWER LEVEL (damage).
+    if (damage >= 15)
+    {
+        entitySprite.setColor(sf::Color::Red);
+    }
 }
 
 void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
@@ -67,14 +74,13 @@ void Enemy::damagePlayer(const sf::Clock& worldClock)
 {
     uint16_t playerHealth = player->getHealth();
     int timeNowSeconds = static_cast<int>(worldClock.getElapsedTime().asSeconds());
-    bool hasPlayerBeenAttackedWithinValidTimeWindow = (timeNowSeconds < 3
-            || timeNowSeconds - lastTimePlayerWasHitSeconds >= 3);
+    bool hasEnemyAttackedAfterTimeWindow = (timeNowSeconds < 3 || timeNowSeconds - lastTimeEnemyAttacked >= 3);
 
-    if (playerHealth > 0 && hasPlayerBeenAttackedWithinValidTimeWindow) {
+    if (playerHealth > 0 && hasEnemyAttackedAfterTimeWindow) {
         // TODO RESEARCH IF WE NEED DELTA TIME SINCE WE ARE ALREADY USING WORLD CLOCK
-        uint16_t newHealth = playerHealth - damage > 0 ? playerHealth - damage : 0;
+        uint16_t newHealth = playerHealth > damage ? playerHealth - damage : 0;
         player->setHealth(newHealth);
-        lastTimePlayerWasHitSeconds = timeNowSeconds;
+        lastTimeEnemyAttacked = timeNowSeconds;
     }
 }
 
@@ -147,4 +153,14 @@ void Enemy::reset() {
     entityDimRect = sf::IntRect(startingAnimationPosition.x, startingAnimationPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT);
     enemySpritePositionOffsetY = std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT);
     enemySpritePositionOffsetX = enemySpritePositionOffsetY * 0.5f;
+}
+
+uint32_t Enemy::getDamage()
+{
+    return damage;
+}
+
+EntityType Enemy::getType()
+{
+    return EntityType::ENEMY;
 }

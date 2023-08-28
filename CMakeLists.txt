@@ -4,8 +4,16 @@ project(vanquish)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(IS_RELEASE_MODE FALSE)
+
 # Note: This compiler optimisation may break debugging.
-set(CXXFLAGS  "-Wall -std=c++${CMAKE_CXX_STANDARD} -I./include -I./libs/headers -g -O2")
+if (IS_RELEASE_MODE)
+    message("-- Loading release build, compiler optimisations set")
+    set(CXXFLAGS  "-Wall -std=c++${CMAKE_CXX_STANDARD} -I./include -I./libs/headers -g -O2")
+else()
+    message("-- Loading debug build, compiler optimisations disabled")
+    set(CXXFLAGS  "-Wall -std=c++${CMAKE_CXX_STANDARD} -I./include -I./libs/headers")
+endif ()
 set(CMAKE_CXX_FLAGS "${CXXFLAGS}")
 
 message("-- C++ Version Found " = " ${CMAKE_CXX_STANDARD}")
