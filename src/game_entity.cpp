@@ -11,12 +11,12 @@ GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f 
 {
 }
 
-sf::Vector2f GameEntity::getPosition()
+sf::Vector2f GameEntity::getPosition() const
 {
     return position;
 }
 
-EntityDirection GameEntity::getDirection()
+EntityDirection GameEntity::getDirection() const
 {
     return direction;
 }
@@ -91,7 +91,7 @@ GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWith
     return NextCoordinateVelocityPair(positionForCoordinate, velocityForCoordinate);
 }
 
-uint8_t GameEntity::getSpriteSheetAnimationOffset(EntityDirection dir)
+uint8_t GameEntity::getSpriteSheetAnimationOffset(const EntityDirection dir) const
 {
     if (dir == EntityDirection::DOWN)
     {
@@ -112,4 +112,24 @@ uint8_t GameEntity::getSpriteSheetAnimationOffset(EntityDirection dir)
     {
         return 3;
     }
+}
+
+bool GameEntity::isColliding(const std::shared_ptr<GameEntity>& entityToCompare) const
+{
+    sf::Vector2f currGameEntityPos = this->getPosition();
+    sf::Vector2f entityToComparePos = entityToCompare->getPosition();
+
+    if ((currGameEntityPos.x + this->getWidth()) > entityToComparePos.x
+        && currGameEntityPos.x < (entityToComparePos.x + entityToCompare->getWidth())
+        && (currGameEntityPos.y + this->getHeight()) > entityToComparePos.y
+        && currGameEntityPos.y < (entityToComparePos.y + entityToCompare->getHeight())) {
+        return true;
+    }
+
+    return false;
+}
+
+void GameEntity::setSpeed(float speed)
+{
+    GameEntity::speed = speed;
 }

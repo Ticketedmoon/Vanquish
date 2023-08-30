@@ -1,6 +1,6 @@
 #include "../include/level.h"
 
-Level::Level(std::shared_ptr<Player>& player) : player(player)
+Level::Level(std::shared_ptr<Player>& player, std::vector<std::shared_ptr<GameEntity>>& entities) : player(player), entities(entities)
 {
     std::ifstream f("resources/level/forest_2.json");
     nlohmann::json data = nlohmann::json::parse(f);
@@ -55,11 +55,26 @@ void Level::debug(bool shouldClear)
     // Move to render function
     if (shouldClear)
     {
-        map.highlightPlayerTile(player->tilePosition.x, player->tilePosition.y, world.at(0).size(), sf::Color::White);
+        map.highlightTileForDebug(player, world.at(0).size(), sf::Color::White);
+        for (const auto& entity : entities)
+        {
+            if (entity->getType() != EntityType::PLAYER)
+            {
+                map.highlightTileForDebug(entity, world.at(0).size(), sf::Color::White);
+
+            }
+        }
     }
     else
     {
-        map.highlightPlayerTile(player->tilePosition.x, player->tilePosition.y, world.at(0).size(), sf::Color::Magenta);
+        map.highlightTileForDebug(player, world.at(0).size(), sf::Color{0, 196, 128, 255});
+        for (const auto& entity : entities)
+        {
+            if (entity->getType() != EntityType::PLAYER)
+            {
+                map.highlightTileForDebug(entity, world.at(0).size(), sf::Color{255, 64, 128, 255});
+            }
+        }
     }
 }
 

@@ -65,15 +65,15 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std:
 
 // Debug feature
 // TODO put execution in separate thread?
-void TileMap::highlightPlayerTile(uint32_t tileX, uint32_t tileY, uint32_t levelWidth, sf::Color tileColour)
+void TileMap::highlightTileForDebug(const std::shared_ptr<GameEntity>& entity, uint32_t levelWidth, sf::Color tileColour)
 {
-    uint32_t currTilePos = tileX + (tileY * levelWidth);
+    uint32_t currTilePos = entity->tilePosition.x + (entity->tilePosition.y * levelWidth);
 
-    if (previousTilePosition != currTilePos)
+    if (previousEntityTilePosition.contains(entity) && previousEntityTilePosition.at(entity) != currTilePos)
     {
         for (int i = 0; i < TOTAL_VERTICES_IN_TILE; i++)
         {
-            m_vertices[previousTilePosition * TOTAL_VERTICES_IN_TILE + i].color = sf::Color::White;
+            m_vertices[previousEntityTilePosition.at(entity) * TOTAL_VERTICES_IN_TILE + i].color = sf::Color::White;
         }
     }
 
@@ -82,7 +82,7 @@ void TileMap::highlightPlayerTile(uint32_t tileX, uint32_t tileY, uint32_t level
         m_vertices[currTilePos * TOTAL_VERTICES_IN_TILE + i].color = tileColour;
     }
 
-    previousTilePosition = currTilePos;
+    previousEntityTilePosition[entity] = currTilePos;
 }
 
 void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const

@@ -11,11 +11,12 @@
 
 #include "player.h"
 #include "tilemap.h"
+#include "enemy.h"
 
 class Level
 {
     public:
-        explicit Level(std::shared_ptr<Player>& player);
+        explicit Level(std::shared_ptr<Player>& player, std::vector<std::shared_ptr<GameEntity>>& gameEntities);
 
         void update(sf::Time& deltaTime, sf::Clock& worldClock);
         void interactWithNode(sf::Time& deltaTime);
@@ -32,4 +33,5 @@ class Level
 
         std::vector<std::vector<uint32_t>> world;
         std::shared_ptr<Player>& player;
+        std::vector<std::shared_ptr<GameEntity>>& entities;
 };

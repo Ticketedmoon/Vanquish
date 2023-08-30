@@ -28,7 +28,6 @@ class Player : public GameEntity
 
         void updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTop, uint32_t spriteSheetLeft) override;
         EntityType getType() override;
-        uint32_t getDamage() override;
 
         bool isDead() const;
         uint16_t getHealth() const;

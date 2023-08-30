@@ -11,12 +11,12 @@ void Engine::initialise()
     configureTextRendering();
 
     std::shared_ptr<Player> player = std::make_shared<Player>(textureManager);
-    Level level(player);
 
     std::vector<std::shared_ptr<GameEntity>> gameEntities;
-    gameEntities.clear();
     gameEntities.reserve(TOTAL_GAME_ENTITIES);
     initialiseGameEntities(textureManager, player, gameEntities);
+
+    Level level(player, gameEntities);
 
     std::vector<std::shared_ptr<GameComponent>> uiComponents;
     uiComponents.clear();
@@ -98,7 +98,7 @@ void Engine::initialiseGameEntities(TextureManager& textureManager, std::shared_
     double rowCountByTotalEnemies = ceil(TOTAL_ENEMIES / 4.0f);
     size_t totalRows = std::max(rowCountByTotalEnemies, static_cast<double>(1));
     size_t totalCols = totalRows == 1 ? TOTAL_ENEMIES : ceil(TOTAL_ENEMIES/2.0);
-    std::cout << "Loading enemies from sprite sheet [rows: " << totalRows << ", cols: " << totalCols << "]\n";
+    std::cout << "Loading entities from sprite sheet [rows: " << totalRows << ", cols: " << totalCols << "]\n";
 
     for (uint32_t rows = 0; rows < totalRows; rows++) {
         for (uint32_t cols = 0; cols < totalCols; cols++) {
@@ -162,21 +162,35 @@ void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
                     std::vector<std::shared_ptr<GameEntity>>& gameEntities,
                     std::vector<std::shared_ptr<GameComponent>>& uiComponents)
 {
-    for (auto& entity : gameEntities)
+    for (int i = 0; i < gameEntities.size(); i++)
     {
-        const std::shared_ptr<GameEntity>& collidedEntity = CollisionManager::compareCollisionWithEnemies(entity, gameEntities);
-        if (entity != collidedEntity && collidedEntity != nullptr)
+        const std::shared_ptr<GameEntity>& entity = gameEntities.at(i);
+
+        // TODO Investigate this
+        //      Remember: Player will never be in this new set.
+        std::set<std::shared_ptr<GameEntity>> entitiesToCompare(gameEntities.begin() + i + 1, gameEntities.end());
+        entitiesToCompare.erase(entity);
+
+        for (const auto& entityToCompare : entitiesToCompare)
         {
-            if (collidedEntity->getType() == EntityType::PLAYER)
+            if (entity->isColliding(entityToCompare))
             {
-                std::cout << "Player->Enemy collision!" << '\n';
+                entityToCompare->setSpeed(0);
+                if (entity->getType() == EntityType::PLAYER && entityToCompare->getType() == EntityType::ENEMY)
+                {
+                    std::cout << "Player->Enemy collision..." << '\n';
+                }
+                else if (entity->getType() == EntityType::ENEMY && entityToCompare->getType() == EntityType::ENEMY)
+                {
+                    std::cout << "Enemy->Enemy collision..." << '\n';
+                }
             }
-            else if (collidedEntity->getType() == EntityType::ENEMY)
+            else
             {
-                std::cout << "Enemy->Enemy collision!" << '\n';
+                // Temporary
+                entityToCompare->setSpeed(45.0);
             }
         }
-
         entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
     }
 

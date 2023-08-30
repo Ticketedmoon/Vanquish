@@ -88,12 +88,6 @@ void Player::reset()
     this->health = STARTING_PLAYER_HEALTH;
 }
 
-uint32_t Player::getDamage()
-{
-    // NOT IMPLEMENTED YET
-    return 0;
-}
-
 EntityType Player::getType()
 {
     return EntityType::PLAYER;

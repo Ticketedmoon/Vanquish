@@ -18,7 +18,7 @@ class Enemy : public GameEntity
 {
     public:
         explicit Enemy(TextureManager& textureManager, std::shared_ptr<Player>& player,
-                       uint32_t posX, uint32_t posY, int rectLeft, int rectTop);
+                       uint32_t posX, uint32_t posY, uint32_t rectLeft, uint32_t rectTop);
 
         Enemy(Enemy& enemy) : GameEntity(enemy)
         {
@@ -32,7 +32,6 @@ class Enemy : public GameEntity
 
         void updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset, uint32_t spriteSheetLeftOffset) override;
         EntityType getType() override;
-        uint32_t getDamage() override;
 
         void updateEntityToRandomDirection();
 

@@ -1,6 +1,6 @@
 #include "../include/enemy.h"
 
-Enemy::Enemy(TextureManager& textureManager, std::shared_ptr<Player>& player, uint32_t posX, uint32_t posY, int rectLeft, int rectTop)
+Enemy::Enemy(TextureManager& textureManager, std::shared_ptr<Player>& player, uint32_t posX, uint32_t posY, uint32_t rectLeft, uint32_t rectTop)
     : GameEntity(ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY_SPEED, sf::Vector2f(posX, posY),
                  sf::IntRect(rectLeft, rectTop, ENEMY_WIDTH, ENEMY_HEIGHT),
                  sf::Vector2f(rectLeft, rectTop)),
@@ -18,6 +18,9 @@ Enemy::Enemy(TextureManager& textureManager, std::shared_ptr<Player>& player, ui
     {
         entitySprite.setColor(sf::Color::Red);
     }
+
+    entitySprite.setPosition(position);
+    entitySprite.setTextureRect(entityDimRect);
 }
 
 void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
@@ -26,8 +29,6 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
     uint32_t tileUnderEnemyY = floor((position.y + enemySpritePositionOffsetY) / ENEMY_HEIGHT);
 
     tilePosition = sf::Vector2u(tileUnderEnemyX, tileUnderEnemyY);
-    entitySprite.setPosition(position);
-    entitySprite.setTextureRect(entityDimRect);
 
     // TODO REFACTOR BELOW
     int milliseconds = worldClock.getElapsedTime().asMilliseconds();
@@ -43,8 +44,7 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
         }
         else
         {
-            if (isEnemyInProximityOfTarget(position.x, position.y, spawnPosition.x,
-                                           spawnPosition.y, WANDER_DISTANCE))
+            if (isEnemyInProximityOfTarget(position.x, position.y, spawnPosition.x, spawnPosition.y, WANDER_DISTANCE))
             {
                 // Move randomly
                 updateEntityToRandomDirection();
@@ -68,6 +68,9 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
                 : entityDimRect.left + ENEMY_WIDTH;
         updateAnimation(worldClock, spriteSheetTop, spriteSheetLeft);
     }
+
+    entitySprite.setPosition(position);
+    entitySprite.setTextureRect(entityDimRect);
 }
 
 void Enemy::damagePlayer(const sf::Clock& worldClock)
@@ -90,7 +93,7 @@ void Enemy::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 }
 
 void Enemy::moveToDestination(const sf::Time &deltaTime, float destinationX, float destinationY) {
-    velocity += sf::Vector2f(ENEMY_SPEED, ENEMY_SPEED);
+    velocity += sf::Vector2f(speed, speed);
 
     bool isEnemyToLeftOfDestination = position.x < destinationX;
     float positionDeltaX = isEnemyToLeftOfDestination
@@ -153,11 +156,6 @@ void Enemy::reset() {
     entityDimRect = sf::IntRect(startingAnimationPosition.x, startingAnimationPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT);
     enemySpritePositionOffsetY = std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT);
     enemySpritePositionOffsetX = enemySpritePositionOffsetY * 0.5f;
-}
-
-uint32_t Enemy::getDamage()
-{
-    return damage;
 }
 
 EntityType Enemy::getType()

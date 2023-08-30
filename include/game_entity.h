@@ -44,14 +44,15 @@ class GameEntity : public GameComponent
 
         virtual void updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTop, uint32_t spriteSheetLeft) = 0;
         virtual EntityType getType() = 0;
-        virtual uint32_t getDamage() = 0;
 
+        // AA-BB
+        bool isColliding(const std::shared_ptr<GameEntity>& entityToCompare) const;
         void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight);
         void setDirection(EntityDirection dir);
 
-        sf::Vector2f getPosition();
-        EntityDirection getDirection();
-        uint8_t getSpriteSheetAnimationOffset(EntityDirection dir);
+        sf::Vector2f getPosition() const;
+        EntityDirection getDirection() const;
+        uint8_t getSpriteSheetAnimationOffset(const EntityDirection dir) const;
 
         uint8_t getWidth() const;
         uint8_t getHeight() const;
@@ -59,6 +60,8 @@ class GameEntity : public GameComponent
         sf::Vector2u tilePosition;
         sf::Vector2f velocity;
         sf::IntRect entityDimRect;
+
+        void setSpeed(float speed);
 
     protected:
         uint8_t width;
