@@ -65,6 +65,8 @@ class Engine {
                            std::vector<std::shared_ptr<GameComponent>>& uiComponents);
         static void render(sf::RenderWindow &window, std::vector<std::shared_ptr<GameEntity>>& gameEntities,
                            std::vector<std::shared_ptr<GameComponent>>& uiComponents);
+        static bool performEntityCollisionDetection(const std::shared_ptr<GameEntity>& entity,
+                                                    const std::vector<std::shared_ptr<GameEntity>>& gameEntities);
 
         static void centerViewOnPlayer(sf::RenderWindow& window, std::shared_ptr<Player>& player,
                                        uint32_t levelWidth,uint32_t levelHeight);

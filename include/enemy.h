@@ -1,7 +1,5 @@
 #pragma once
 
-#include <experimental/random>
-
 #include "game_entity.h"
 #include "texture_manager.h"
 #include "player.h"
@@ -33,11 +31,8 @@ class Enemy : public GameEntity
         void updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset, uint32_t spriteSheetLeftOffset) override;
         EntityType getType() override;
 
-        void updateEntityToRandomDirection();
-
         // TODO REFACTOR
         int entityWaitTimeBeforeMovement = std::experimental::randint(5000, 10000);
-        int directionIndex = std::experimental::randint(0, 3);
         int lastTimeEnemyAttacked = 0;
 
     private:

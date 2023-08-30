@@ -162,36 +162,31 @@ void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
                     std::vector<std::shared_ptr<GameEntity>>& gameEntities,
                     std::vector<std::shared_ptr<GameComponent>>& uiComponents)
 {
-    for (int i = 0; i < gameEntities.size(); i++)
+    // Consider using A* for entity pathing, or is it that overkill? = research.
+    for (const auto& entity : gameEntities)
     {
-        const std::shared_ptr<GameEntity>& entity = gameEntities.at(i);
-
-        // TODO Investigate this
-        //      Remember: Player will never be in this new set.
-        std::set<std::shared_ptr<GameEntity>> entitiesToCompare(gameEntities.begin() + i + 1, gameEntities.end());
-        entitiesToCompare.erase(entity);
-
-        for (const auto& entityToCompare : entitiesToCompare)
+        bool isEntityColliding = performEntityCollisionDetection(entity, gameEntities);
+        if (isEntityColliding)
         {
-            if (entity->isColliding(entityToCompare))
+            if (entity->getType() == EntityType::ENEMY)
             {
-                entityToCompare->setSpeed(0);
-                if (entity->getType() == EntityType::PLAYER && entityToCompare->getType() == EntityType::ENEMY)
-                {
-                    std::cout << "Player->Enemy collision..." << '\n';
-                }
-                else if (entity->getType() == EntityType::ENEMY && entityToCompare->getType() == EntityType::ENEMY)
-                {
-                    std::cout << "Enemy->Enemy collision..." << '\n';
-                }
+                // When enemy->enemy collision
+                // Have them both continue toward the player while minimising collisions.
+                // Therefore, the collision behaviour needs to be tied in with how entities move x or y.
+                // If the player is at 2,2 and the enemies 0,0 and 0,1 respectively,
+                //   enemyA can not go down / increase it's y-axis, or a collision will occur, but it can still gain
+                //   territory by moving 1 or 2 across on the x, although not the most optimal route.
+                //   We can start with this as a basic form of movement for enemies and pathfinding behaviour.
             }
-            else
+            else if (entity->getType() == EntityType::PLAYER)
             {
-                // Temporary
-                entityToCompare->setSpeed(45.0);
+                entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
             }
         }
-        entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
+        else
+        {
+            entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
+        }
     }
 
     for (auto& entity : uiComponents)
@@ -201,6 +196,28 @@ void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
 
     // TODO INVESTIGATE IF WE CAN MOVE THE PLAYER UPDATE LOGIC OUT OF LEVEL
     level.update(deltaTime, worldClock);
+}
+
+/*
+ * Note: This method is somewhat hacky, I don't like it.
+ * Come back to this at a later point when enemy pathing becomes more of a focus.
+ */
+bool Engine::performEntityCollisionDetection(const std::shared_ptr<GameEntity>& entity,
+                                             const std::vector<std::shared_ptr<GameEntity>>& gameEntities)
+{
+    std::set<std::shared_ptr<GameEntity>> entitiesToCompare(gameEntities.begin(), gameEntities.end());
+    entitiesToCompare.erase(entity);
+    bool isColliding = false;
+
+    // Can this be condensed into a single higher-order func?
+    for (const auto& entityToCompare : entitiesToCompare)
+    {
+        if (entity->isColliding(entityToCompare))
+        {
+            isColliding = true;
+        }
+    }
+    return isColliding;
 }
 
 void Engine::render(sf::RenderWindow& window, std::vector<std::shared_ptr<GameEntity>>& gameEntities,

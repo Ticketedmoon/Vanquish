@@ -47,12 +47,11 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
             if (isEnemyInProximityOfTarget(position.x, position.y, spawnPosition.x, spawnPosition.y, WANDER_DISTANCE))
             {
                 // Move randomly
-                updateEntityToRandomDirection();
                 updatePosition(deltaTime, levelWidth, levelHeight);
                 if (milliseconds > (entityWaitTimeBeforeMovement + 250))
                 {
                     entityWaitTimeBeforeMovement = std::experimental::randint(milliseconds + 5000,milliseconds + 10000);
-                    directionIndex = std::experimental::randint(0, 3);
+                    updateEntityToRandomDirection();
                 }
             }
             else
@@ -139,16 +138,6 @@ void Enemy::updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset
         entityDimRect.left = spriteSheetLeftOffset;
         animationFrameStartTime = currentTime;
     }
-}
-
-void Enemy::updateEntityToRandomDirection()
-{
-    EntityDirection newDir = directionIndex == 0
-            ? EntityDirection::UP : directionIndex == 1
-            ? EntityDirection::RIGHT : directionIndex == 2
-            ? EntityDirection::DOWN : EntityDirection::LEFT;
-
-    this->setDirection(newDir);
 }
 
 void Enemy::reset() {

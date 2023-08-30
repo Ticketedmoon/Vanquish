@@ -129,7 +129,13 @@ bool GameEntity::isColliding(const std::shared_ptr<GameEntity>& entityToCompare)
     return false;
 }
 
-void GameEntity::setSpeed(float speed)
+void GameEntity::updateEntityToRandomDirection()
 {
-    GameEntity::speed = speed;
+    int directionIndex = std::experimental::randint(0, 3);
+    EntityDirection newDir = directionIndex == 0
+            ? EntityDirection::UP : directionIndex == 1
+            ? EntityDirection::RIGHT : directionIndex == 2
+            ? EntityDirection::DOWN : EntityDirection::LEFT;
+
+    this->setDirection(newDir);
 }

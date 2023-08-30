@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <cstring>
+#include <experimental/random>
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -52,7 +53,8 @@ class GameEntity : public GameComponent
 
         sf::Vector2f getPosition() const;
         EntityDirection getDirection() const;
-        uint8_t getSpriteSheetAnimationOffset(const EntityDirection dir) const;
+        uint8_t getSpriteSheetAnimationOffset(EntityDirection dir) const;
+        void updateEntityToRandomDirection();
 
         uint8_t getWidth() const;
         uint8_t getHeight() const;
@@ -60,8 +62,6 @@ class GameEntity : public GameComponent
         sf::Vector2u tilePosition;
         sf::Vector2f velocity;
         sf::IntRect entityDimRect;
-
-        void setSpeed(float speed);
 
     protected:
         uint8_t width;
