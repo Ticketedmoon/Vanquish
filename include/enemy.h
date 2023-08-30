@@ -36,11 +36,12 @@ class Enemy : public GameEntity
         int lastTimeEnemyAttacked = 0;
 
     private:
-        static bool isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX, float targetLocationY,
-                                        uint32_t distance);
+        static bool isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX,
+                                               float targetLocationY, uint32_t distance);
         void moveToDestination(const sf::Time &deltaTime, float destinationX, float destinationY);
         void damagePlayer(const sf::Clock& worldClock);
 
+        // TODO ENEMY SHOULDN't HAVE REF TO PLAYER
         std::shared_ptr<Player> player;
 
         // TODO IMPROVE THIS, MAKE MORE DYNAMIC

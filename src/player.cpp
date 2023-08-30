@@ -8,19 +8,18 @@ Player::Player(TextureManager& textureManager)
       playerSpritePositionOffsetY((std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT)))
 {
     sf::Texture& texture = *textureManager.getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY);
-    entitySprite = sf::Sprite(texture, entityDimRect);
+    entitySprite = sf::Sprite(texture, entitySpriteSheetDimRect);
     entitySprite.scale(PLAYER_SCALE_FACTOR, PLAYER_SCALE_FACTOR);
 }
 
 void Player::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
 {
-    uint32_t tileUnderPlayerX = floor((position.x+playerSpritePositionOffsetX)/PLAYER_WIDTH);
-    uint32_t tileUnderPlayerY = floor((position.y+playerSpritePositionOffsetY)/PLAYER_HEIGHT);
+    uint32_t tileUnderPlayerX = floor((getPosition().x+playerSpritePositionOffsetX)/PLAYER_WIDTH);
+    uint32_t tileUnderPlayerY = floor((getPosition().y+playerSpritePositionOffsetY)/PLAYER_HEIGHT);
 
     tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
-
-    entitySprite.setPosition(position);
-    entitySprite.setTextureRect(entityDimRect);
+    entitySprite.setPosition(getPosition());
+    entitySprite.setTextureRect(entitySpriteSheetDimRect);
 }
 
 void Player::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
@@ -30,28 +29,27 @@ void Player::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 
 sf::Vector2<uint32_t> Player::findNextTileFromPlayerDirection(sf::Time& deltaTime, EntityDirection direction)
 {
-    float nextPlayerX = position.x;
-    float nextPlayerY = position.y;
+    sf::Vector2f nextPlayerPos = getPosition();
 
     if (direction == EntityDirection::UP)
     {
-        nextPlayerY += (velocity.y - PLAYER_SPEED) * deltaTime.asSeconds();
+        nextPlayerPos.y += (velocity.y - PLAYER_SPEED) * deltaTime.asSeconds();
     }
     if (direction == EntityDirection::DOWN)
     {
-        nextPlayerY += (velocity.y + PLAYER_SPEED) * deltaTime.asSeconds();
+        nextPlayerPos.y += (velocity.y + PLAYER_SPEED) * deltaTime.asSeconds();
     }
     if (direction == EntityDirection::LEFT)
     {
-        nextPlayerX += (velocity.x - PLAYER_SPEED) * deltaTime.asSeconds();
+        nextPlayerPos.x += (velocity.x - PLAYER_SPEED) * deltaTime.asSeconds();
     }
     if (direction == EntityDirection::RIGHT) 
     {
-        nextPlayerX += (velocity.x + PLAYER_SPEED) * deltaTime.asSeconds();
+        nextPlayerPos.x += (velocity.x + PLAYER_SPEED) * deltaTime.asSeconds();
     }
-    
-    uint32_t nextTileX = std::floor((nextPlayerX+playerSpritePositionOffsetX)/PLAYER_WIDTH);
-    uint32_t nextTileY = std::floor((nextPlayerY+playerSpritePositionOffsetY)/PLAYER_HEIGHT);
+
+    uint32_t nextTileX = std::floor((nextPlayerPos.x + playerSpritePositionOffsetX) / PLAYER_WIDTH);
+    uint32_t nextTileY = std::floor((nextPlayerPos.y + playerSpritePositionOffsetY) / PLAYER_HEIGHT);
     return {nextTileX, nextTileY};
 }
 
@@ -60,8 +58,8 @@ void Player::updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTop, uin
     sf::Time currentWorldTime = worldClock.getElapsedTime();
     if (currentWorldTime - animationFrameStartTime >= animationFrameDuration)
     {
-        entityDimRect.top = spriteSheetTop;
-        entityDimRect.left = spriteSheetLeft;
+        entitySpriteSheetDimRect.top = spriteSheetTop;
+        entitySpriteSheetDimRect.left = spriteSheetLeft;
         animationFrameStartTime = currentWorldTime;
     }
 }
@@ -84,7 +82,7 @@ bool Player::isDead() const
 void Player::reset()
 {
     GameEntity::reset();
-    entityDimRect = sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
+    entitySpriteSheetDimRect = sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
     this->health = STARTING_PLAYER_HEALTH;
 }
 

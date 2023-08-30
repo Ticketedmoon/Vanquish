@@ -80,6 +80,7 @@ void Level::debug(bool shouldClear)
 
 void Level::loadLevel()
 {
+    // TODO Fix magic number here
     if (!map.load("./resources/assets/basic_tilemap.png", sf::Vector2u(32, 32), world))
     {
         std::cout << "Failed to load tileset" << std::endl;
@@ -90,7 +91,7 @@ void Level::loadLevel()
 void Level::checkForPlayerMovement(sf::Time& deltaTime, sf::Clock& worldClock, EntityDirection dir, uint32_t spriteOffset)
 {
     uint32_t spriteSheetTop = PLAYER_HEIGHT * spriteOffset;
-    uint32_t spriteSheetLeft = (player->entityDimRect.left == (PLAYER_WIDTH * 2)) ? 0 : (player->entityDimRect.left + PLAYER_WIDTH);
+    uint32_t spriteSheetLeft = (player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 2)) ? 0 : (player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     player->updateAnimation(worldClock, spriteSheetTop, spriteSheetLeft);
     player->setDirection(dir);
 

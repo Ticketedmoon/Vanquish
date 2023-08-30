@@ -158,6 +158,17 @@ void Engine::listenForEvents(sf::RenderWindow& window, Level& level, sf::Time& d
 }
 
 // TODO Combine deltaTime and worldClock and debugCLock into single class
+
+// When enemy->enemy collision
+// Have them both continue toward the player while minimising collisions.
+// Therefore, the collision behaviour needs to be tied in with how entities move x or y.
+// If the player is at 2,2 and the enemies 0,0 and 0,1 respectively,
+//   enemyA can not go down / increase its y-axis, or a collision will occur, but it can still gain
+//   territory by moving 1 or 2 across on the x, although not the most optimal route.
+//   We can start with this as a basic form of movement for enemies and pathfinding behaviour.
+//
+// 1. If the enemy is colliding with another enemy, we need to effect one of them.
+//   e.g., in the case of 2, 1 needs to take effect, while the other continues.
 void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
                     std::vector<std::shared_ptr<GameEntity>>& gameEntities,
                     std::vector<std::shared_ptr<GameComponent>>& uiComponents)
@@ -170,23 +181,14 @@ void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
         {
             if (entity->getType() == EntityType::ENEMY)
             {
-                // When enemy->enemy collision
-                // Have them both continue toward the player while minimising collisions.
-                // Therefore, the collision behaviour needs to be tied in with how entities move x or y.
-                // If the player is at 2,2 and the enemies 0,0 and 0,1 respectively,
-                //   enemyA can not go down / increase it's y-axis, or a collision will occur, but it can still gain
-                //   territory by moving 1 or 2 across on the x, although not the most optimal route.
-                //   We can start with this as a basic form of movement for enemies and pathfinding behaviour.
+                // TBD
             }
             else if (entity->getType() == EntityType::PLAYER)
             {
-                entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
+                // TBD
             }
         }
-        else
-        {
-            entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
-        }
+        entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
     }
 
     for (auto& entity : uiComponents)
@@ -212,7 +214,7 @@ bool Engine::performEntityCollisionDetection(const std::shared_ptr<GameEntity>& 
     // Can this be condensed into a single higher-order func?
     for (const auto& entityToCompare : entitiesToCompare)
     {
-        if (entity->isColliding(entityToCompare))
+        if (entity->getSpriteGlobalBounds().intersects(entityToCompare->getSpriteGlobalBounds()))
         {
             isColliding = true;
         }

@@ -1,19 +1,15 @@
 #include "../include/game_entity.h"
 
-GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position, sf::IntRect entityDimRect,
-                       sf::Vector2f startingAnimationPosition)
+GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position,
+                       sf::IntRect entitySpriteSheetDimRect, sf::Vector2f startingAnimationPosition)
     : width(width),
       height(height),
       speed(speed),
-      position(position),
-      entityDimRect(entityDimRect),
+      entitySpriteSheetDimRect(entitySpriteSheetDimRect),
       startingAnimationPosition(startingAnimationPosition)
 {
-}
-
-sf::Vector2f GameEntity::getPosition() const
-{
-    return position;
+    setPosition(position);
+    spawnPosition = sf::Vector2f(position);
 }
 
 EntityDirection GameEntity::getDirection() const
@@ -26,20 +22,10 @@ void GameEntity::setDirection(EntityDirection dir)
     this->direction = dir;
 }
 
-uint8_t GameEntity::getWidth() const
-{
-    return width;
-}
-
-uint8_t GameEntity::getHeight() const
-{
-    return height;
-}
-
 void GameEntity::reset()
 {
     animationFrameStartTime = sf::Time::Zero;
-    position = spawnPosition;
+    setPosition(spawnPosition);
 }
 
 void GameEntity::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
@@ -59,16 +45,16 @@ void GameEntity::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32
     if (direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT)
     {
         NextCoordinateVelocityPair nextCoordinatePair =
-                getNextCoordinatePositionWithNextVelocity(deltaTime, tileMapWidth, position.x, velocity.x);
-        position.x = nextCoordinatePair.coordinatePosition;
+                getNextCoordinatePositionWithNextVelocity(deltaTime, tileMapWidth, getPosition().x, velocity.x);
+        setPosition(nextCoordinatePair.coordinatePosition, getPosition().y);
         velocity.x = nextCoordinatePair.velocity;
     }
 
     if (direction == EntityDirection::UP || direction == EntityDirection::DOWN)
     {
         NextCoordinateVelocityPair nextCoordinatePair =
-                getNextCoordinatePositionWithNextVelocity(deltaTime, tileMapHeight, position.y, velocity.y);
-        position.y = nextCoordinatePair.coordinatePosition;
+                getNextCoordinatePositionWithNextVelocity(deltaTime, tileMapHeight, getPosition().y, velocity.y);
+        setPosition(getPosition().x, nextCoordinatePair.coordinatePosition);
         velocity.y = nextCoordinatePair.velocity;
     }
 }
@@ -114,19 +100,9 @@ uint8_t GameEntity::getSpriteSheetAnimationOffset(const EntityDirection dir) con
     }
 }
 
-bool GameEntity::isColliding(const std::shared_ptr<GameEntity>& entityToCompare) const
+sf::FloatRect GameEntity::getSpriteGlobalBounds()
 {
-    sf::Vector2f currGameEntityPos = this->getPosition();
-    sf::Vector2f entityToComparePos = entityToCompare->getPosition();
-
-    if ((currGameEntityPos.x + this->getWidth()) > entityToComparePos.x
-        && currGameEntityPos.x < (entityToComparePos.x + entityToCompare->getWidth())
-        && (currGameEntityPos.y + this->getHeight()) > entityToComparePos.y
-        && currGameEntityPos.y < (entityToComparePos.y + entityToCompare->getHeight())) {
-        return true;
-    }
-
-    return false;
+    return entitySprite.getGlobalBounds();
 }
 
 void GameEntity::updateEntityToRandomDirection()

@@ -5,7 +5,7 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/System/Clock.hpp>
 
-class GameComponent : public sf::Drawable
+class GameComponent : public sf::Drawable, public sf::Transformable
 {
     public:
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override = 0;
