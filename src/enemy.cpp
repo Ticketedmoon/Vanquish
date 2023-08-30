@@ -65,7 +65,7 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
         uint32_t spriteSheetLeft = entitySpriteSheetDimRect.left == (startingAnimationPosition.x + (ENEMY_WIDTH * 2))
                 ? startingAnimationPosition.x
                 : entitySpriteSheetDimRect.left + ENEMY_WIDTH;
-        updateAnimation(worldClock, spriteSheetTop, spriteSheetLeft);
+        updateAnimation(deltaTime, spriteSheetTop, spriteSheetLeft);
     }
 
     entitySprite.setPosition(position);
@@ -129,17 +129,6 @@ bool Enemy::isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocati
                                        float targetLocationY, uint32_t distance)
 {
     return sqrt(pow(sourceLocationX - targetLocationX, 2) + pow(sourceLocationY - targetLocationY, 2)) < distance;
-}
-
-void Enemy::updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset, uint32_t spriteSheetLeftOffset)
-{
-    sf::Time currentTime = worldClock.getElapsedTime();
-    if (currentTime - animationFrameStartTime >= animationFrameDuration)
-    {
-        entitySpriteSheetDimRect.top = spriteSheetTopOffset;
-        entitySpriteSheetDimRect.left = spriteSheetLeftOffset;
-        animationFrameStartTime = currentTime;
-    }
 }
 
 void Enemy::reset() {

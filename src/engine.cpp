@@ -197,7 +197,7 @@ void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, Level& level,
     }
 
     // TODO INVESTIGATE IF WE CAN MOVE THE PLAYER UPDATE LOGIC OUT OF LEVEL
-    level.update(deltaTime, worldClock);
+    level.update(deltaTime);
 }
 
 /*

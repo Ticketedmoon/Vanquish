@@ -18,7 +18,7 @@ class Level
     public:
         explicit Level(std::shared_ptr<Player>& player, std::vector<std::shared_ptr<GameEntity>>& gameEntities);
 
-        void update(sf::Time& deltaTime, sf::Clock& worldClock);
+        void update(sf::Time& deltaTime);
         void interactWithNode(sf::Time& deltaTime);
         void debug(bool shouldClear);
 
@@ -28,8 +28,7 @@ class Level
 
     private:
         void loadLevel();
-        void checkForPlayerMovement(sf::Time& deltaTime, sf::Clock& worldClock,
-                                    EntityDirection dir, uint32_t spriteOffset);
+        void checkForPlayerMovement(sf::Time& deltaTime, EntityDirection dir);
 
         std::vector<std::vector<uint32_t>> world;
         std::shared_ptr<Player>& player;

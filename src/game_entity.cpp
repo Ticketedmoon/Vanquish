@@ -12,6 +12,17 @@ GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f 
     spawnPosition = sf::Vector2f(position);
 }
 
+void GameEntity::updateAnimation(sf::Time& deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft)
+{
+    animationFrameStartTime += deltaTime;
+    if (animationFrameStartTime >= animationFrameDuration)
+    {
+        entitySpriteSheetDimRect.top = spriteSheetTop;
+        entitySpriteSheetDimRect.left = spriteSheetLeft;
+        animationFrameStartTime = sf::Time::Zero;
+    }
+}
+
 EntityDirection GameEntity::getDirection() const
 {
     return direction;

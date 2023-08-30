@@ -26,7 +26,6 @@ class Player : public GameEntity
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
         void reset() override;
 
-        void updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTop, uint32_t spriteSheetLeft) override;
         EntityType getType() override;
 
         bool isDead() const;

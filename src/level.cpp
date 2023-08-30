@@ -9,30 +9,44 @@ Level::Level(std::shared_ptr<Player>& player, std::vector<std::shared_ptr<GameEn
 }
 
 // TODO MOVE TO ENGINE CLASS NOW THAT IT SIMPLY CHECKS KEYBOARD AND THEN CALLS A FUNC? 
-void Level::update(sf::Time& deltaTime, sf::Clock& worldClock)
+void Level::update(sf::Time& deltaTime)
 {
-    // TODO REFACTOR
-    // Cardinal movement directions
+    std::optional<uint32_t> spriteSheetTop;
+    std::optional<uint32_t> spriteSheetLeft;
+
+    // TODO/REFACTOR: Centralise these 4 blocks as they share similar characteristics.
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
-        checkForPlayerMovement(deltaTime, worldClock, EntityDirection::UP, 3);
+        checkForPlayerMovement(deltaTime, EntityDirection::UP);
+        spriteSheetTop = PLAYER_HEIGHT * 3;
+        spriteSheetLeft = (player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 2)) ? 0 : (player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     {
-        checkForPlayerMovement(deltaTime, worldClock, EntityDirection::DOWN, 0);
+        checkForPlayerMovement(deltaTime, EntityDirection::DOWN);
+        spriteSheetTop = PLAYER_HEIGHT * 0;
+        spriteSheetLeft = (player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 2)) ? 0 : (player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
-        checkForPlayerMovement(deltaTime, worldClock, EntityDirection::LEFT, 1);
+        checkForPlayerMovement(deltaTime, EntityDirection::LEFT);
+        spriteSheetTop = PLAYER_HEIGHT * 1;
+        spriteSheetLeft = (player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 2)) ? 0 : (player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
-        checkForPlayerMovement(deltaTime, worldClock, EntityDirection::RIGHT, 2);
+        checkForPlayerMovement(deltaTime, EntityDirection::RIGHT);
+        spriteSheetTop = PLAYER_HEIGHT * 2;
+        spriteSheetLeft = (player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 2)) ? 0 : (player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
+    if (spriteSheetTop.has_value() && spriteSheetLeft.has_value())
+    {
+        player->updateAnimation(deltaTime, spriteSheetTop.value(), spriteSheetLeft.value());
+    }
 }
 
 void Level::interactWithNode(sf::Time& deltaTime)
@@ -88,11 +102,8 @@ void Level::loadLevel()
     }
 }
 
-void Level::checkForPlayerMovement(sf::Time& deltaTime, sf::Clock& worldClock, EntityDirection dir, uint32_t spriteOffset)
+void Level::checkForPlayerMovement(sf::Time& deltaTime, EntityDirection dir)
 {
-    uint32_t spriteSheetTop = PLAYER_HEIGHT * spriteOffset;
-    uint32_t spriteSheetLeft = (player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 2)) ? 0 : (player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
-    player->updateAnimation(worldClock, spriteSheetTop, spriteSheetLeft);
     player->setDirection(dir);
 
     // TODO Create a tile object rather than a pair here?

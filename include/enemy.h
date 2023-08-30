@@ -28,7 +28,6 @@ class Enemy : public GameEntity
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
         void reset() override;
 
-        void updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTopOffset, uint32_t spriteSheetLeftOffset) override;
         EntityType getType() override;
 
         // TODO REFACTOR

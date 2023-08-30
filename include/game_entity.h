@@ -43,7 +43,8 @@ class GameEntity : public GameComponent
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override = 0;
         void reset() override = 0;
 
-        virtual void updateAnimation(sf::Clock &worldClock, uint32_t spriteSheetTop, uint32_t spriteSheetLeft) = 0;
+        virtual void updateAnimation(sf::Time& deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft);
+
         virtual EntityType getType() = 0;
 
         void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight);

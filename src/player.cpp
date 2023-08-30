@@ -33,35 +33,26 @@ sf::Vector2<uint32_t> Player::findNextTileFromPlayerDirection(sf::Time& deltaTim
 
     if (direction == EntityDirection::UP)
     {
-        nextPlayerPos.y += (velocity.y - PLAYER_SPEED) * deltaTime.asSeconds();
+        nextPlayerPos.y += (velocity.y - speed) * deltaTime.asSeconds();
     }
     if (direction == EntityDirection::DOWN)
     {
-        nextPlayerPos.y += (velocity.y + PLAYER_SPEED) * deltaTime.asSeconds();
+        nextPlayerPos.y += (velocity.y + speed) * deltaTime.asSeconds();
     }
     if (direction == EntityDirection::LEFT)
     {
-        nextPlayerPos.x += (velocity.x - PLAYER_SPEED) * deltaTime.asSeconds();
+        nextPlayerPos.x += (velocity.x - speed) * deltaTime.asSeconds();
     }
     if (direction == EntityDirection::RIGHT) 
     {
-        nextPlayerPos.x += (velocity.x + PLAYER_SPEED) * deltaTime.asSeconds();
+        nextPlayerPos.x += (velocity.x + speed) * deltaTime.asSeconds();
     }
 
-    uint32_t nextTileX = std::floor((nextPlayerPos.x + playerSpritePositionOffsetX) / PLAYER_WIDTH);
-    uint32_t nextTileY = std::floor((nextPlayerPos.y + playerSpritePositionOffsetY) / PLAYER_HEIGHT);
+    float nextPlayerPosWithOffsetX = nextPlayerPos.x + playerSpritePositionOffsetX;
+    float nextPlayerPosWithOffsetY = nextPlayerPos.y + playerSpritePositionOffsetY;
+    uint32_t nextTileX = nextPlayerPosWithOffsetX > 0 ? std::floor(nextPlayerPosWithOffsetX / width) : 0;
+    uint32_t nextTileY = nextPlayerPosWithOffsetY > 0 ? std::floor(nextPlayerPosWithOffsetY / height) : 0;
     return {nextTileX, nextTileY};
-}
-
-void Player::updateAnimation(sf::Clock& worldClock, uint32_t spriteSheetTop, uint32_t spriteSheetLeft)
-{
-    sf::Time currentWorldTime = worldClock.getElapsedTime();
-    if (currentWorldTime - animationFrameStartTime >= animationFrameDuration)
-    {
-        entitySpriteSheetDimRect.top = spriteSheetTop;
-        entitySpriteSheetDimRect.left = spriteSheetLeft;
-        animationFrameStartTime = currentWorldTime;
-    }
 }
 
 uint16_t Player::getHealth() const
