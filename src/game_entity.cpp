@@ -71,11 +71,11 @@ void GameEntity::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32
 }
 
 GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWithNextVelocity(const sf::Time &deltaTime,
-                                                                                             uint32_t tileMapWidth,
+                                                                                             uint32_t tileMapDimensionValue,
                                                                                              float positionForCoordinate,
                                                                                              float velocityForCoordinate) {
     float positionDeltaX = positionForCoordinate + (velocityForCoordinate * deltaTime.asSeconds());
-    if (positionDeltaX >= 0 && positionDeltaX <static_cast<float>(tileMapWidth))
+    if (positionDeltaX >= 0 && positionDeltaX <static_cast<float>(tileMapDimensionValue))
     {
         positionForCoordinate = positionDeltaX;
         velocityForCoordinate *= 0.5f;
@@ -88,7 +88,8 @@ GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWith
     return NextCoordinateVelocityPair(positionForCoordinate, velocityForCoordinate);
 }
 
-uint8_t GameEntity::getSpriteSheetAnimationOffset(const EntityDirection dir) const
+// TODO REFACTOR
+ uint8_t GameEntity::getSpriteSheetAnimationOffset(const EntityDirection dir)
 {
     if (dir == EntityDirection::DOWN)
     {

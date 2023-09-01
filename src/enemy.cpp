@@ -50,7 +50,7 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
                 updatePosition(deltaTime, levelWidth, levelHeight);
                 if (milliseconds > (entityWaitTimeBeforeMovement + 250))
                 {
-                    entityWaitTimeBeforeMovement = std::experimental::randint(milliseconds + 5000,milliseconds + 10000);
+                    entityWaitTimeBeforeMovement = std::experimental::randint(milliseconds + 5000, milliseconds + 10000);
                     updateEntityToRandomDirection();
                 }
             }

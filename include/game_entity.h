@@ -51,7 +51,7 @@ class GameEntity : public GameComponent
         void setDirection(EntityDirection dir);
 
         EntityDirection getDirection() const;
-        uint8_t getSpriteSheetAnimationOffset(EntityDirection dir) const;
+        static uint8_t getSpriteSheetAnimationOffset(EntityDirection dir) ;
         void updateEntityToRandomDirection();
 
         sf::FloatRect getSpriteGlobalBounds();
@@ -83,7 +83,7 @@ class GameEntity : public GameComponent
         };
 
         static NextCoordinateVelocityPair getNextCoordinatePositionWithNextVelocity(const sf::Time &deltaTime,
-                                                                                    uint32_t tileMapWidth,
+                                                                                    uint32_t tileMapDimensionValue,
                                                                                     float positionForCoordinate,
                                                                                     float velocityForCoordinate);
 };

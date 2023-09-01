@@ -10,6 +10,7 @@ Player::Player(TextureManager& textureManager)
     sf::Texture& texture = *textureManager.getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY);
     entitySprite = sf::Sprite(texture, entitySpriteSheetDimRect);
     entitySprite.scale(PLAYER_SCALE_FACTOR, PLAYER_SCALE_FACTOR);
+    entitySprite.setPosition(getPosition());
 }
 
 void Player::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
