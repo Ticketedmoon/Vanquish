@@ -6,6 +6,7 @@ void Engine::initialise()
     configureGameWindow(window);
 
     TextureManager textureManager;
+    textureManager.addTexture(PLAYER_SPRITE_SHEET_A_KEY, PLAYER_SPRITE_SHEET_A_FILE_PATH);
     textureManager.addTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY, HUMAN_CHARACTER_SPRITE_SHEET_A_FILE_PATH);
 
     configureTextRendering();

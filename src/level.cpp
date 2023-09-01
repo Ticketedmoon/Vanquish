@@ -19,28 +19,28 @@ void Level::update(sf::Time& deltaTime)
     {
         checkForPlayerMovement(deltaTime, EntityDirection::UP);
         spriteSheetTop = PLAYER_HEIGHT * 3;
-        spriteSheetLeft = (player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 2)) ? 0 : (player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
+        spriteSheetLeft = (player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 7)) ? 0 : (player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     {
         checkForPlayerMovement(deltaTime, EntityDirection::DOWN);
         spriteSheetTop = PLAYER_HEIGHT * 0;
-        spriteSheetLeft = (player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 2)) ? 0 : (player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
+        spriteSheetLeft = (player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 7)) ? 0 : (player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
         checkForPlayerMovement(deltaTime, EntityDirection::LEFT);
         spriteSheetTop = PLAYER_HEIGHT * 1;
-        spriteSheetLeft = (player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 2)) ? 0 : (player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
+        spriteSheetLeft = (player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 7)) ? 0 : (player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
         checkForPlayerMovement(deltaTime, EntityDirection::RIGHT);
         spriteSheetTop = PLAYER_HEIGHT * 2;
-        spriteSheetLeft = (player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 2)) ? 0 : (player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
+        spriteSheetLeft = (player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 7)) ? 0 : (player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
     if (spriteSheetTop.has_value() && spriteSheetLeft.has_value())
