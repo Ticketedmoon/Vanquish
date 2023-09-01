@@ -27,6 +27,7 @@ class Enemy : public GameEntity
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
         void reset() override;
+        sf::Time getAnimationFrameDuration() override;
 
         EntityType getType() override;
 
@@ -50,4 +51,5 @@ class Enemy : public GameEntity
         uint32_t enemySpritePositionOffsetX{};
         uint32_t enemySpritePositionOffsetY{};
 
+        sf::Time animationFrameDuration{ sf::seconds(1.f / 6.f) }; // 3 frames per second
 };

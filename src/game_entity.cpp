@@ -15,7 +15,7 @@ GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f 
 void GameEntity::updateAnimation(sf::Time& deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft)
 {
     animationFrameStartTime += deltaTime;
-    if (animationFrameStartTime >= animationFrameDuration)
+    if (animationFrameStartTime >= getAnimationFrameDuration())
     {
         entitySpriteSheetDimRect.top = spriteSheetTop;
         entitySpriteSheetDimRect.left = spriteSheetLeft;

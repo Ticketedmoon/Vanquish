@@ -142,3 +142,8 @@ EntityType Enemy::getType()
 {
     return EntityType::ENEMY;
 }
+
+sf::Time Enemy::getAnimationFrameDuration()
+{
+    return animationFrameDuration;
+}

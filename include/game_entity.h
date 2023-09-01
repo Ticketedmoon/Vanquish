@@ -44,14 +44,15 @@ class GameEntity : public GameComponent
         void reset() override = 0;
 
         virtual void updateAnimation(sf::Time& deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft);
+        virtual sf::Time getAnimationFrameDuration() = 0;
 
         virtual EntityType getType() = 0;
 
         void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight);
         void setDirection(EntityDirection dir);
 
+        static uint8_t getSpriteSheetAnimationOffset(EntityDirection dir);
         EntityDirection getDirection() const;
-        static uint8_t getSpriteSheetAnimationOffset(EntityDirection dir) ;
         void updateEntityToRandomDirection();
 
         sf::FloatRect getSpriteGlobalBounds();
@@ -73,7 +74,6 @@ class GameEntity : public GameComponent
 
         sf::Vector2f startingAnimationPosition;
         sf::Time animationFrameStartTime{ sf::Time::Zero };
-        sf::Time animationFrameDuration{ sf::seconds(1.f / 6.f) }; // 3 frames per second
 
     private:
         struct NextCoordinateVelocityPair

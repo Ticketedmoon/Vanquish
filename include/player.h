@@ -7,9 +7,9 @@
 #include "texture_manager.h"
 #include "common_constants.h"
 
-inline static constexpr uint8_t PLAYER_WIDTH = 32;
-inline static constexpr uint8_t PLAYER_HEIGHT = 32;
-inline static constexpr float PLAYER_SCALE_FACTOR = 0.75;
+inline static constexpr uint8_t PLAYER_WIDTH = 48;
+inline static constexpr uint8_t PLAYER_HEIGHT = 50;
+inline static constexpr float PLAYER_SCALE_FACTOR = 0.85;
 inline static constexpr float PLAYER_SPEED = 50.0f;
 inline static constexpr uint16_t STARTING_PLAYER_HEALTH = 200;
 
@@ -26,6 +26,7 @@ class Player : public GameEntity
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
         void updateAnimation(sf::Time& deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft) override;
         void reset() override;
+        sf::Time getAnimationFrameDuration() override;
 
         EntityType getType() override;
 
@@ -40,4 +41,6 @@ class Player : public GameEntity
 
         uint32_t playerSpritePositionOffsetX;
         uint32_t playerSpritePositionOffsetY;
+
+        sf::Time animationFrameDuration{ sf::seconds(1.f / 12.f) }; // 3 frames per second
 };

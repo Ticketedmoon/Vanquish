@@ -38,7 +38,7 @@ static uint32_t APP_FRAME_RATE = 60;
 static float VIEW_ZOOM_FACTOR = 0.5;
 
 static constexpr size_t TOTAL_PLAYERS = 1;
-static constexpr size_t TOTAL_ENEMIES = 0;
+static constexpr size_t TOTAL_ENEMIES = 8;
 static constexpr size_t TOTAL_UI_COMPONENTS = 1;
 static constexpr size_t TOTAL_GAME_ENTITIES = TOTAL_PLAYERS + TOTAL_ENEMIES;
 

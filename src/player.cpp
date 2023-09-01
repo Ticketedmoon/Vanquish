@@ -7,8 +7,9 @@ Player::Player(TextureManager& textureManager)
       playerSpritePositionOffsetX((std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT) * 0.5f)),
       playerSpritePositionOffsetY((std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT)))
 {
-    sf::Texture& texture = *textureManager.getTexture(PLAYER_SPRITE_SHEET_A_KEY);
-    entitySprite = sf::Sprite(texture, entitySpriteSheetDimRect);
+    sf::Texture& textureUp = *textureManager.getTexture(PLAYER_SPRITE_SHEET_A_WALK_KEY);
+
+    entitySprite = sf::Sprite(textureUp, entitySpriteSheetDimRect);
     entitySprite.scale(PLAYER_SCALE_FACTOR, PLAYER_SCALE_FACTOR);
     entitySprite.setPosition(getPosition());
 }
@@ -92,4 +93,9 @@ void Player::updateAnimation(sf::Time& deltaTime, uint32_t spriteSheetTop, uint3
         entitySpriteSheetDimRect.left = spriteSheetLeft;
         animationFrameStartTime = sf::Time::Zero;
     }
+}
+
+sf::Time Player::getAnimationFrameDuration()
+{
+    return animationFrameDuration;
 }
