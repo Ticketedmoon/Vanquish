@@ -36,9 +36,6 @@ void Engine::startGameLoop()
 
         listenForEvents(deltaTime);
         update(deltaTime, worldClock, debugClock);
-
-        centerViewOnPlayer();
-
         render(debugClock);
 
         window.display();
@@ -121,7 +118,10 @@ void Engine::listenForEvents(sf::Time& deltaTime)
                         : GameState::PLAYING;
                 if (gameState == GameState::PLAYING)
                 {
-                    level.debug(true);
+                    level.enableEntityTileHighlightsForDebug({
+                        {EntityType::PLAYER, sf::Color::White},
+                        {EntityType::ENEMY,  sf::Color::White}
+                    });
                 }
             }
 
@@ -162,6 +162,8 @@ void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, sf::Clock& debug
 
         initialiseGameEntities();
         initialiseUserInterface();
+
+        level = Level(player, gameEntities);
     }
 }
 
@@ -172,6 +174,8 @@ void Engine::render(sf::Clock& debugClock)
         showGameOverScreen();
         return;
     }
+
+    centerViewOnPlayer();
 
     window.draw(level.getMap());
 
@@ -217,7 +221,10 @@ void Engine::startDebugView(sf::Clock& debugClock)
     debugText.setCharacterSize(12);
 
     window.draw(debugText);
-    level.debug(false);
+    level.enableEntityTileHighlightsForDebug({
+        {EntityType::PLAYER, sf::Color{0, 196, 128, 255}},
+        {EntityType::ENEMY, sf::Color{255, 64, 128, 255}}
+    });
 }
 
 void Engine::centerViewOnPlayer()

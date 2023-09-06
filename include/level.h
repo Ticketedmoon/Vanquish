@@ -22,7 +22,7 @@ class Level
 
         void update(sf::Time& deltaTime);
         void interactWithNode(sf::Time& deltaTime);
-        void debug(bool shouldClear);
+        void enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf::Color> entityTypeTileColour);
 
         uint32_t getLevelWidth();
         uint32_t getLevelHeight();

@@ -66,38 +66,17 @@ void Level::interactWithNode(sf::Time& deltaTime)
     }
 }
 
-void Level::debug(bool shouldClear)
+void Level::enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf::Color> entityTypeTileColour)
 {
-    // Move to render function
-    if (shouldClear)
-    {
-        map.highlightTileForDebug(player, world.at(0).size(), sf::Color::White);
-        for (const auto& entity : entities)
-        {
-            if (entity->getType() != EntityType::PLAYER)
-            {
-                map.highlightTileForDebug(entity, world.at(0).size(), sf::Color::White);
-
-            }
-        }
-    }
-    else
-    {
-        map.highlightTileForDebug(player, world.at(0).size(), sf::Color{0, 196, 128, 255});
-        for (const auto& entity : entities)
-        {
-            if (entity->getType() != EntityType::PLAYER)
-            {
-                map.highlightTileForDebug(entity, world.at(0).size(), sf::Color{255, 64, 128, 255});
-            }
-        }
+    for (const auto& entity: entities) {
+        sf::Color tileColour = entityTypeTileColour.at(entity->getType());
+        map.highlightTileForDebug(entity, world.at(0).size(), tileColour);
     }
 }
 
 void Level::loadLevel()
 {
-    // TODO Fix magic number here
-    if (!map.load("./resources/assets/basic_tilemap.png", sf::Vector2u(32, 32), world))
+    if (!map.load("./resources/assets/basic_tilemap.png", sf::Vector2u(TILE_SIZE, TILE_SIZE), world))
     {
         std::cout << "Failed to load tileset" << std::endl;
         return;
