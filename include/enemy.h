@@ -26,7 +26,6 @@ class Enemy : public GameEntity
         // TODO ADD DELTA TIME TO CONSTRUCTOR RATHER THAN NEEDING TO PASS IT IN EACH METHOD
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
-        void reset() override;
         sf::Time getAnimationFrameDuration() override;
 
         EntityType getType() override;

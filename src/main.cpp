@@ -4,7 +4,7 @@ int main()
 {
     std::cout << "Setting up application..." << std::endl;
     Engine engine;
-    engine.initialise();
+    engine.startGameLoop();
 
     return 0;
 }

@@ -33,12 +33,6 @@ void GameEntity::setDirection(EntityDirection dir)
     this->direction = dir;
 }
 
-void GameEntity::reset()
-{
-    animationFrameStartTime = sf::Time::Zero;
-    setPosition(spawnPosition);
-}
-
 void GameEntity::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
 {
     const float sign = direction == EntityDirection::UP || direction == EntityDirection::LEFT ? -1.0f : 1.0f;

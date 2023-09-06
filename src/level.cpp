@@ -1,6 +1,8 @@
 #include "../include/level.h"
 
-Level::Level(std::shared_ptr<Player>& player, std::vector<std::shared_ptr<GameEntity>>& entities) : player(player), entities(entities)
+
+Level::Level(std::shared_ptr<Player>& player, std::vector<std::shared_ptr<GameEntity>>& entities)
+    : player(player), entities(entities)
 {
     std::ifstream f("resources/level/forest_2.json");
     nlohmann::json data = nlohmann::json::parse(f);
@@ -127,4 +129,9 @@ uint32_t Level::getLevelWidth()
 uint32_t Level::getLevelHeight()
 {
     return this->world.size();
+}
+
+TileMap Level::getMap()
+{
+    return map;
 }

@@ -25,7 +25,6 @@ class Player : public GameEntity
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
         void updateAnimation(sf::Time& deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft) override;
-        void reset() override;
         sf::Time getAnimationFrameDuration() override;
 
         EntityType getType() override;
@@ -42,5 +41,5 @@ class Player : public GameEntity
         uint32_t playerSpritePositionOffsetX;
         uint32_t playerSpritePositionOffsetY;
 
-        sf::Time animationFrameDuration{ sf::seconds(1.f / 12.f) }; // 3 frames per second
+        sf::Time animationFrameDuration{ sf::seconds(1.f / 16.f) };
 };

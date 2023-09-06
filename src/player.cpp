@@ -16,8 +16,8 @@ Player::Player(TextureManager& textureManager)
 
 void Player::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
 {
-    uint32_t tileUnderPlayerX = floor((getPosition().x+playerSpritePositionOffsetX)/PLAYER_WIDTH);
-    uint32_t tileUnderPlayerY = floor((getPosition().y+playerSpritePositionOffsetY)/PLAYER_HEIGHT);
+    uint32_t tileUnderPlayerX = floor((getPosition().x + playerSpritePositionOffsetX) / TILE_SIZE);
+    uint32_t tileUnderPlayerY = floor((getPosition().y + playerSpritePositionOffsetY) / TILE_SIZE);
 
     tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
     entitySprite.setPosition(getPosition());
@@ -70,13 +70,6 @@ void Player::setHealth(uint16_t newHealth)
 bool Player::isDead() const
 {
     return this->health == 0;
-}
-
-void Player::reset()
-{
-    GameEntity::reset();
-    entitySpriteSheetDimRect = sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
-    this->health = STARTING_PLAYER_HEALTH;
 }
 
 EntityType Player::getType()

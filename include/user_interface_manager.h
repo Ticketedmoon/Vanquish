@@ -15,7 +15,6 @@ class UserInterfaceManager : public GameComponent
 
         void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
-        void reset() override;
 
     private:
         std::shared_ptr<Player> player;

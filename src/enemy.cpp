@@ -25,8 +25,8 @@ Enemy::Enemy(TextureManager& textureManager, std::shared_ptr<Player>& player, ui
 void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
 {
     const sf::Vector2f& position = getPosition();
-    uint32_t tileUnderEnemyX = floor((position.x + enemySpritePositionOffsetX) / ENEMY_WIDTH);
-    uint32_t tileUnderEnemyY = floor((position.y + enemySpritePositionOffsetY) / ENEMY_HEIGHT);
+    uint32_t tileUnderEnemyX = floor((position.x + enemySpritePositionOffsetX) / TILE_SIZE);
+    uint32_t tileUnderEnemyY = floor((position.y + enemySpritePositionOffsetY) / TILE_SIZE);
 
     tilePosition = sf::Vector2u(tileUnderEnemyX, tileUnderEnemyY);
 
@@ -129,13 +129,6 @@ bool Enemy::isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocati
                                        float targetLocationY, uint32_t distance)
 {
     return sqrt(pow(sourceLocationX - targetLocationX, 2) + pow(sourceLocationY - targetLocationY, 2)) < distance;
-}
-
-void Enemy::reset() {
-    GameEntity::reset();
-    entitySpriteSheetDimRect = sf::IntRect(startingAnimationPosition.x, startingAnimationPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT);
-    enemySpritePositionOffsetY = std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT);
-    enemySpritePositionOffsetX = enemySpritePositionOffsetY * 0.5f;
 }
 
 EntityType Enemy::getType()

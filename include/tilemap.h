@@ -8,14 +8,16 @@
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <vector>
+
 #include "game_entity.h"
 
 // Two triangles
-const uint32_t TOTAL_VERTICES_IN_TILE = 6;
+static constexpr uint32_t TOTAL_VERTICES_IN_TILE = 6;
 
 class TileMap : public sf::Drawable, public sf::Transformable
 {

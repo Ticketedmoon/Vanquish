@@ -8,8 +8,10 @@
 class GameComponent : public sf::Drawable, public sf::Transformable
 {
     public:
+        GameComponent() = default;
+        ~GameComponent() override = default;
+
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override = 0;
         virtual void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) = 0;
-        virtual void reset() = 0;
 
 };

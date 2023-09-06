@@ -15,9 +15,3 @@ void UserInterfaceManager::draw(sf::RenderTarget& renderTarget, sf::RenderStates
 {
     renderTarget.draw(healthBar);
 }
-
-void UserInterfaceManager::reset()
-{
-    this->healthBar = HealthBar(sf::Vector2f(player->getHealth(), 15), sf::Vector2f(20, 20), sf::Color::Green,
-            sf::Color::Black, 2.0f);
-}
