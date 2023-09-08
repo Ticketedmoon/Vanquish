@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+static uint32_t WINDOW_WIDTH = 1280;
+static uint32_t WINDOW_HEIGHT = 720;
+
 static const std::string PLAYER_SPRITE_SHEET_A_WALK_KEY = "player_sprite_sheet_walk_animation_a";
 static const std::string PLAYER_SPRITE_SHEET_WALK_FILE_PATH = "resources/assets/movement/knight_movement.png";
 

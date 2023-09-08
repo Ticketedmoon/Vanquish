@@ -106,11 +106,6 @@ GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWith
     }
 }
 
-sf::FloatRect GameEntity::getSpriteGlobalBounds()
-{
-    return entitySprite.getGlobalBounds();
-}
-
 void GameEntity::updateEntityToRandomDirection()
 {
     int directionIndex = std::experimental::randint(0, 3);
@@ -120,4 +115,14 @@ void GameEntity::updateEntityToRandomDirection()
             ? EntityDirection::DOWN : EntityDirection::LEFT;
 
     this->setDirection(newDir);
+}
+
+uint8_t GameEntity::getWidth()
+{
+    return width;
+}
+
+uint8_t GameEntity::getHeight()
+{
+    return height;
 }

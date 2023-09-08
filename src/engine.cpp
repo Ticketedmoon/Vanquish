@@ -12,7 +12,8 @@ Engine::Engine()
 
     level = Level(player, gameEntities);
 
-    configureTextRendering();
+    textManager = std::make_shared<TextManager>(window);
+    viewManager = std::make_unique<ViewManager>(window, level, textManager);
 }
 
 void Engine::initialiseUserInterface()
@@ -175,7 +176,7 @@ void Engine::render(sf::Clock& debugClock)
         return;
     }
 
-    centerViewOnPlayer();
+    viewManager->centerViewOnEntity(player);
 
     window.draw(level.getMap());
 
@@ -189,7 +190,7 @@ void Engine::render(sf::Clock& debugClock)
 
     if (gameState == GameState::DEBUG)
     {
-        startDebugView(debugClock);
+        viewManager->startDebugView(debugClock, player);
     }
 
     for (auto& entity : uiComponents)
@@ -198,84 +199,11 @@ void Engine::render(sf::Clock& debugClock)
     }
 }
 
-/*
- * TODO ADD IMPROVEMENT TO ENABLE DEBUG CODE ONLY IF CODE IS RUN IN DEBUG CONFIGURATION.
- *      WE DO NOT WANT TO HAVE DEBUG CODE IN DISTRIBUTION BUILDS.
- */
-void Engine::startDebugView(sf::Clock& debugClock)
-{
-    std::string fps = std::to_string(1.0f / debugClock.restart().asSeconds());
-    const std::string& playerPosX = std::to_string(player->getPosition().x);
-    const std::string& playerPosY = std::to_string(player->getPosition().y);
-    const std::string& playerTileX = std::to_string(player->tilePosition.x);
-    const std::string& playerTileY = std::to_string(player->tilePosition.y);
-
-    debugText.setString(
-            "fps: " + fps + "\n" +
-            "window position (x, y): " + "(" + playerPosX + ", " + playerPosY + ")" + "\n" +
-            "tile position (x, y): " + "(" + playerTileX + ", " + playerTileY + ")" + "\n"
-    );
-
-    sf::Vector2f debugTextLocation = sf::Vector2f(25, 50);
-    debugText.setPosition(debugTextLocation);
-    debugText.setCharacterSize(12);
-
-    window.draw(debugText);
-    level.enableEntityTileHighlightsForDebug({
-        {EntityType::PLAYER, sf::Color{0, 196, 128, 255}},
-        {EntityType::ENEMY, sf::Color{255, 64, 128, 255}}
-    });
-}
-
-void Engine::centerViewOnPlayer()
-{
-    // kee view centred/centered on player
-    sf::Vector2f playerPos = player->getPosition();
-    float centreX = getViewCentreForCoordinate(playerPos.x, level.getLevelWidth(), WINDOW_WIDTH, PLAYER_WIDTH);
-    float centreY = getViewCentreForCoordinate(playerPos.y, level.getLevelHeight(), WINDOW_HEIGHT, PLAYER_HEIGHT);
-
-    sf::View newView = window.getView();
-    newView.zoom(VIEW_ZOOM_FACTOR);
-    newView.setCenter(centreX, centreY);
-
-    window.setView(newView);
-}
-
-float Engine::getViewCentreForCoordinate(const float playerCoordinatePosition, const float levelDimension,
-                                         const float windowDimensionValue, const float playerDimensionValue) {
-    if (playerCoordinatePosition <= windowDimensionValue / 4)
-    {
-        return windowDimensionValue / 4;
-    }
-
-    return playerCoordinatePosition < (playerDimensionValue * levelDimension)
-        ? playerCoordinatePosition
-        : windowDimensionValue - (windowDimensionValue / 3);
-}
-
-void Engine::configureTextRendering()
-{
-    if (!font.loadFromFile(FONT_PATH))
-    {
-        std::string msg = "Failed to load font from font path: " + FONT_PATH;
-        throw new std::runtime_error(msg);
-    }
-
-    debugText.setFont(font); // font is a sf::Font
-    debugText.setCharacterSize(9); // in pixels, not points!
-    debugText.setFillColor(sf::Color::Green);
-    debugText.setOutlineColor(sf::Color::Black);
-    debugText.setOutlineThickness(2.0f);
-    debugText.setLetterSpacing(3.0f);
-}
-
 void Engine::showGameOverScreen() {
-    sf::Text sf_text = sf::Text("You have died!\nPress [SPACE] to restart", font);
     window.clear(sf::Color::Red);
-    sf_text.setFillColor(sf::Color::White);
-    sf_text.setCharacterSize(64); // in pixels, not points!
-    sf_text.setStyle(sf::Text::Bold | sf::Text::Underlined);
-    sf::FloatRect bounds = sf_text.getLocalBounds();
-    sf_text.setPosition(WINDOW_WIDTH/2 - bounds.width/2, 225);
-    window.draw(sf_text);
+    const std::string text = "You have died!\nPress [SPACE] to restart";
+
+    // TODO make this calculation using text.getLocalBounds()
+    float textPositionX = WINDOW_WIDTH / 2 - (text.size() * 0.5 * 20);
+    textManager->drawText(text, sf::Color::White, 64, sf::Vector2f(textPositionX, 255));
 }

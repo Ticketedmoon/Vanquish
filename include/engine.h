@@ -27,22 +27,17 @@
 #include "enemy.h"
 #include "level.h"
 #include "tilemap.h"
+#include "view_manager.h"
 #include "common_constants.h"
-
-static uint32_t WINDOW_WIDTH = 1280;
-static uint32_t WINDOW_HEIGHT = 720;
 
 static constexpr std::string_view WINDOW_TITLE = "vanquish";
 static bool USE_VERTICAL_SYNC = false;
 static uint32_t APP_FRAME_RATE = 60;
-static float VIEW_ZOOM_FACTOR = 0.5;
 
 static constexpr size_t TOTAL_PLAYERS = 1;
 static constexpr size_t TOTAL_ENEMIES = 8;
 static constexpr size_t TOTAL_UI_COMPONENTS = 1;
 static constexpr size_t TOTAL_GAME_ENTITIES = TOTAL_PLAYERS + TOTAL_ENEMIES;
-
-static const std::string FONT_PATH = "resources/fonts/calibri.ttf";
 
 enum class GameState
 {
@@ -66,31 +61,22 @@ class Engine {
         // Set up
         static void createGameWindow();
         static void initialiseGameEntities();
-        void configureTextRendering();
 
-        static void centerViewOnPlayer();
-        static float getViewCentreForCoordinate(float playerCoordinatePosition, float levelDimension,
-                                                float windowDimensionValue,float playerDimensionValue);
-        void showGameOverScreen();
-
-        // Debug
-        void startDebugView(sf::Clock& debugClock);
+        // TODO Move to ViewManager?
+        static void showGameOverScreen();
 
     private:
         // TODO Understand 'inline' and why it worked here
         inline static sf::RenderWindow window;
         inline static TextureManager textureManager;
+        inline static std::unique_ptr<ViewManager> viewManager;
+        inline static std::shared_ptr<TextManager> textManager; // TODO RENAME, TOO SIMILAR TO textureManager
         inline static std::shared_ptr<Player> player;
         inline static Level level;
         inline static std::vector<std::shared_ptr<GameEntity>> gameEntities;
         inline static std::vector<std::shared_ptr<GameComponent>> uiComponents;
 
         GameState gameState = GameState::PLAYING;
-
-        sf::Font font;
-
-        // Debug
-        sf::Text debugText;
 
     static void initialiseUserInterface();
 };

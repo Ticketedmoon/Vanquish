@@ -47,22 +47,20 @@ class GameEntity : public GameComponent
 
         virtual EntityType getType() = 0;
 
+        void updateEntityToRandomDirection();
         void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight);
         void setDirection(EntityDirection dir);
 
         static uint8_t getSpriteSheetAnimationOffset(EntityDirection dir);
         EntityDirection getDirection() const;
-        void updateEntityToRandomDirection();
-
-        sf::FloatRect getSpriteGlobalBounds();
+        uint8_t getWidth();
+        uint8_t getHeight();
 
         sf::Vector2u tilePosition;
         sf::Vector2f velocity;
         sf::IntRect entitySpriteSheetDimRect;
 
     protected:
-        uint8_t width;
-        uint8_t height;
         float speed;
 
         sf::Vector2f spawnPosition;
@@ -75,6 +73,9 @@ class GameEntity : public GameComponent
         sf::Time animationFrameStartTime{ sf::Time::Zero };
 
     private:
+        uint8_t width;
+        uint8_t height;
+
         struct NextCoordinateVelocityPair
         {
             float coordinatePosition;

@@ -52,8 +52,8 @@ sf::Vector2<uint32_t> Player::findNextTileFromPlayerDirection(sf::Time& deltaTim
 
     float nextPlayerPosWithOffsetX = nextPlayerPos.x + playerSpritePositionOffsetX;
     float nextPlayerPosWithOffsetY = nextPlayerPos.y + playerSpritePositionOffsetY;
-    uint32_t nextTileX = nextPlayerPosWithOffsetX > 0 ? std::floor(nextPlayerPosWithOffsetX / width) : 0;
-    uint32_t nextTileY = nextPlayerPosWithOffsetY > 0 ? std::floor(nextPlayerPosWithOffsetY / height) : 0;
+    uint32_t nextTileX = nextPlayerPosWithOffsetX > 0 ? std::floor(nextPlayerPosWithOffsetX / getWidth()) : 0;
+    uint32_t nextTileY = nextPlayerPosWithOffsetY > 0 ? std::floor(nextPlayerPosWithOffsetY / getHeight()) : 0;
     return {nextTileX, nextTileY};
 }
 
