@@ -203,7 +203,7 @@ void Engine::showGameOverScreen() {
     window.clear(sf::Color::Red);
     const std::string text = "You have died!\nPress [SPACE] to restart";
 
-    // TODO make this calculation using text.getLocalBounds()
+    // TODO - Make this calculation using text.getLocalBounds()
     float textPositionX = WINDOW_WIDTH / 2 - (text.size() * 0.5 * 20);
     textManager->drawText(text, sf::Color::White, 64, sf::Vector2f(textPositionX, 255));
 }
