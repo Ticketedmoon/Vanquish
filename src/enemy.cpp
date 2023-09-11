@@ -1,14 +1,14 @@
 #include "../include/enemy.h"
 
-Enemy::Enemy(TextureManager& textureManager, std::shared_ptr<Player>& player, uint32_t posX, uint32_t posY, uint32_t rectLeft, uint32_t rectTop)
+Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Player>& player, uint32_t posX, uint32_t posY, uint32_t rectLeft, uint32_t rectTop)
     : GameEntity(ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY_SPEED, sf::Vector2f(posX, posY),
                  sf::IntRect(rectLeft, rectTop, ENEMY_WIDTH, ENEMY_HEIGHT),
-                 sf::Vector2f(rectLeft, rectTop)),
+                 sf::Vector2f(rectLeft, rectTop), STARTING_ENEMY_HEALTH),
       player(player),
       enemySpritePositionOffsetX((std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT) * 0.5f)),
       enemySpritePositionOffsetY((std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT)))
 {
-    sf::Texture& texture = *(textureManager.getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY));
+    sf::Texture& texture = *(textureManager->getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY));
     entitySprite = sf::Sprite(texture, entitySpriteSheetDimRect);
     entitySprite.scale(ENEMY_SCALE_FACTOR , ENEMY_SCALE_FACTOR);
     entitySprite.setPosition(getPosition());

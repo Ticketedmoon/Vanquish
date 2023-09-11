@@ -35,7 +35,7 @@ class GameEntity : public GameComponent
 {
     public:
         GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position, sf::IntRect entitySpriteSheetDimRect,
-                   sf::Vector2f startingAnimationPosition);
+                   sf::Vector2f startingAnimationPosition, uint16_t health);
         ~GameEntity() override = default;
 
         // Not necessary to add virtual here to maintain pure-virtual function as parent method is pure-virtual.
@@ -53,8 +53,12 @@ class GameEntity : public GameComponent
 
         static uint8_t getSpriteSheetAnimationOffset(EntityDirection dir);
         EntityDirection getDirection() const;
-        uint8_t getWidth();
-        uint8_t getHeight();
+        uint8_t getWidth() const;
+        uint8_t getHeight() const;
+
+        bool isDead() const;
+        uint16_t getHealth() const;
+        void setHealth(uint16_t newHealth);
 
         sf::Vector2u tilePosition;
         sf::Vector2f velocity;
@@ -73,6 +77,7 @@ class GameEntity : public GameComponent
         sf::Time animationFrameStartTime{ sf::Time::Zero };
 
     private:
+        uint16_t health;
         uint8_t width;
         uint8_t height;
 

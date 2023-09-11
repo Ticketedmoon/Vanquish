@@ -1,13 +1,13 @@
 #include "../include/player.h"
 
-Player::Player(TextureManager& textureManager)
+Player::Player(std::shared_ptr<TextureManager>& textureManager)
     : GameEntity(PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, sf::Vector2f(300, 150),
                  sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT),
-                 sf::Vector2f(0, 0)),
+                 sf::Vector2f(0, 0), STARTING_PLAYER_HEALTH),
       playerSpritePositionOffsetX((std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT) * 0.5f)),
       playerSpritePositionOffsetY((std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT)))
 {
-    sf::Texture& textureUp = *textureManager.getTexture(PLAYER_SPRITE_SHEET_A_WALK_KEY);
+    sf::Texture& textureUp = *textureManager->getTexture(PLAYER_SPRITE_SHEET_A_WALK_KEY);
 
     entitySprite = sf::Sprite(textureUp, entitySpriteSheetDimRect);
     entitySprite.scale(PLAYER_SCALE_FACTOR, PLAYER_SCALE_FACTOR);
@@ -55,21 +55,6 @@ sf::Vector2<uint32_t> Player::findNextTileFromPlayerDirection(sf::Time& deltaTim
     uint32_t nextTileX = nextPlayerPosWithOffsetX > 0 ? std::floor(nextPlayerPosWithOffsetX / getWidth()) : 0;
     uint32_t nextTileY = nextPlayerPosWithOffsetY > 0 ? std::floor(nextPlayerPosWithOffsetY / getHeight()) : 0;
     return {nextTileX, nextTileY};
-}
-
-uint16_t Player::getHealth() const
-{
-    return this->health;
-}
-
-void Player::setHealth(uint16_t newHealth)
-{
-    this->health = newHealth;
-}
-
-bool Player::isDead() const
-{
-    return this->health == 0;
 }
 
 EntityType Player::getType()

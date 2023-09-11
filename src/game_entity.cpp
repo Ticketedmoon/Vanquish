@@ -1,12 +1,13 @@
 #include "../include/game_entity.h"
 
 GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position,
-                       sf::IntRect entitySpriteSheetDimRect, sf::Vector2f startingAnimationPosition)
-    : width(width),
-      height(height),
+                       sf::IntRect entitySpriteSheetDimRect, sf::Vector2f startingAnimationPosition, uint16_t health)
+    : entitySpriteSheetDimRect(entitySpriteSheetDimRect),
       speed(speed),
-      entitySpriteSheetDimRect(entitySpriteSheetDimRect),
-      startingAnimationPosition(startingAnimationPosition)
+      startingAnimationPosition(startingAnimationPosition),
+      health(health),
+      width(width),
+      height(height)
 {
     setPosition(position);
     spawnPosition = sf::Vector2f(position);
@@ -83,24 +84,21 @@ GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWith
 }
 
 // TODO REFACTOR
- uint8_t GameEntity::getSpriteSheetAnimationOffset(const EntityDirection dir)
+uint8_t GameEntity::getSpriteSheetAnimationOffset(const EntityDirection dir)
 {
     if (dir == EntityDirection::DOWN)
     {
         return 0;
     }
-
-    if (dir == EntityDirection::LEFT)
+    else if (dir == EntityDirection::LEFT)
     {
         return 1;
     }
-
-    if (dir == EntityDirection::RIGHT)
+    else if (dir == EntityDirection::RIGHT)
     {
         return 2;
     }
-
-    if (dir == EntityDirection::UP)
+    else
     {
         return 3;
     }
@@ -117,12 +115,27 @@ void GameEntity::updateEntityToRandomDirection()
     this->setDirection(newDir);
 }
 
-uint8_t GameEntity::getWidth()
+uint8_t GameEntity::getWidth() const
 {
     return width;
 }
 
-uint8_t GameEntity::getHeight()
+uint8_t GameEntity::getHeight() const
 {
     return height;
+}
+
+uint16_t GameEntity::getHealth() const
+{
+    return this->health;
+}
+
+void GameEntity::setHealth(uint16_t newHealth)
+{
+    this->health = newHealth;
+}
+
+bool GameEntity::isDead() const
+{
+    return this->health == 0;
 }

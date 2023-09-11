@@ -4,31 +4,21 @@ Engine::Engine()
 {
     createGameWindow();
 
-    textureManager.addTexture(PLAYER_SPRITE_SHEET_A_WALK_KEY, PLAYER_SPRITE_SHEET_WALK_FILE_PATH);
-    textureManager.addTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY, HUMAN_CHARACTER_SPRITE_SHEET_A_FILE_PATH);
+    textureManager = std::make_shared<TextureManager>();
+    textureManager->addTexture(PLAYER_SPRITE_SHEET_A_WALK_KEY, PLAYER_SPRITE_SHEET_WALK_FILE_PATH);
+    textureManager->addTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY, HUMAN_CHARACTER_SPRITE_SHEET_A_FILE_PATH);
 
     player = std::make_shared<Player>(textureManager);
-    level = Level(player);
-
-    initialiseGameEntities();
-
-    initialiseUserInterface();
+    level = Level(player, textureManager);
 
     textManager = std::make_shared<TextManager>(window);
+    userInterfaceManager = std::make_shared<UserInterfaceManager>(player);
     viewManager = std::make_unique<ViewManager>(window, level, textManager);
-}
-
-void Engine::initialiseUserInterface()
-{
-    uiComponents.clear();
-    uiComponents.reserve(TOTAL_UI_COMPONENTS);
-    uiComponents.emplace_back(std::make_unique<UserInterfaceManager>(player));
+    debugManager = std::make_unique<DebugManager>(player, level, textManager);
 }
 
 void Engine::startGameLoop()
 {
-    sf::Clock worldClock;
-    sf::Clock debugClock;
     sf::Clock deltaClock;
 
     while (window.isOpen())
@@ -38,8 +28,8 @@ void Engine::startGameLoop()
         window.clear();
 
         listenForEvents(deltaTime);
-        update(deltaTime, worldClock, debugClock);
-        render(debugClock);
+        update(deltaTime, worldClock);
+        render();
 
         window.display();
     }
@@ -64,37 +54,6 @@ void Engine::createGameWindow()
     }
 }
 
-void Engine::initialiseGameEntities()
-{
-    gameEntities.clear();
-    gameEntities.reserve(TOTAL_GAME_ENTITIES);
-    gameEntities.push_back(player);
-
-    // Load all characters on sprite sheet into memory.
-    double rowCountByTotalEnemies = ceil(TOTAL_ENEMIES / 4.0f);
-    size_t totalRows = std::max(rowCountByTotalEnemies, static_cast<double>(1));
-    size_t totalCols = totalRows == 1 ? TOTAL_ENEMIES : ceil(TOTAL_ENEMIES/2.0);
-    std::cout << "Loading entities from sprite sheet [rows: " << totalRows << ", cols: " << totalCols << "]\n";
-
-    for (uint32_t rows = 0; rows < totalRows; rows++) {
-        for (uint32_t cols = 0; cols < totalCols; cols++) {
-            if ((rows*4) + cols >= TOTAL_ENEMIES) return;
-
-            uint32_t enemyRectLeft = ENEMY_WIDTH * (3 * cols);
-            uint32_t enemyRectTop = ENEMY_HEIGHT * (4 * rows);
-
-            // Note: These positions are temporary.
-            uint32_t enemyX = std::experimental::randint(TILE_SIZE, (TILE_SIZE-1) * level.getLevelWidth());
-            uint32_t enemyY = std::experimental::randint(TILE_SIZE, (TILE_SIZE-1) * level.getLevelHeight());
-
-            gameEntities.emplace_back(
-                    std::make_shared<Enemy>(textureManager, player, enemyX, enemyY, enemyRectLeft, enemyRectTop));
-        }
-    }
-
-    level.setEntitiesForLevel(gameEntities);
-}
-
 // TODO We could make a nice improvement here where we take a map of {Keyboard::Key -> function ptr} and we simply
 //      iterate over each during inner loop.
 void Engine::listenForEvents(sf::Time& deltaTime)
@@ -107,20 +66,21 @@ void Engine::listenForEvents(sf::Time& deltaTime)
             window.close();
         }
 
-        if (event.type == sf::Event::KeyPressed)
+        if (event.type == sf::Event::KeyReleased)
         {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+            if (event.key.code == sf::Keyboard::Space)
             {
                 level.interactWithNode(deltaTime);
             }
 
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::SemiColon))
+            if (event.key.code == sf::Keyboard::SemiColon)
             {
                 gameState = gameState == GameState::PLAYING
                         ? GameState::DEBUG
                         : GameState::PLAYING;
                 if (gameState == GameState::PLAYING)
                 {
+                    // Clear tiles of highlighting
                     level.enableEntityTileHighlightsForDebug({
                         {EntityType::PLAYER, sf::Color::White},
                         {EntityType::ENEMY,  sf::Color::White}
@@ -128,50 +88,42 @@ void Engine::listenForEvents(sf::Time& deltaTime)
                 }
             }
 
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+            if (event.key.code == sf::Keyboard::Space)
             {
                 if (gameState == GameState::GAME_OVER)
                 {
+                    // Restart
                     gameState = GameState::PLAYING;
                 }
             }
-        
+
         }
     }
 }
 
 // TODO Combine deltaTime and worldClock and debugCLock into single class
-void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, sf::Clock& debugClock)
+void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock)
 {
-    // Consider using A* for entity pathing, or is it that overkill? = research.
-    for (const auto& entity : gameEntities)
-    {
-        entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
-    }
-
-    for (auto& entity : uiComponents)
-    {
-        entity->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
-    }
+    userInterfaceManager->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
 
     // TODO INVESTIGATE IF WE CAN MOVE THE PLAYER UPDATE LOGIC OUT OF LEVEL
-    level.update(deltaTime);
+    // TODO ALSO, WE'RE PASSING LEVEL info into level here, this is bad - refactor.
+    level.update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
 
     if (player->isDead())
     {
         gameState = GameState::GAME_OVER;
         worldClock.restart();
-        debugClock.restart();
 
         player = std::make_shared<Player>(textureManager);
-        level = Level(player);
-
-        initialiseGameEntities();
-        initialiseUserInterface();
+        level = Level(player, textureManager);
+        viewManager = std::make_unique<ViewManager>(window, level, textManager);
+        userInterfaceManager = std::make_unique<UserInterfaceManager>(player);
+        debugManager = std::make_unique<DebugManager>(player, level, textManager);
     }
 }
 
-void Engine::render(sf::Clock& debugClock)
+void Engine::render()
 {
     if (gameState == GameState::GAME_OVER)
     {
@@ -180,25 +132,12 @@ void Engine::render(sf::Clock& debugClock)
     }
 
     viewManager->centerViewOnEntity(player);
-
-    window.draw(level.getMap());
-
-    for (auto& entity : gameEntities)
-    {
-        entity->draw(window, sf::RenderStates::Default);
-    }
-
-    // Update view to default and render UI
-    window.setView(window.getDefaultView());
+    level.draw(window, sf::RenderStates::Default);
+    userInterfaceManager->render(window, sf::RenderStates::Default, gameState);
 
     if (gameState == GameState::DEBUG)
     {
-        viewManager->startDebugView(debugClock, player);
-    }
-
-    for (auto& entity : uiComponents)
-    {
-        entity->draw(window, sf::RenderStates::Default);
+        debugManager->render(window, sf::RenderStates::Default, gameState);
     }
 }
 

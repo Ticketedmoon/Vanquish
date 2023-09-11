@@ -12,10 +12,12 @@ static constexpr float ENEMY_SCALE_FACTOR = 0.75;
 static constexpr float ENEMY_SPEED = 45.0f;
 static constexpr int HORIZONTAL_DIRECTION_WINDOW_SIZE_FOR_ENEMY_ANIMATION = 20;
 
+inline static constexpr uint16_t STARTING_ENEMY_HEALTH = 50;
+
 class Enemy : public GameEntity
 {
     public:
-        explicit Enemy(TextureManager& textureManager, std::shared_ptr<Player>& player,
+        explicit Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Player>& player,
                        uint32_t posX, uint32_t posY, uint32_t rectLeft, uint32_t rectTop);
 
         Enemy(Enemy& enemy) : GameEntity(enemy)

@@ -1,7 +1,8 @@
 #include "user_interface/health_bar.h"
 
-HealthBar::HealthBar(sf::Vector2f dimensions, sf::Vector2f position, sf::Color fillColor, sf::Color outlineColour,
-                     float outlineThickness)
+HealthBar::HealthBar(std::shared_ptr<GameEntity>& entity, sf::Vector2f dimensions, sf::Vector2f position,
+                     sf::Color fillColor, sf::Color outlineColour, float outlineThickness)
+                     : entity(entity)
 {
     healthBarBackground = sf::RectangleShape(dimensions);
     healthBarBackground.setPosition(position);
@@ -16,9 +17,9 @@ HealthBar::HealthBar(sf::Vector2f dimensions, sf::Vector2f position, sf::Color f
     healthBar.setOutlineThickness(outlineThickness);
 }
 
-void HealthBar::update(uint16_t healthValue)
+void HealthBar::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
 {
-    sf::Vector2f newSize = sf::Vector2f(healthValue, healthBar.getSize().y);
+    sf::Vector2f newSize = sf::Vector2f(entity->getHealth(), healthBar.getSize().y);
     healthBar.setSize(newSize);
 }
 

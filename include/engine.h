@@ -30,22 +30,15 @@
 #include "tilemap.h"
 #include "view_manager.h"
 #include "common_constants.h"
+#include "debug/debug_manager.h"
 
 static constexpr std::string_view WINDOW_TITLE = "vanquish";
-static bool USE_VERTICAL_SYNC = false;
-static uint32_t APP_FRAME_RATE = 60;
+static const bool USE_VERTICAL_SYNC = false;
+static const uint32_t APP_FRAME_RATE = 60;
 
 static constexpr size_t TOTAL_PLAYERS = 1;
 static constexpr size_t TOTAL_ENEMIES = 8;
-static constexpr size_t TOTAL_UI_COMPONENTS = 1;
 static constexpr size_t TOTAL_GAME_ENTITIES = TOTAL_PLAYERS + TOTAL_ENEMIES;
-
-enum class GameState
-{
-    PLAYING,
-    GAME_OVER,
-    DEBUG
-};
 
 class Engine {
 
@@ -55,13 +48,12 @@ class Engine {
 
     private:
         // Game loop logic
-        void update(sf::Time& deltaTime, sf::Clock& worldClock, sf::Clock& debugClock);
-        void render(sf::Clock& debugClock);
+        void update(sf::Time& deltaTime, sf::Clock& worldClock);
+        void render();
         void listenForEvents(sf::Time& deltaTime);
 
         // Set up
         static void createGameWindow();
-        static void initialiseGameEntities();
 
         // TODO Move to ViewManager?
         static void showGameOverScreen();
@@ -69,15 +61,14 @@ class Engine {
     private:
         // TODO Understand 'inline' and why it worked here
         inline static sf::RenderWindow window;
-        inline static TextureManager textureManager;
+        inline static std::shared_ptr<TextureManager> textureManager;
         inline static std::unique_ptr<ViewManager> viewManager;
         inline static std::shared_ptr<TextManager> textManager; // TODO RENAME, TOO SIMILAR TO textureManager
+        inline static std::unique_ptr<DebugManager> debugManager;
+        inline static std::shared_ptr<UserInterfaceManager> userInterfaceManager;
         inline static std::shared_ptr<Player> player;
         inline static Level level;
-        inline static std::vector<std::shared_ptr<GameEntity>> gameEntities;
-        inline static std::vector<std::shared_ptr<GameComponent>> uiComponents;
 
         GameState gameState = GameState::PLAYING;
-
-    static void initialiseUserInterface();
+        sf::Clock worldClock;
 };

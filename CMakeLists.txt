@@ -33,8 +33,10 @@ endif ()
 
 file(GLOB GAME_SOURCES "src/*.cpp")
 file(GLOB UI_SOURCES "src/user_interface/*.cpp")
+file(GLOB DEBUG_SOURCES "src/debug/*.cpp")
+
 file(COPY resources DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
-add_executable(${PROJECT_NAME} ${GAME_SOURCES} ${UI_SOURCES})
+add_executable(${PROJECT_NAME} ${GAME_SOURCES} ${UI_SOURCES} ${DEBUG_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_BINARY_DIR}")
 target_include_directories(${PROJECT_NAME} PRIVATE include)
