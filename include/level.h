@@ -18,12 +18,13 @@ class Level
 {
     public:
         Level() = default;
-        Level(std::shared_ptr<Player>& player, std::vector<std::shared_ptr<GameEntity>>& gameEntities);
+        Level(std::shared_ptr<Player>& player);
 
         void update(sf::Time& deltaTime);
         void interactWithNode(sf::Time& deltaTime);
         void enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf::Color> entityTypeTileColour);
 
+        void setEntitiesForLevel(std::vector<std::shared_ptr<GameEntity>>& gameEntities);
         uint32_t getLevelWidth();
         uint32_t getLevelHeight();
         TileMap getMap();

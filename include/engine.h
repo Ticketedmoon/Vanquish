@@ -20,6 +20,7 @@
 #include <cstring>
 #include <vector>
 #include <set>
+#include <experimental/random>
 
 #include "texture_manager.h"
 #include "user_interface_manager.h"

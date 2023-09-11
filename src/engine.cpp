@@ -7,10 +7,12 @@ Engine::Engine()
     textureManager.addTexture(PLAYER_SPRITE_SHEET_A_WALK_KEY, PLAYER_SPRITE_SHEET_WALK_FILE_PATH);
     textureManager.addTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY, HUMAN_CHARACTER_SPRITE_SHEET_A_FILE_PATH);
 
-    initialiseGameEntities();
-    initialiseUserInterface();
+    player = std::make_shared<Player>(textureManager);
+    level = Level(player);
 
-    level = Level(player, gameEntities);
+    initialiseGameEntities();
+
+    initialiseUserInterface();
 
     textManager = std::make_shared<TextManager>(window);
     viewManager = std::make_unique<ViewManager>(window, level, textManager);
@@ -64,8 +66,6 @@ void Engine::createGameWindow()
 
 void Engine::initialiseGameEntities()
 {
-    player = std::make_shared<Player>(textureManager);
-
     gameEntities.clear();
     gameEntities.reserve(TOTAL_GAME_ENTITIES);
     gameEntities.push_back(player);
@@ -80,17 +80,19 @@ void Engine::initialiseGameEntities()
         for (uint32_t cols = 0; cols < totalCols; cols++) {
             if ((rows*4) + cols >= TOTAL_ENEMIES) return;
 
-            // Note: These positions are temporary, so magic numbers aren't concerning for now.
-            uint32_t enemyX = (cols + 1) * 64;
-            uint32_t enemyY = (rows + 1) * 64;
-
             uint32_t enemyRectLeft = ENEMY_WIDTH * (3 * cols);
             uint32_t enemyRectTop = ENEMY_HEIGHT * (4 * rows);
+
+            // Note: These positions are temporary.
+            uint32_t enemyX = std::experimental::randint(TILE_SIZE, (TILE_SIZE-1) * level.getLevelWidth());
+            uint32_t enemyY = std::experimental::randint(TILE_SIZE, (TILE_SIZE-1) * level.getLevelHeight());
 
             gameEntities.emplace_back(
                     std::make_shared<Enemy>(textureManager, player, enemyX, enemyY, enemyRectLeft, enemyRectTop));
         }
     }
+
+    level.setEntitiesForLevel(gameEntities);
 }
 
 // TODO We could make a nice improvement here where we take a map of {Keyboard::Key -> function ptr} and we simply
@@ -161,10 +163,11 @@ void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock, sf::Clock& debug
         worldClock.restart();
         debugClock.restart();
 
+        player = std::make_shared<Player>(textureManager);
+        level = Level(player);
+
         initialiseGameEntities();
         initialiseUserInterface();
-
-        level = Level(player, gameEntities);
     }
 }
 
