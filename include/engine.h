@@ -33,7 +33,7 @@
 #include "game_clock.h"
 
 static constexpr std::string_view WINDOW_TITLE = "vanquish";
-static const bool USE_VERTICAL_SYNC = false;
+static const bool USE_VERTICAL_SYNC = true;
 static const uint32_t APP_FRAME_RATE = 60;
 
 class Engine {

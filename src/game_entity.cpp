@@ -45,13 +45,13 @@ void GameEntity::updatePosition(sf::Time deltaTime, uint32_t levelWidth, uint32_
     velocity += acceleration;
 
     // TODO REFACTOR ME CAN WE USE tilePosition?
-    uint32_t tileMapWidth = (levelWidth - 1) * width;
-    uint32_t tileMapHeight = (levelHeight - 1) * height;
+    uint32_t worldWidth = (levelWidth - 1) * TILE_SIZE;
+    uint32_t worldHeight = (levelHeight - 1) * TILE_SIZE;
 
     if (direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT)
     {
         NextCoordinateVelocityPair nextCoordinatePair =
-                getNextCoordinatePositionWithNextVelocity(deltaTime, tileMapWidth, getPosition().x, velocity.x);
+                getNextCoordinatePositionWithNextVelocity(deltaTime, worldWidth, getPosition().x, velocity.x);
         setPosition(nextCoordinatePair.coordinatePosition, getPosition().y);
         velocity.x = nextCoordinatePair.velocity;
     }
@@ -59,7 +59,7 @@ void GameEntity::updatePosition(sf::Time deltaTime, uint32_t levelWidth, uint32_
     if (direction == EntityDirection::UP || direction == EntityDirection::DOWN)
     {
         NextCoordinateVelocityPair nextCoordinatePair =
-                getNextCoordinatePositionWithNextVelocity(deltaTime, tileMapHeight, getPosition().y, velocity.y);
+                getNextCoordinatePositionWithNextVelocity(deltaTime, worldHeight, getPosition().y, velocity.y);
         setPosition(getPosition().x, nextCoordinatePair.coordinatePosition);
         velocity.y = nextCoordinatePair.velocity;
     }
@@ -77,7 +77,7 @@ GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWith
     }
     else
     {
-        positionForCoordinate = 0;
+        velocityForCoordinate = 0.0f;
     }
 
     return NextCoordinateVelocityPair(positionForCoordinate, velocityForCoordinate);
