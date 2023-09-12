@@ -23,9 +23,11 @@ void DebugManager::update(GameClock& gameClock)
     const std::string& playerPosY = std::to_string(player->getPosition().y);
     const std::string& playerTileX = std::to_string(player->tilePosition.x);
     const std::string& playerTileY = std::to_string(player->tilePosition.y);
+    const std::string& worldTimeSeconds = std::to_string(gameClock.getWorldTimeSeconds());
 
     debugTextValue =
             "fps: " + fps + "\n" +
             "window position (x, y): " + "(" + playerPosX + ", " + playerPosY + ")" + "\n" +
-            "tile position (x, y): " + "(" + playerTileX + ", " + playerTileY + ")" + "\n";
+            "tile position (x, y): " + "(" + playerTileX + ", " + playerTileY + ")" + "\n" +
+            "Game World Time (seconds): " + "(" + worldTimeSeconds + ")" + "\n";
 }
