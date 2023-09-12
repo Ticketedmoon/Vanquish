@@ -1,12 +1,16 @@
 #include "../include/enemy.h"
 
-Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Player>& player, uint32_t posX, uint32_t posY, uint32_t rectLeft, uint32_t rectTop)
-    : GameEntity(ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY_SPEED, sf::Vector2f(posX, posY),
-                 sf::IntRect(rectLeft, rectTop, ENEMY_WIDTH, ENEMY_HEIGHT),
-                 sf::Vector2f(rectLeft, rectTop), STARTING_ENEMY_HEALTH),
+Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Player>& player,
+             sf::Vector2f position,
+             sf::Vector2u spriteSheetRectPosition,
+             sf::Vector2u levelDimensions)
+    : GameEntity(ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY_SPEED, position,
+                 sf::IntRect(spriteSheetRectPosition.x, spriteSheetRectPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT),
+                 spriteSheetRectPosition, STARTING_ENEMY_HEALTH),
       player(player),
       enemySpritePositionOffsetX((std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT) * 0.5f)),
-      enemySpritePositionOffsetY((std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT)))
+      enemySpritePositionOffsetY((std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT))),
+      levelDimensions(levelDimensions)
 {
     sf::Texture& texture = *(textureManager->getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY));
     entitySprite = sf::Sprite(texture, entitySpriteSheetDimRect);
@@ -22,7 +26,7 @@ Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Pl
     }
 }
 
-void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
+void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime)
 {
     const sf::Vector2f& position = getPosition();
     uint32_t tileUnderEnemyX = floor((position.x + enemySpritePositionOffsetX) / TILE_SIZE);
@@ -47,7 +51,7 @@ void Enemy::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
             if (isEnemyInProximityOfTarget(position.x, position.y, spawnPosition.x, spawnPosition.y, WANDER_DISTANCE))
             {
                 // Move randomly
-                updatePosition(deltaTime, levelWidth, levelHeight);
+                updatePosition(deltaTime, levelDimensions.x, levelDimensions.y);
                 if (milliseconds > (entityWaitTimeBeforeMovement + 250))
                 {
                     entityWaitTimeBeforeMovement = std::experimental::randint(milliseconds + 5000, milliseconds + 10000);

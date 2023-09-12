@@ -3,7 +3,7 @@
 Player::Player(std::shared_ptr<TextureManager>& textureManager)
     : GameEntity(PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, sf::Vector2f(300, 150),
                  sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT),
-                 sf::Vector2f(0, 0), STARTING_PLAYER_HEALTH),
+                 sf::Vector2u(0, 0), STARTING_PLAYER_HEALTH),
       playerSpritePositionOffsetX((std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT) * 0.5f)),
       playerSpritePositionOffsetY((std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT)))
 {
@@ -14,7 +14,7 @@ Player::Player(std::shared_ptr<TextureManager>& textureManager)
     entitySprite.setPosition(getPosition());
 }
 
-void Player::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
+void Player::update(sf::Clock& worldClock, sf::Time& deltaTime)
 {
     uint32_t tileUnderPlayerX = floor((getPosition().x + playerSpritePositionOffsetX) / TILE_SIZE);
     uint32_t tileUnderPlayerY = floor((getPosition().y + playerSpritePositionOffsetY) / TILE_SIZE);

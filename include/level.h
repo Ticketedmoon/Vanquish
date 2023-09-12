@@ -20,22 +20,24 @@ class Level : public GameComponent
         Level() = default;
         Level(std::shared_ptr<Player>& player, std::shared_ptr<TextureManager>& textureManager);
 
-        void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
+        void update(sf::Clock& worldClock, sf::Time& deltaTime) override;
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
 
         void interactWithNode(sf::Time& deltaTime);
         void enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf::Color> entityTypeTileColour);
 
         void initialiseGameEntities();
-        uint32_t getLevelWidth();
-        uint32_t getLevelHeight();
+        uint32_t getWorldWidth();
+        uint32_t getWorldHeight();
 
     private:
         void loadLevel();
         void checkForPlayerMovement(sf::Time& deltaTime, EntityDirection dir);
 
+    private:
         TileMap map;
         std::vector<std::vector<uint32_t>> world;
+
         std::shared_ptr<Player> m_player;
         std::vector<std::shared_ptr<GameEntity>> gameEntities;
         std::shared_ptr<TextureManager> m_textureManager;

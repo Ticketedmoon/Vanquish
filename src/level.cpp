@@ -1,7 +1,8 @@
 #include "../include/level.h"
 #include "engine.h"
 
-Level::Level(std::shared_ptr<Player>& player, std::shared_ptr<TextureManager>& textureManager) : m_player(player), m_textureManager(textureManager)
+Level::Level(std::shared_ptr<Player>& player, std::shared_ptr<TextureManager>& textureManager)
+    : m_player(player), m_textureManager(textureManager)
 {
     std::ifstream f("resources/level/forest_2.json");
     nlohmann::json data = nlohmann::json::parse(f);
@@ -13,11 +14,11 @@ Level::Level(std::shared_ptr<Player>& player, std::shared_ptr<TextureManager>& t
 }
 
 // TODO MOVE TO ENGINE CLASS NOW THAT IT SIMPLY CHECKS KEYBOARD AND THEN CALLS A FUNC? 
-void Level::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
+void Level::update(sf::Clock& worldClock, sf::Time& deltaTime)
 {
     for (auto& entity : gameEntities)
     {
-        entity->update(worldClock, deltaTime, levelWidth, levelHeight);
+        entity->update(worldClock, deltaTime);
     }
 
     std::optional<uint32_t> spriteSheetTop;
@@ -60,7 +61,7 @@ void Level::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWid
 
 void Level::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 {
-    renderTarget.draw(map);
+    map.draw(renderTarget, states);
 
     for (auto& entity : gameEntities)
     {
@@ -114,7 +115,7 @@ void Level::checkForPlayerMovement(sf::Time& deltaTime, EntityDirection dir)
         return;
     }
 
-    m_player->updatePosition(deltaTime, world.at(0).size(), world.size());
+    m_player->updatePosition(deltaTime, getWorldWidth(), getWorldHeight());
 }
 
 void Level::initialiseGameEntities()
@@ -129,6 +130,8 @@ void Level::initialiseGameEntities()
     size_t totalCols = totalRows == 1 ? TOTAL_ENEMIES : ceil(TOTAL_ENEMIES/2.0);
     std::cout << "Loading gameEntities from sprite sheet [rows: " << totalRows << ", cols: " << totalCols << "]\n";
 
+    const sf::Vector2u levelDimensions = sf::Vector2u(getWorldWidth(), getWorldHeight());
+
     for (uint32_t rows = 0; rows < totalRows; rows++) {
         for (uint32_t cols = 0; cols < totalCols; cols++) {
             if ((rows*4) + cols >= TOTAL_ENEMIES) return;
@@ -137,22 +140,26 @@ void Level::initialiseGameEntities()
             uint32_t enemyRectTop = ENEMY_HEIGHT * (4 * rows);
 
             // Note: These positions are temporary.
-            uint32_t enemyX = std::experimental::randint(TILE_SIZE, (TILE_SIZE-1) * getLevelWidth());
-            uint32_t enemyY = std::experimental::randint(TILE_SIZE, (TILE_SIZE-1) * getLevelHeight());
+            float enemyX = std::experimental::randint(TILE_SIZE, (TILE_SIZE-1) * getWorldWidth());
+            float enemyY = std::experimental::randint(TILE_SIZE, (TILE_SIZE-1) * getWorldHeight());
+
+            sf::Vector2u spritePositionGroup = sf::Vector2u(enemyRectLeft, enemyRectTop);
+            sf::Vector2f enemyPosition = sf::Vector2f(enemyX, enemyY);
 
             gameEntities.emplace_back(
-                    std::make_shared<Enemy>(m_textureManager, m_player, enemyX, enemyY, enemyRectLeft, enemyRectTop));
+                    std::make_shared<Enemy>(m_textureManager, m_player, enemyPosition, spritePositionGroup,
+                                            levelDimensions));
         }
     }
 }
 
 
-uint32_t Level::getLevelWidth()
+uint32_t Level::getWorldWidth()
 {
     return this->world.at(0).size();
 }
 
-uint32_t Level::getLevelHeight()
+uint32_t Level::getWorldHeight()
 {
     return this->world.size();
 }

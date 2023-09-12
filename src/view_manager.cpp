@@ -9,8 +9,8 @@ void ViewManager::centerViewOnEntity(const std::shared_ptr<GameEntity>& entity)
 {
     // keep view centred/centered on entity
     sf::Vector2f entityPos = entity->getPosition();
-    float centreX = getViewCentreForCoordinate(entityPos.x, m_level.getLevelWidth(), WINDOW_WIDTH, entity->getWidth());
-    float centreY = getViewCentreForCoordinate(entityPos.y, m_level.getLevelHeight(), WINDOW_HEIGHT, entity->getHeight());
+    float centreX = getViewCentreForCoordinate(entityPos.x, m_level.getWorldWidth(), WINDOW_WIDTH, entity->getWidth());
+    float centreY = getViewCentreForCoordinate(entityPos.y, m_level.getWorldHeight(), WINDOW_HEIGHT, entity->getHeight());
 
     sf::View newView = m_window.getView();
     newView.zoom(VIEW_ZOOM_FACTOR);

@@ -18,16 +18,12 @@ class DebugManager : public GameComponent
 {
     public:
         DebugManager(std::shared_ptr<Player>& player, Level& level, std::shared_ptr<TextManager>& textManager);
-        // TODO FIX THIS INCLUSION OF DRAW EVERYWHERE
-        void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override {};
-        void render(sf::RenderTarget& renderTarget, sf::RenderStates states, GameState gameState) override;
-        void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
-
-    private:
-        void startDebugView();
+        void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
+        void update(sf::Clock& worldClock, sf::Time& deltaTime) override;
 
     private:
         sf::Clock debugClock;
+        sf::String debugTextValue;
 
         std::shared_ptr<Player>& player;
         Level& level;

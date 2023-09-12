@@ -17,16 +17,18 @@
 #include "game_entity.h"
 
 // Two triangles
-static constexpr uint32_t TOTAL_VERTICES_IN_TILE = 6;
+static constexpr uint8_t TOTAL_VERTICES_IN_TILE = 6;
 
-class TileMap : public sf::Drawable, public sf::Transformable
+class TileMap : GameComponent
 {
     public:
+        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        void update(sf::Clock& worldClock, sf::Time& deltaTime) override;
+
         bool load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& tiles);
         void highlightTileForDebug(const std::shared_ptr<GameEntity>& entity, uint32_t levelWidth, sf::Color tileColour);
 
     private:
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
         sf::VertexArray m_vertices;
         sf::Texture m_tileset;

@@ -71,13 +71,13 @@ void TileMap::highlightTileForDebug(const std::shared_ptr<GameEntity>& entity, u
 
     if (previousEntityTilePosition.contains(entity) && previousEntityTilePosition.at(entity) != currTilePos)
     {
-        for (int i = 0; i < TOTAL_VERTICES_IN_TILE; i++)
+        for (uint8_t i = 0; i < TOTAL_VERTICES_IN_TILE; i++)
         {
             m_vertices[previousEntityTilePosition.at(entity) * TOTAL_VERTICES_IN_TILE + i].color = sf::Color::White;
         }
     }
 
-    for (int i = 0; i < TOTAL_VERTICES_IN_TILE; i++)
+    for (uint8_t i = 0; i < TOTAL_VERTICES_IN_TILE; i++)
     {
         m_vertices[currTilePos * TOTAL_VERTICES_IN_TILE + i].color = tileColour;
     }
@@ -95,4 +95,9 @@ void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
     // draw the vertex array
     target.draw(m_vertices, states);
+}
+
+void TileMap::update(sf::Clock& worldClock, sf::Time& deltaTime)
+{
+    // NOT IMPLEMENTED
 }

@@ -104,12 +104,19 @@ void Engine::listenForEvents(sf::Time& deltaTime)
 // TODO Combine deltaTime and worldClock and debugCLock into single class
 void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock)
 {
-    userInterfaceManager->update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
+    userInterfaceManager->update(worldClock, deltaTime);
 
     // TODO INVESTIGATE IF WE CAN MOVE THE PLAYER UPDATE LOGIC OUT OF LEVEL
     // TODO ALSO, WE'RE PASSING LEVEL info into level here, this is bad - refactor.
-    level.update(worldClock, deltaTime, level.getLevelWidth(), level.getLevelHeight());
+    level.update(worldClock, deltaTime);
 
+    if (gameState == GameState::DEBUG)
+    {
+        debugManager->update(worldClock, deltaTime);
+    }
+
+    // TODO CHECK THIS IN PLAYER UPDATE METHOD
+    //      CALL RESET LOGIC IN ENGINE IF GAME_STATE IS SET ACCORDINGLY.
     if (player->isDead())
     {
         gameState = GameState::GAME_OVER;
@@ -133,11 +140,11 @@ void Engine::render()
 
     viewManager->centerViewOnEntity(player);
     level.draw(window, sf::RenderStates::Default);
-    userInterfaceManager->render(window, sf::RenderStates::Default, gameState);
+    userInterfaceManager->draw(window, sf::RenderStates::Default);
 
     if (gameState == GameState::DEBUG)
     {
-        debugManager->render(window, sf::RenderStates::Default, gameState);
+        debugManager->draw(window, sf::RenderStates::Default);
     }
 }
 

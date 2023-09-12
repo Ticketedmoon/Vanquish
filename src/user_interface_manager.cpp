@@ -11,19 +11,19 @@ UserInterfaceManager::UserInterfaceManager(std::shared_ptr<GameEntity> gameEntit
     uiComponents.emplace_back(healthBarForEntity);
 }
 
-void UserInterfaceManager::update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
+void UserInterfaceManager::update(sf::Clock& worldClock, sf::Time& deltaTime)
 {
     for (auto& component : uiComponents)
     {
-        component->update(worldClock, deltaTime, levelWidth, levelHeight);
+        component->update(worldClock, deltaTime);
     }
 }
 
-void UserInterfaceManager::render(sf::RenderTarget& renderTarget, sf::RenderStates states, GameState gameState)
+void UserInterfaceManager::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 {
     renderTarget.setView(renderTarget.getDefaultView());
     for (auto& component : uiComponents)
     {
-        component->render(renderTarget, sf::RenderStates::Default, gameState);
+        component->draw(renderTarget, sf::RenderStates::Default);
     }
 }

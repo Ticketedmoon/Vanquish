@@ -1,7 +1,7 @@
 #include "../include/game_entity.h"
 
 GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position,
-                       sf::IntRect entitySpriteSheetDimRect, sf::Vector2f startingAnimationPosition, uint16_t health)
+                       sf::IntRect entitySpriteSheetDimRect, sf::Vector2u startingAnimationPosition, uint16_t health)
     : entitySpriteSheetDimRect(entitySpriteSheetDimRect),
       speed(speed),
       startingAnimationPosition(startingAnimationPosition),
@@ -10,7 +10,7 @@ GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f 
       height(height)
 {
     setPosition(position);
-    spawnPosition = sf::Vector2f(position);
+    spawnPosition = sf::Vector2u(position);
 }
 
 void GameEntity::updateAnimation(sf::Time& deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft)
@@ -45,8 +45,8 @@ void GameEntity::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32
     velocity += acceleration;
 
     // TODO REFACTOR ME CAN WE USE tilePosition?
-    uint32_t tileMapWidth = ((levelWidth-1) * width);
-    uint32_t tileMapHeight = ((levelHeight-1) * height);
+    uint32_t tileMapWidth = (levelWidth - 1) * width;
+    uint32_t tileMapHeight = (levelHeight - 1) * height;
 
     if (direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT)
     {
@@ -69,10 +69,10 @@ GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWith
                                                                                              uint32_t tileMapDimensionValue,
                                                                                              float positionForCoordinate,
                                                                                              float velocityForCoordinate) {
-    float positionDeltaX = positionForCoordinate + (velocityForCoordinate * deltaTime.asSeconds());
-    if (positionDeltaX >= 0 && positionDeltaX <static_cast<float>(tileMapDimensionValue))
+    float positionDeltaForCoordinate = positionForCoordinate + (velocityForCoordinate * deltaTime.asSeconds());
+    if (positionDeltaForCoordinate >= 0 && positionDeltaForCoordinate < static_cast<float>(tileMapDimensionValue))
     {
-        positionForCoordinate = positionDeltaX;
+        positionForCoordinate = positionDeltaForCoordinate;
         velocityForCoordinate *= 0.5f;
     }
     else

@@ -18,7 +18,9 @@ class Enemy : public GameEntity
 {
     public:
         explicit Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Player>& player,
-                       uint32_t posX, uint32_t posY, uint32_t rectLeft, uint32_t rectTop);
+                       sf::Vector2f position,
+                       sf::Vector2u spriteSheetRectPosition,
+                       sf::Vector2u levelDimensions);
 
         Enemy(Enemy& enemy) : GameEntity(enemy)
         {
@@ -27,7 +29,7 @@ class Enemy : public GameEntity
 
         // TODO ADD DELTA TIME TO CONSTRUCTOR RATHER THAN NEEDING TO PASS IT IN EACH METHOD
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
-        void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) override;
+        void update(sf::Clock& worldClock, sf::Time& deltaTime) override;
         sf::Time getAnimationFrameDuration() override;
 
         EntityType getType() override;
@@ -42,11 +44,15 @@ class Enemy : public GameEntity
         void moveToDestination(const sf::Time &deltaTime, float destinationX, float destinationY);
         void damagePlayer(const sf::Clock& worldClock);
 
+    private:
+
         // TODO ENEMY SHOULDN't HAVE REF TO PLAYER
         std::shared_ptr<Player> player;
 
         // TODO IMPROVE THIS, MAKE MORE DYNAMIC
         uint16_t damage = std::experimental::randint(5, 20);
+
+        sf::Vector2u levelDimensions;
 
         // TODO Move me to parent class?
         uint32_t enemySpritePositionOffsetX{};

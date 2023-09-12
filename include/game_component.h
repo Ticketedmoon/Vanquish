@@ -14,8 +14,8 @@ class GameComponent : public sf::Drawable, public sf::Transformable
         GameComponent() = default;
         ~GameComponent() override = default;
 
+        // TODO SINCE THIS IS NOT VIRTUAL, ARE WE REQUIRED TO OVERRIDE?
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override = 0;
-        virtual void render(sf::RenderTarget& renderTarget, sf::RenderStates states, GameState gameState);
-        virtual void update(sf::Clock& worldClock, sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight) = 0;
+        virtual void update(sf::Clock& worldClock, sf::Time& deltaTime) = 0;
 
 };
