@@ -13,7 +13,7 @@ GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f 
     spawnPosition = sf::Vector2u(position);
 }
 
-void GameEntity::updateAnimation(sf::Time& deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft)
+void GameEntity::updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft)
 {
     animationFrameStartTime += deltaTime;
     if (animationFrameStartTime >= getAnimationFrameDuration())
@@ -34,7 +34,7 @@ void GameEntity::setDirection(EntityDirection dir)
     this->direction = dir;
 }
 
-void GameEntity::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight)
+void GameEntity::updatePosition(sf::Time deltaTime, uint32_t levelWidth, uint32_t levelHeight)
 {
     const float sign = direction == EntityDirection::UP || direction == EntityDirection::LEFT ? -1.0f : 1.0f;
     float xAccel = direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT ? (speed * sign) : 0;
@@ -65,7 +65,7 @@ void GameEntity::updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32
     }
 }
 
-GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWithNextVelocity(const sf::Time &deltaTime,
+GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWithNextVelocity(const sf::Time deltaTime,
                                                                                              uint32_t tileMapDimensionValue,
                                                                                              float positionForCoordinate,
                                                                                              float velocityForCoordinate) {

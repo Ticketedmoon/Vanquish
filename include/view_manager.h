@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SFML/System/Clock.hpp>
 #include <SFML/Graphics/Text.hpp>
 
 #include "../include/game_entity.h"
@@ -10,7 +9,7 @@
 #include "../include/text_manager.h"
 #include "user_interface_manager.h"
 
-static const float VIEW_ZOOM_FACTOR = 0.5;
+static const float VIEW_ZOOM_FACTOR = 0.65;
 
 class ViewManager
 {

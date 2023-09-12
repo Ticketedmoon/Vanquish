@@ -23,7 +23,7 @@ class TileMap : GameComponent
 {
     public:
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-        void update(sf::Clock& worldClock, sf::Time& deltaTime) override;
+        void update(GameClock& gameClock) override;
 
         bool load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& tiles);
         void highlightTileForDebug(const std::shared_ptr<GameEntity>& entity, uint32_t levelWidth, sf::Color tileColour);

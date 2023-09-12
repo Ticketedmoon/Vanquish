@@ -19,16 +19,14 @@ Engine::Engine()
 
 void Engine::startGameLoop()
 {
-    sf::Clock deltaClock;
-
     while (window.isOpen())
     {
-        sf::Time deltaTime = deltaClock.restart();
+        gameClock.restartDeltaClock();
 
         window.clear();
 
-        listenForEvents(deltaTime);
-        update(deltaTime, worldClock);
+        listenForEvents();
+        update();
         render();
 
         window.display();
@@ -56,7 +54,7 @@ void Engine::createGameWindow()
 
 // TODO We could make a nice improvement here where we take a map of {Keyboard::Key -> function ptr} and we simply
 //      iterate over each during inner loop.
-void Engine::listenForEvents(sf::Time& deltaTime)
+void Engine::listenForEvents()
 {
     sf::Event event{};
     while (window.pollEvent(event))
@@ -70,7 +68,7 @@ void Engine::listenForEvents(sf::Time& deltaTime)
         {
             if (event.key.code == sf::Keyboard::Space)
             {
-                level.interactWithNode(deltaTime);
+                level.interactWithNode(gameClock.getDeltaTime());
             }
 
             if (event.key.code == sf::Keyboard::SemiColon)
@@ -101,18 +99,17 @@ void Engine::listenForEvents(sf::Time& deltaTime)
     }
 }
 
-// TODO Combine deltaTime and worldClock and debugCLock into single class
-void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock)
+void Engine::update()
 {
-    userInterfaceManager->update(worldClock, deltaTime);
+    userInterfaceManager->update(gameClock);
 
     // TODO INVESTIGATE IF WE CAN MOVE THE PLAYER UPDATE LOGIC OUT OF LEVEL
     // TODO ALSO, WE'RE PASSING LEVEL info into level here, this is bad - refactor.
-    level.update(worldClock, deltaTime);
+    level.update(gameClock);
 
     if (gameState == GameState::DEBUG)
     {
-        debugManager->update(worldClock, deltaTime);
+        debugManager->update(gameClock);
     }
 
     // TODO CHECK THIS IN PLAYER UPDATE METHOD
@@ -120,8 +117,8 @@ void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock)
     if (player->isDead())
     {
         gameState = GameState::GAME_OVER;
-        worldClock.restart();
 
+        gameClock = GameClock();
         player = std::make_shared<Player>(textureManager);
         level = Level(player, textureManager);
         viewManager = std::make_unique<ViewManager>(window, level, textManager);
@@ -132,20 +129,25 @@ void Engine::update(sf::Time& deltaTime, sf::Clock& worldClock)
 
 void Engine::render()
 {
-    if (gameState == GameState::GAME_OVER)
-    {
-        showGameOverScreen();
-        return;
+    switch (gameState) {
+        case GameState::PLAYING:
+            renderCoreGameComponents();
+            break;
+        case GameState::GAME_OVER:
+            showGameOverScreen();
+            break;
+        case GameState::DEBUG:
+            renderCoreGameComponents();
+            debugManager->draw(window, sf::RenderStates::Default);
+            break;
     }
+}
 
+void Engine::renderCoreGameComponents()
+{
     viewManager->centerViewOnEntity(player);
     level.draw(window, sf::RenderStates::Default);
     userInterfaceManager->draw(window, sf::RenderStates::Default);
-
-    if (gameState == GameState::DEBUG)
-    {
-        debugManager->draw(window, sf::RenderStates::Default);
-    }
 }
 
 void Engine::showGameOverScreen() {

@@ -3,10 +3,10 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/Drawable.hpp>
-#include <SFML/System/Clock.hpp>
 #include <SFML/Graphics/Transformable.hpp>
 
 #include "common_constants.h"
+#include "game_clock.h"
 
 class GameComponent : public sf::Drawable, public sf::Transformable
 {
@@ -16,6 +16,6 @@ class GameComponent : public sf::Drawable, public sf::Transformable
 
         // TODO SINCE THIS IS NOT VIRTUAL, ARE WE REQUIRED TO OVERRIDE?
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override = 0;
-        virtual void update(sf::Clock& worldClock, sf::Time& deltaTime) = 0;
+        virtual void update(GameClock& gameClock) = 0;
 
 };

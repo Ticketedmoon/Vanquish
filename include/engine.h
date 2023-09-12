@@ -2,7 +2,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/System/Clock.hpp>
 #include <SFML/System/String.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -31,14 +30,11 @@
 #include "view_manager.h"
 #include "common_constants.h"
 #include "debug/debug_manager.h"
+#include "game_clock.h"
 
 static constexpr std::string_view WINDOW_TITLE = "vanquish";
 static const bool USE_VERTICAL_SYNC = false;
 static const uint32_t APP_FRAME_RATE = 60;
-
-static constexpr size_t TOTAL_PLAYERS = 1;
-static constexpr size_t TOTAL_ENEMIES = 8;
-static constexpr size_t TOTAL_GAME_ENTITIES = TOTAL_PLAYERS + TOTAL_ENEMIES;
 
 class Engine {
 
@@ -48,12 +44,12 @@ class Engine {
 
     private:
         // Game loop logic
-        void update(sf::Time& deltaTime, sf::Clock& worldClock);
+        void update();
         void render();
-        void listenForEvents(sf::Time& deltaTime);
+        void listenForEvents();
 
-        // Set up
         static void createGameWindow();
+        static void renderCoreGameComponents();
 
         // TODO Move to ViewManager?
         static void showGameOverScreen();
@@ -68,7 +64,7 @@ class Engine {
         inline static std::shared_ptr<UserInterfaceManager> userInterfaceManager;
         inline static std::shared_ptr<Player> player;
         inline static Level level;
+        inline static GameClock gameClock;
 
         GameState gameState = GameState::PLAYING;
-        sf::Clock worldClock;
 };

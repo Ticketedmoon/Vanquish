@@ -19,7 +19,7 @@ class DebugManager : public GameComponent
     public:
         DebugManager(std::shared_ptr<Player>& player, Level& level, std::shared_ptr<TextManager>& textManager);
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
-        void update(sf::Clock& worldClock, sf::Time& deltaTime) override;
+        void update(GameClock& gameClock) override;
 
     private:
         sf::Clock debugClock;

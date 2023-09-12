@@ -12,7 +12,7 @@ class HealthBar : public GameComponent
                   sf::Color fillColor, sf::Color outlineColour,
                   float outlineThickness);
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
-        void update(sf::Clock& worldClock, sf::Time& deltaTime) override;
+        void update(GameClock& gameClock) override;
 
     private:
         std::shared_ptr<GameEntity> entity;

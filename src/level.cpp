@@ -1,5 +1,4 @@
 #include "../include/level.h"
-#include "engine.h"
 
 Level::Level(std::shared_ptr<Player>& player, std::shared_ptr<TextureManager>& textureManager)
     : m_player(player), m_textureManager(textureManager)
@@ -14,11 +13,11 @@ Level::Level(std::shared_ptr<Player>& player, std::shared_ptr<TextureManager>& t
 }
 
 // TODO MOVE TO ENGINE CLASS NOW THAT IT SIMPLY CHECKS KEYBOARD AND THEN CALLS A FUNC? 
-void Level::update(sf::Clock& worldClock, sf::Time& deltaTime)
+void Level::update(GameClock& gameClock)
 {
     for (auto& entity : gameEntities)
     {
-        entity->update(worldClock, deltaTime);
+        entity->update(gameClock);
     }
 
     std::optional<uint32_t> spriteSheetTop;
@@ -27,35 +26,35 @@ void Level::update(sf::Clock& worldClock, sf::Time& deltaTime)
     // TODO/REFACTOR: Centralise these 4 blocks as they share similar characteristics.
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
-        checkForPlayerMovement(deltaTime, EntityDirection::UP);
+        checkForPlayerMovement(gameClock, EntityDirection::UP);
         spriteSheetTop = PLAYER_HEIGHT * 3;
         spriteSheetLeft = (m_player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 7)) ? 0 : (m_player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     {
-        checkForPlayerMovement(deltaTime, EntityDirection::DOWN);
+        checkForPlayerMovement(gameClock, EntityDirection::DOWN);
         spriteSheetTop = PLAYER_HEIGHT * 0;
         spriteSheetLeft = (m_player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 7)) ? 0 : (m_player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
-        checkForPlayerMovement(deltaTime, EntityDirection::LEFT);
+        checkForPlayerMovement(gameClock, EntityDirection::LEFT);
         spriteSheetTop = PLAYER_HEIGHT * 1;
         spriteSheetLeft = (m_player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 7)) ? 0 : (m_player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
-        checkForPlayerMovement(deltaTime, EntityDirection::RIGHT);
+        checkForPlayerMovement(gameClock, EntityDirection::RIGHT);
         spriteSheetTop = PLAYER_HEIGHT * 2;
         spriteSheetLeft = (m_player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 7)) ? 0 : (m_player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
     if (spriteSheetTop.has_value() && spriteSheetLeft.has_value())
     {
-        m_player->updateAnimation(deltaTime, spriteSheetTop.value(), spriteSheetLeft.value());
+        m_player->updateAnimation(gameClock.getDeltaTime(), spriteSheetTop.value(), spriteSheetLeft.value());
     }
 }
 
@@ -69,7 +68,7 @@ void Level::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
     }
 }
 
-void Level::interactWithNode(sf::Time& deltaTime)
+void Level::interactWithNode(sf::Time deltaTime)
 {
     // TODO Create a tile object rather than a pair here?
     sf::Vector2u nextPlayerFacingTile = m_player->findNextTileFromPlayerDirection(deltaTime, m_player->getDirection());
@@ -101,12 +100,12 @@ void Level::loadLevel()
     }
 }
 
-void Level::checkForPlayerMovement(sf::Time& deltaTime, EntityDirection dir)
+void Level::checkForPlayerMovement(GameClock& gameClock, EntityDirection dir)
 {
     m_player->setDirection(dir);
 
     // TODO Create a tile object rather than a pair here?
-    sf::Vector2u nextPlayerFacingTile = m_player->findNextTileFromPlayerDirection(deltaTime, dir);
+    sf::Vector2u nextPlayerFacingTile = m_player->findNextTileFromPlayerDirection(gameClock.getDeltaTime(), dir);
 
     if (world.at(nextPlayerFacingTile.y).at(nextPlayerFacingTile.x))
     {
@@ -115,7 +114,7 @@ void Level::checkForPlayerMovement(sf::Time& deltaTime, EntityDirection dir)
         return;
     }
 
-    m_player->updatePosition(deltaTime, getWorldWidth(), getWorldHeight());
+    m_player->updatePosition(gameClock.getDeltaTime(), getWorldWidth(), getWorldHeight());
 }
 
 void Level::initialiseGameEntities()

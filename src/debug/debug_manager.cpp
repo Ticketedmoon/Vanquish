@@ -16,7 +16,7 @@ void DebugManager::draw(sf::RenderTarget& renderTarget, sf::RenderStates states)
     });
 }
 
-void DebugManager::update(sf::Clock& worldClock, sf::Time& deltaTime)
+void DebugManager::update(GameClock& gameClock)
 {
     std::string fps = std::to_string(1.0f / debugClock.restart().asSeconds());
     const std::string& playerPosX = std::to_string(player->getPosition().x);

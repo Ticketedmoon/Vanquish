@@ -10,7 +10,6 @@
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <SFML/System/Clock.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -31,6 +30,7 @@ enum class EntityType
     ENEMY
 };
 
+
 class GameEntity : public GameComponent
 {
     public:
@@ -40,15 +40,15 @@ class GameEntity : public GameComponent
 
         // Not necessary to add virtual here to maintain pure-virtual function as parent method is pure-virtual.
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override = 0;
-        void update(sf::Clock& worldClock, sf::Time& deltaTime) override = 0;
+        void update(GameClock& gameClock) override = 0;
 
-        virtual void updateAnimation(sf::Time& deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft);
+        virtual void updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft);
         virtual sf::Time getAnimationFrameDuration() = 0;
 
         virtual EntityType getType() = 0;
 
         void updateEntityToRandomDirection();
-        void updatePosition(sf::Time& deltaTime, uint32_t levelWidth, uint32_t levelHeight);
+        void updatePosition(sf::Time deltaTime, uint32_t levelWidth, uint32_t levelHeight);
         void setDirection(EntityDirection dir);
 
         static uint8_t getSpriteSheetAnimationOffset(EntityDirection dir);
@@ -63,6 +63,18 @@ class GameEntity : public GameComponent
         sf::Vector2u tilePosition;
         sf::Vector2f velocity;
         sf::IntRect entitySpriteSheetDimRect;
+
+    private:
+        struct NextCoordinateVelocityPair
+        {
+            float coordinatePosition;
+            float velocity;
+        };
+
+        static NextCoordinateVelocityPair getNextCoordinatePositionWithNextVelocity(sf::Time deltaTime,
+                                                                                    uint32_t tileMapDimensionValue,
+                                                                                    float positionForCoordinate,
+                                                                                    float velocityForCoordinate);
 
     protected:
         float speed;
@@ -80,15 +92,4 @@ class GameEntity : public GameComponent
         uint16_t health;
         uint8_t width;
         uint8_t height;
-
-        struct NextCoordinateVelocityPair
-        {
-            float coordinatePosition;
-            float velocity;
-        };
-
-        static NextCoordinateVelocityPair getNextCoordinatePositionWithNextVelocity(const sf::Time &deltaTime,
-                                                                                    uint32_t tileMapDimensionValue,
-                                                                                    float positionForCoordinate,
-                                                                                    float velocityForCoordinate);
 };

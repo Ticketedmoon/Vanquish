@@ -7,9 +7,12 @@
 
 static constexpr uint8_t ENEMY_WIDTH = 32;
 static constexpr uint8_t ENEMY_HEIGHT = 32;
-static constexpr uint32_t WANDER_DISTANCE = 256;
+static constexpr uint32_t WANDER_DISTANCE = 128;
 static constexpr float ENEMY_SCALE_FACTOR = 0.75;
 static constexpr float ENEMY_SPEED = 45.0f;
+static constexpr size_t MIN_ENEMY_MOVE_RATE = 500;
+static constexpr size_t MAX_ENEMY_MOVE_RATE = 3000;
+
 static constexpr int HORIZONTAL_DIRECTION_WINDOW_SIZE_FOR_ENEMY_ANIMATION = 20;
 
 inline static constexpr uint16_t STARTING_ENEMY_HEALTH = 50;
@@ -29,20 +32,20 @@ class Enemy : public GameEntity
 
         // TODO ADD DELTA TIME TO CONSTRUCTOR RATHER THAN NEEDING TO PASS IT IN EACH METHOD
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
-        void update(sf::Clock& worldClock, sf::Time& deltaTime) override;
+        void update(GameClock& gameClock) override;
         sf::Time getAnimationFrameDuration() override;
 
         EntityType getType() override;
 
         // TODO REFACTOR
-        int entityWaitTimeBeforeMovement = std::experimental::randint(5000, 10000);
+        int entityWaitTimeBeforeMovement = std::experimental::randint(MIN_ENEMY_MOVE_RATE, MAX_ENEMY_MOVE_RATE);
         int lastTimeEnemyAttacked = 0;
 
     private:
         static bool isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX,
                                                float targetLocationY, uint32_t distance);
-        void moveToDestination(const sf::Time &deltaTime, float destinationX, float destinationY);
-        void damagePlayer(const sf::Clock& worldClock);
+        void moveToDestination(float deltaTimeSeconds, float destinationX, float destinationY);
+        void damagePlayer(float worldTimeSeconds);
 
     private:
 
