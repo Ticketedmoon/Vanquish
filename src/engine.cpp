@@ -10,7 +10,7 @@ void Engine::startGameLoop()
 {
     while (window.isOpen())
     {
-        gameClock.restartDeltaClock();
+        gameState.getClock().restartDeltaClock();
 
         window.clear();
 
@@ -38,7 +38,7 @@ void Engine::listenForEvents()
         {
             if (event.key.code == sf::Keyboard::Space)
             {
-                level.interactWithNode(gameClock.getDeltaTime());
+                level.interactWithNode(gameState.getClock().getDeltaTime());
             }
 
             if (event.key.code == sf::Keyboard::SemiColon)
@@ -48,7 +48,10 @@ void Engine::listenForEvents()
 
             if (event.key.code == sf::Keyboard::Space)
             {
-                gameState.reset();
+                if (gameState.getState() == GameState::State::GAME_OVER)
+                {
+                    createGameEngineComponents();
+                }
             }
 
         }
@@ -57,15 +60,15 @@ void Engine::listenForEvents()
 
 void Engine::update()
 {
-    userInterfaceManager->update(gameClock);
+    userInterfaceManager->update(gameState.getClock());
 
     // TODO INVESTIGATE IF WE CAN MOVE THE PLAYER UPDATE LOGIC OUT OF LEVEL
     // TODO ALSO, WE'RE PASSING LEVEL info into level here, this is bad - refactor.
-    level.update(gameClock);
+    level.update(gameState.getClock());
 
     if (gameState.getState() == GameState::State::DEBUG)
     {
-        debugManager->update(gameClock);
+        debugManager->update(gameState.getClock());
     }
 
     // TODO CHECK THIS IN PLAYER UPDATE METHOD
@@ -73,7 +76,6 @@ void Engine::update()
     if (player->isDead())
     {
         gameState.updateState(GameState::State::GAME_OVER);
-        createGameEngineComponents();
     }
 }
 
@@ -125,7 +127,7 @@ void Engine::createGameEngineComponents()
     userInterfaceManager = std::make_shared<UserInterfaceManager>(player);
     viewManager = std::make_unique<ViewManager>(window, level, textManager);
     debugManager = std::make_unique<DebugManager>(player, level, textManager);
-    gameClock = GameClock();
+    gameState = GameState();
 }
 
 void Engine::renderCoreGameComponents()

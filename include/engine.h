@@ -69,9 +69,8 @@ class Engine {
         inline static std::shared_ptr<UserInterfaceManager> userInterfaceManager;
         inline static std::shared_ptr<Player> player;
         inline static Level level;
-        inline static GameClock gameClock;
 
-        GameState gameState;
+        inline static GameState gameState;
 };
 
 #endif //VANQUISH_ENGINE_H

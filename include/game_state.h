@@ -22,16 +22,14 @@ class GameState
             this->m_state = state;
         };
 
-        void reset()
+        GameClock& getClock()
         {
-            if (m_state == GameState::State::GAME_OVER)
-            {
-                m_state = GameState::State::PLAYING;
-            }
+            return gameClock;
         }
 
     private:
         State m_state = State::PLAYING;
+        GameClock gameClock;
 };
 
 #endif //VANQUISH_GAME_STATE_H

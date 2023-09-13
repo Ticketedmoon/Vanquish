@@ -24,7 +24,7 @@ class DebugManager : public GameComponent
 
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(GameClock& gameClock) override;
-        void updateDebugState(GameState gameState);
+        void updateDebugState(GameState& gameState);
 
     private:
         sf::Clock debugClock;

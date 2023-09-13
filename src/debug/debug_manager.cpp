@@ -32,7 +32,7 @@ void DebugManager::update(GameClock& gameClock)
             "Game World Time (seconds): " + "(" + worldTimeSeconds + ")" + "\n";
 }
 
-void DebugManager::updateDebugState(GameState gameState)
+void DebugManager::updateDebugState(GameState& gameState)
 {
     if (gameState.getState() == GameState::State::PLAYING)
     {
