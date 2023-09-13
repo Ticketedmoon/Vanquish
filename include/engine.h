@@ -29,6 +29,7 @@
 #include "tilemap.h"
 #include "view_manager.h"
 #include "common_constants.h"
+#include "game_state.h"
 #include "debug/debug_manager.h"
 #include "game_clock.h"
 
@@ -44,11 +45,12 @@ class Engine {
 
     private:
         // Game loop logic
+        void listenForEvents();
         void update();
         void render();
-        void listenForEvents();
 
         static void createGameWindow();
+        static void createGameEngineComponents();
         static void renderCoreGameComponents();
 
         // TODO Move to ViewManager?
@@ -66,5 +68,5 @@ class Engine {
         inline static Level level;
         inline static GameClock gameClock;
 
-        GameState gameState = GameState::PLAYING;
+        GameState gameState;
 };

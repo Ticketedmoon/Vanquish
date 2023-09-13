@@ -13,13 +13,16 @@
 #include "player.h"
 #include "level.h"
 #include "text_manager.h"
+#include "game_state.h"
 
 class DebugManager : public GameComponent
 {
     public:
         DebugManager(std::shared_ptr<Player>& player, Level& level, std::shared_ptr<TextManager>& textManager);
+
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(GameClock& gameClock) override;
+        void updateDebugState(GameState gameState);
 
     private:
         sf::Clock debugClock;

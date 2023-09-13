@@ -31,3 +31,20 @@ void DebugManager::update(GameClock& gameClock)
             "tile position (x, y): " + "(" + playerTileX + ", " + playerTileY + ")" + "\n" +
             "Game World Time (seconds): " + "(" + worldTimeSeconds + ")" + "\n";
 }
+
+void DebugManager::updateDebugState(GameState gameState)
+{
+    if (gameState.getState() == GameState::State::PLAYING)
+    {
+        gameState.updateState(GameState::State::DEBUG);
+    }
+    else
+    {
+        gameState.updateState(GameState::State::PLAYING);
+        // Clear tiles of highlighting
+        level.enableEntityTileHighlightsForDebug({
+            {EntityType::PLAYER, sf::Color::White},
+            {EntityType::ENEMY,  sf::Color::White}
+        });
+    }
+}

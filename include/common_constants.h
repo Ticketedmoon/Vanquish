@@ -12,10 +12,3 @@ static const std::string HUMAN_CHARACTER_SPRITE_SHEET_A_KEY = "human_character_s
 static const std::string HUMAN_CHARACTER_SPRITE_SHEET_A_FILE_PATH = "resources/assets/character_sprite_sheet_v2.png";
 
 static constexpr uint32_t TILE_SIZE = 32;
-
-enum class GameState
-{
-    PLAYING,
-    GAME_OVER,
-    DEBUG
-};
