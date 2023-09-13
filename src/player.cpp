@@ -15,6 +15,11 @@ Player::Player(std::shared_ptr<TextureManager>& textureManager)
     entitySprite.setPosition(getPosition());
 }
 
+void Player::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
+{
+    renderTarget.draw(entitySprite);
+}
+
 void Player::update(GameState& gameState)
 {
     if (isDead())
@@ -64,11 +69,6 @@ void Player::startMovement(GameClock& gameClock, EntityDirection direction, size
             : (entitySpriteSheetDimRect.left + PLAYER_WIDTH);
 
     updateAnimation(gameClock.getDeltaTime(), spriteSheetTop, spriteSheetLeft);
-}
-
-void Player::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
-{
-    renderTarget.draw(entitySprite);
 }
 
 EntityType Player::getType()
