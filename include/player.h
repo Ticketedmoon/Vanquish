@@ -33,7 +33,8 @@ class Player : public GameEntity
 
         EntityType getType() override;
 
-        sf::Vector2<uint32_t> findNextTileFromPlayerDirection(sf::Time deltaTime, EntityDirection playerDir);
+        sf::Vector2<uint32_t> findNextTileFromPlayerDirection(sf::Time deltaTime);
+        void updatePositionBasedOnNextTile(GameClock& gameClock, std::vector<std::vector<uint32_t>>& world);
 
     private:
         uint32_t playerSpritePositionOffsetX;

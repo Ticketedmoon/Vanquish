@@ -81,7 +81,7 @@ void Enemy::damagePlayer(const float worldTimeSeconds)
 {
     uint16_t playerHealth = player->getHealth();
     int timeNowSeconds = static_cast<int>(worldTimeSeconds);
-    bool hasEnemyAttackedAfterTimeWindow = (timeNowSeconds < 3 || timeNowSeconds - lastTimeEnemyAttacked >= 3);
+    bool hasEnemyAttackedAfterTimeWindow = timeNowSeconds - lastTimeEnemyAttacked >= 3;
 
     if (playerHealth > 0 && hasEnemyAttackedAfterTimeWindow) {
         // TODO RESEARCH IF WE NEED DELTA TIME SINCE WE ARE ALREADY USING WORLD CLOCK

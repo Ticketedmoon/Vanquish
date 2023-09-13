@@ -20,6 +20,7 @@ static constexpr size_t TOTAL_PLAYERS = 1;
 static constexpr size_t TOTAL_ENEMIES = 8;
 static constexpr size_t TOTAL_GAME_ENTITIES = TOTAL_PLAYERS + TOTAL_ENEMIES;
 
+// TODO Rename to world.h
 class Level : public GameComponent
 {
     public:
@@ -38,7 +39,6 @@ class Level : public GameComponent
 
     private:
         void loadLevel();
-        void checkForPlayerMovement(GameClock& gameClock, EntityDirection dir);
 
     private:
         TileMap map;

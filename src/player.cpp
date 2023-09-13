@@ -35,32 +35,51 @@ void Player::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
     renderTarget.draw(entitySprite);
 }
 
-sf::Vector2<uint32_t> Player::findNextTileFromPlayerDirection(sf::Time deltaTime, EntityDirection direction)
+sf::Vector2<uint32_t> Player::findNextTileFromPlayerDirection(sf::Time deltaTime)
 {
-    sf::Vector2f nextPlayerPos = getPosition();
+    sf::Vector2f position = getPosition();
 
     if (direction == EntityDirection::UP)
     {
-        nextPlayerPos.y += (velocity.y - speed) * deltaTime.asSeconds();
+        position.y += (velocity.y - speed) * deltaTime.asSeconds();
     }
     if (direction == EntityDirection::DOWN)
     {
-        nextPlayerPos.y += (velocity.y + speed) * deltaTime.asSeconds();
+        position.y += (velocity.y + speed) * deltaTime.asSeconds();
     }
     if (direction == EntityDirection::LEFT)
     {
-        nextPlayerPos.x += (velocity.x - speed) * deltaTime.asSeconds();
+        position.x += (velocity.x - speed) * deltaTime.asSeconds();
     }
     if (direction == EntityDirection::RIGHT) 
     {
-        nextPlayerPos.x += (velocity.x + speed) * deltaTime.asSeconds();
+        position.x += (velocity.x + speed) * deltaTime.asSeconds();
     }
 
-    float nextPlayerPosWithOffsetX = nextPlayerPos.x + playerSpritePositionOffsetX;
-    float nextPlayerPosWithOffsetY = nextPlayerPos.y + playerSpritePositionOffsetY;
+    float nextPlayerPosWithOffsetX = position.x + playerSpritePositionOffsetX;
+    float nextPlayerPosWithOffsetY = position.y + playerSpritePositionOffsetY;
     uint32_t nextTileX = nextPlayerPosWithOffsetX > 0 ? std::floor(nextPlayerPosWithOffsetX / TILE_SIZE) : 0;
     uint32_t nextTileY = nextPlayerPosWithOffsetY > 0 ? std::floor(nextPlayerPosWithOffsetY / TILE_SIZE) : 0;
     return {nextTileX, nextTileY};
+}
+
+void Player::updatePositionBasedOnNextTile(GameClock& gameClock, std::vector<std::vector<uint32_t>>& world)
+{
+    // TODO Create a tile object rather than a pair here?
+    sf::Vector2u nextPlayerFacingTile = findNextTileFromPlayerDirection(gameClock.getDeltaTime());
+
+    bool nextTileHasCollision = world.at(nextPlayerFacingTile.y).at(nextPlayerFacingTile.x);
+    if (nextTileHasCollision)
+    {
+        // Reset player velocity if they bump into an obstacle;
+        velocity = sf::Vector2f(0, 0);
+    }
+    else
+    {
+        const unsigned long worldWidth = world.at(0).size();
+        const unsigned long worldHeight = world.size();
+        updatePosition(gameClock.getDeltaTime(), worldWidth, worldHeight);
+    }
 }
 
 EntityType Player::getType()

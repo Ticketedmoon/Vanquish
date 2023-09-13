@@ -15,6 +15,8 @@ Level::Level(std::shared_ptr<Player>& player, std::shared_ptr<TextureManager>& t
 // TODO MOVE TO ENGINE CLASS NOW THAT IT SIMPLY CHECKS KEYBOARD AND THEN CALLS A FUNC? 
 void Level::update(GameState& gameState)
 {
+    map.update(gameState);
+
     for (auto& entity : gameEntities)
     {
         entity->update(gameState);
@@ -28,28 +30,32 @@ void Level::update(GameState& gameState)
     // TODO/REFACTOR: Centralise these 4 blocks as they share similar characteristics.
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
-        checkForPlayerMovement(gameClock, EntityDirection::UP);
+        m_player->setDirection(EntityDirection::UP);
+        m_player->updatePositionBasedOnNextTile(gameClock, world);
         spriteSheetTop = PLAYER_HEIGHT * 3;
         spriteSheetLeft = (m_player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 7)) ? 0 : (m_player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     {
-        checkForPlayerMovement(gameClock, EntityDirection::DOWN);
+        m_player->setDirection(EntityDirection::DOWN);
+        m_player->updatePositionBasedOnNextTile(gameClock, world);
         spriteSheetTop = PLAYER_HEIGHT * 0;
         spriteSheetLeft = (m_player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 7)) ? 0 : (m_player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
-        checkForPlayerMovement(gameClock, EntityDirection::LEFT);
+        m_player->setDirection(EntityDirection::LEFT);
+        m_player->updatePositionBasedOnNextTile(gameClock, world);
         spriteSheetTop = PLAYER_HEIGHT * 1;
         spriteSheetLeft = (m_player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 7)) ? 0 : (m_player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
-        checkForPlayerMovement(gameClock, EntityDirection::RIGHT);
+        m_player->setDirection(EntityDirection::RIGHT);
+        m_player->updatePositionBasedOnNextTile(gameClock, world);
         spriteSheetTop = PLAYER_HEIGHT * 2;
         spriteSheetLeft = (m_player->entitySpriteSheetDimRect.left == (PLAYER_WIDTH * 7)) ? 0 : (m_player->entitySpriteSheetDimRect.left + PLAYER_WIDTH);
     }
@@ -73,7 +79,7 @@ void Level::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 void Level::interactWithNode(sf::Time deltaTime)
 {
     // TODO Create a tile object rather than a pair here?
-    sf::Vector2u nextPlayerFacingTile = m_player->findNextTileFromPlayerDirection(deltaTime, m_player->getDirection());
+    sf::Vector2u nextPlayerFacingTile = m_player->findNextTileFromPlayerDirection(deltaTime);
     uint8_t nodeFacingPlayer = world.at(nextPlayerFacingTile.y).at(nextPlayerFacingTile.x);
 
     if (nodeFacingPlayer == 2 || nodeFacingPlayer == 3)
@@ -100,23 +106,6 @@ void Level::loadLevel()
         std::cout << "Failed to load tileset" << std::endl;
         return;
     }
-}
-
-void Level::checkForPlayerMovement(GameClock& gameClock, EntityDirection dir)
-{
-    m_player->setDirection(dir);
-
-    // TODO Create a tile object rather than a pair here?
-    sf::Vector2u nextPlayerFacingTile = m_player->findNextTileFromPlayerDirection(gameClock.getDeltaTime(), dir);
-
-    if (world.at(nextPlayerFacingTile.y).at(nextPlayerFacingTile.x))
-    {
-        // Reset player velocity if they bump into an obstacle;
-        m_player->velocity = sf::Vector2f(0, 0);
-        return;
-    }
-
-    m_player->updatePosition(gameClock.getDeltaTime(), getWorldWidth(), getWorldHeight());
 }
 
 void Level::initialiseGameEntities()

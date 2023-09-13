@@ -68,7 +68,6 @@ void Engine::update()
     userInterfaceManager->update(gameState);
 
     // TODO INVESTIGATE IF WE CAN MOVE THE PLAYER UPDATE LOGIC OUT OF LEVEL
-    // TODO ALSO, WE'RE PASSING LEVEL info into level here, this is bad - refactor.
     level.update(gameState);
 
     if (gameState.getState() == GameState::State::DEBUG)
