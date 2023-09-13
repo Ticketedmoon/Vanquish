@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef VANQUISH_GAME_CLOCK_H
 #define VANQUISH_GAME_CLOCK_H
 

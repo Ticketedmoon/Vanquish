@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef VANQUISH_PLAYER_H
+#define VANQUISH_PLAYER_H
+
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Time.hpp>
 
@@ -37,3 +40,5 @@ class Player : public GameEntity
 
         sf::Time animationFrameDuration{ sf::seconds(1.f / 16.f) };
 };
+
+#endif //VANQUISH_PLAYER_H

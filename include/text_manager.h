@@ -1,4 +1,5 @@
 #pragma once
+
 #ifndef VANQUISH_TEXT_MANAGER_H
 #define VANQUISH_TEXT_MANAGER_H
 

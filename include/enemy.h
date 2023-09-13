@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef VANQUISH_ENEMY_H
+#define VANQUISH_ENEMY_H
+
 #include "game_entity.h"
 #include "texture_manager.h"
 #include "player.h"
@@ -63,3 +66,5 @@ class Enemy : public GameEntity
 
         sf::Time animationFrameDuration{ sf::seconds(1.f / 6.f) }; // 3 frames per second
 };
+
+#endif //VANQUISH_ENEMY_H

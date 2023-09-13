@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef VANQUISH_USER_INTERFACE_MANAGER_H
+#define VANQUISH_USER_INTERFACE_MANAGER_H
+
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 
@@ -22,3 +25,5 @@ class UserInterfaceManager : public GameComponent
     private:
         std::vector<std::shared_ptr<GameComponent>> uiComponents;
 };
+
+#endif //VANQUISH_USER_INTERFACE_MANAGER_H

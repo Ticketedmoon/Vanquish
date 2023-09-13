@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef VANQUISH_ENGINE_H
+#define VANQUISH_ENGINE_H
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/String.hpp>
@@ -70,3 +73,5 @@ class Engine {
 
         GameState gameState;
 };
+
+#endif //VANQUISH_ENGINE_H

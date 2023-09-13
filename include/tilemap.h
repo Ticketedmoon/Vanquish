@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef VANQUISH_TILEMAP_H
+#define VANQUISH_TILEMAP_H
+
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/PrimitiveType.hpp>
@@ -35,3 +38,5 @@ class TileMap : GameComponent
 
         std::unordered_map<std::shared_ptr<GameEntity>, uint32_t> previousEntityTilePosition;
 };
+
+#endif //VANQUISH_TILEMAP_H

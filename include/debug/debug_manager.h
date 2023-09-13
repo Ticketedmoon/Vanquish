@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef VANQUISH_DEBUG_MANAGER_H
 #define VANQUISH_DEBUG_MANAGER_H
 

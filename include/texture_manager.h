@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef VANQUISH_TEXTURE_MANAGER_H
+#define VANQUISH_TEXTURE_MANAGER_H
+
 #include <SFML/Graphics.hpp>
 
 #include <cstdlib>
@@ -19,3 +22,5 @@ class TextureManager
     private:
         std::unordered_map<std::string, std::shared_ptr<sf::Texture>> textureMap_;
 };
+
+#endif //VANQUISH_TEXTURE_MANAGER_H

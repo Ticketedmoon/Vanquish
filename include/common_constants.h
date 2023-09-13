@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef VANQUISH_COMMON_CONSTANTS_H
+#define VANQUISH_COMMON_CONSTANTS_H
+
 #include <iostream>
 
 static const uint32_t WINDOW_WIDTH = 1280;
@@ -12,3 +15,5 @@ static const std::string HUMAN_CHARACTER_SPRITE_SHEET_A_KEY = "human_character_s
 static const std::string HUMAN_CHARACTER_SPRITE_SHEET_A_FILE_PATH = "resources/assets/character_sprite_sheet_v2.png";
 
 static constexpr uint32_t TILE_SIZE = 32;
+
+#endif //VANQUISH_COMMON_CONSTANTS_H

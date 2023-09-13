@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef VANQUISH_HEALTH_BAR_H
+#define VANQUISH_HEALTH_BAR_H
+
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 
@@ -20,3 +23,5 @@ class HealthBar : public GameComponent
         sf::RectangleShape healthBarBackground;
 
 };
+
+#endif //VANQUISH_HEALTH_BAR_H

@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef VANQUISH_VIEW_MANAGER_H
+#define VANQUISH_VIEW_MANAGER_H
+
 #include <SFML/Graphics/Text.hpp>
 
 #include "../include/game_entity.h"
@@ -27,3 +30,5 @@ class ViewManager
         Level& m_level;
         std::shared_ptr<TextManager> m_textManager;
 };
+
+#endif //VANQUISH_VIEW_MANAGER_H

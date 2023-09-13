@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef VANQUISH_LEVEL_H
+#define VANQUISH_LEVEL_H
+
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Color.hpp>
 
@@ -45,3 +48,5 @@ class Level : public GameComponent
         std::vector<std::shared_ptr<GameEntity>> gameEntities;
         std::shared_ptr<TextureManager> m_textureManager;
 };
+
+#endif //VANQUISH_LEVEL_H

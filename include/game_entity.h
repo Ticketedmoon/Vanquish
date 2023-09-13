@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef VANQUISH_GAME_ENTITY_H
+#define VANQUISH_GAME_ENTITY_H
+
 #include <filesystem>
 #include <cmath>
 #include <cstdint>
@@ -93,3 +96,5 @@ class GameEntity : public GameComponent
         uint8_t width;
         uint8_t height;
 };
+
+#endif //VANQUISH_GAME_ENTITY_H

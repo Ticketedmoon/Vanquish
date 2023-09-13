@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef VANQUISH_GAME_COMPONENT_H
+#define VANQUISH_GAME_COMPONENT_H
+
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/Drawable.hpp>
@@ -19,3 +22,5 @@ class GameComponent : public sf::Drawable, public sf::Transformable
         virtual void update(GameClock& gameClock) = 0;
 
 };
+
+#endif //VANQUISH_GAME_COMPONENT_H
