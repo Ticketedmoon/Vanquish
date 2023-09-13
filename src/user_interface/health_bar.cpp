@@ -17,7 +17,7 @@ HealthBar::HealthBar(std::shared_ptr<GameEntity>& entity, sf::Vector2f dimension
     healthBar.setOutlineThickness(outlineThickness);
 }
 
-void HealthBar::update(GameClock& gameClock)
+void HealthBar::update(GameState& gameState)
 {
     sf::Vector2f newSize = sf::Vector2f(entity->getHealth(), healthBar.getSize().y);
     healthBar.setSize(newSize);

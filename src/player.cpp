@@ -14,8 +14,14 @@ Player::Player(std::shared_ptr<TextureManager>& textureManager)
     entitySprite.setPosition(getPosition());
 }
 
-void Player::update(GameClock& gameClock)
+void Player::update(GameState& gameState)
 {
+    if (isDead())
+    {
+        gameState.updateState(GameState::State::GAME_OVER);
+        return;
+    }
+
     uint32_t tileUnderPlayerX = floor((getPosition().x + playerSpritePositionOffsetX) / TILE_SIZE);
     uint32_t tileUnderPlayerY = floor((getPosition().y + playerSpritePositionOffsetY) / TILE_SIZE);
 

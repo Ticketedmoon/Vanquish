@@ -19,14 +19,14 @@ class ViewManager
     public:
         ViewManager(sf::RenderWindow& window, Level& level, std::shared_ptr<TextManager>& textManager);
         void centerViewOnEntity(const std::shared_ptr<GameEntity>& entity);
+        void showGameOverView();
 
     private:
         static float getViewCentreForCoordinate(float playerCoordinatePosition, float levelDimension,
-                                         float windowDimensionValue, float playerDimensionValue);
+                                                float windowDimensionValue, float playerDimensionValue);
 
     private:
         sf::RenderWindow& m_window;
-
         Level& m_level;
         std::shared_ptr<TextManager> m_textManager;
 };

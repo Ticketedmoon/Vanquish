@@ -30,3 +30,12 @@ float ViewManager::getViewCentreForCoordinate(const float playerCoordinatePositi
            ? playerCoordinatePosition
            : windowDimensionValue - (windowDimensionValue / 3);
 }
+
+void ViewManager::showGameOverView() {
+    m_window.clear(sf::Color::Red);
+    const std::string text = "You have died!\nPress [SPACE] to restart";
+
+    // TODO - Make this calculation using text.getLocalBounds() or View config
+    float textPositionX = WINDOW_WIDTH / 2 - (text.size() * 0.5 * 20);
+    m_textManager->drawText(text, sf::Color::White, 64, sf::Vector2f(textPositionX, 255));
+}

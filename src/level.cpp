@@ -13,15 +13,17 @@ Level::Level(std::shared_ptr<Player>& player, std::shared_ptr<TextureManager>& t
 }
 
 // TODO MOVE TO ENGINE CLASS NOW THAT IT SIMPLY CHECKS KEYBOARD AND THEN CALLS A FUNC? 
-void Level::update(GameClock& gameClock)
+void Level::update(GameState& gameState)
 {
     for (auto& entity : gameEntities)
     {
-        entity->update(gameClock);
+        entity->update(gameState);
     }
 
     std::optional<uint32_t> spriteSheetTop;
     std::optional<uint32_t> spriteSheetLeft;
+
+    GameClock& gameClock = gameState.getClock();
 
     // TODO/REFACTOR: Centralise these 4 blocks as they share similar characteristics.
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))

@@ -43,7 +43,7 @@ class GameEntity : public GameComponent
 
         // Not necessary to add virtual here to maintain pure-virtual function as parent method is pure-virtual.
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override = 0;
-        void update(GameClock& gameClock) override = 0;
+        void update(GameState& gameState) override = 0;
 
         virtual void updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft);
         virtual sf::Time getAnimationFrameDuration() = 0;

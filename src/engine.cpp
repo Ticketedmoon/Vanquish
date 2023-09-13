@@ -3,7 +3,7 @@
 Engine::Engine()
 {
     createGameWindow();
-    createGameEngineComponents();
+    buildGameEngineComponents();
 }
 
 void Engine::startGameLoop()
@@ -50,7 +50,7 @@ void Engine::listenForEvents()
             {
                 if (gameState.getState() == GameState::State::GAME_OVER)
                 {
-                    createGameEngineComponents();
+                    buildGameEngineComponents();
                 }
             }
 
@@ -60,34 +60,35 @@ void Engine::listenForEvents()
 
 void Engine::update()
 {
-    userInterfaceManager->update(gameState.getClock());
+    if (gameState.getState() == GameState::State::GAME_OVER)
+    {
+        return;
+    }
+
+    userInterfaceManager->update(gameState);
 
     // TODO INVESTIGATE IF WE CAN MOVE THE PLAYER UPDATE LOGIC OUT OF LEVEL
     // TODO ALSO, WE'RE PASSING LEVEL info into level here, this is bad - refactor.
-    level.update(gameState.getClock());
+    level.update(gameState);
 
     if (gameState.getState() == GameState::State::DEBUG)
     {
-        debugManager->update(gameState.getClock());
-    }
-
-    // TODO CHECK THIS IN PLAYER UPDATE METHOD
-    //      CALL RESET LOGIC IN ENGINE IF GAME_STATE IS SET ACCORDINGLY.
-    if (player->isDead())
-    {
-        gameState.updateState(GameState::State::GAME_OVER);
+        debugManager->update(gameState);
     }
 }
 
 void Engine::render()
 {
-    switch (gameState.getState()) {
+    switch (gameState.getState())
+    {
         case GameState::State::PLAYING:
             renderCoreGameComponents();
             break;
+
         case GameState::State::GAME_OVER:
-            showGameOverScreen();
+            viewManager->showGameOverView();
             break;
+
         case GameState::State::DEBUG:
             renderCoreGameComponents();
             debugManager->draw(window, sf::RenderStates::Default);
@@ -101,7 +102,6 @@ void Engine::createGameWindow()
 
     uint32_t screenWidth = sf::VideoMode::getDesktopMode().width;
     uint32_t screenHeight = sf::VideoMode::getDesktopMode().height;
-
     window.setPosition(sf::Vector2i((screenWidth - WINDOW_WIDTH)/2, (screenHeight - WINDOW_HEIGHT)/2));
 
     if (USE_VERTICAL_SYNC)
@@ -114,7 +114,7 @@ void Engine::createGameWindow()
     }
 }
 
-void Engine::createGameEngineComponents()
+void Engine::buildGameEngineComponents()
 {
     textureManager = std::make_shared<TextureManager>();
     textureManager->addTexture(PLAYER_SPRITE_SHEET_A_WALK_KEY, PLAYER_SPRITE_SHEET_WALK_FILE_PATH);
@@ -135,13 +135,4 @@ void Engine::renderCoreGameComponents()
     viewManager->centerViewOnEntity(player);
     level.draw(window, sf::RenderStates::Default);
     userInterfaceManager->draw(window, sf::RenderStates::Default);
-}
-
-void Engine::showGameOverScreen() {
-    window.clear(sf::Color::Red);
-    const std::string text = "You have died!\nPress [SPACE] to restart";
-
-    // TODO - Make this calculation using text.getLocalBounds()
-    float textPositionX = WINDOW_WIDTH / 2 - (text.size() * 0.5 * 20);
-    textManager->drawText(text, sf::Color::White, 64, sf::Vector2f(textPositionX, 255));
 }

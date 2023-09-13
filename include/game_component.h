@@ -9,7 +9,7 @@
 #include <SFML/Graphics/Transformable.hpp>
 
 #include "common_constants.h"
-#include "game_clock.h"
+#include "game_state.h"
 
 class GameComponent : public sf::Drawable, public sf::Transformable
 {
@@ -19,7 +19,7 @@ class GameComponent : public sf::Drawable, public sf::Transformable
 
         // TODO SINCE THIS IS NOT VIRTUAL, ARE WE REQUIRED TO OVERRIDE?
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override = 0;
-        virtual void update(GameClock& gameClock) = 0;
+        virtual void update(GameState& gameState) = 0;
 
 };
 

@@ -3,6 +3,8 @@
 #ifndef VANQUISH_GAME_STATE_H
 #define VANQUISH_GAME_STATE_H
 
+#include "game_clock.h"
+
 class GameState
 {
     public:
@@ -17,6 +19,7 @@ class GameState
         {
             return m_state;
         }
+
         void updateState(const State state)
         {
             this->m_state = state;

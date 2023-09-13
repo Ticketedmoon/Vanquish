@@ -26,7 +26,7 @@ class Level : public GameComponent
         Level() = default;
         Level(std::shared_ptr<Player>& player, std::shared_ptr<TextureManager>& textureManager);
 
-        void update(GameClock& gameClock) override;
+        void update(GameState& gameState) override;
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
 
         void interactWithNode(sf::Time deltaTime);

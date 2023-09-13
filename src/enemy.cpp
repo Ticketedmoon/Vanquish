@@ -26,17 +26,17 @@ Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Pl
     }
 }
 
-void Enemy::update(GameClock& gameClock)
+void Enemy::update(GameState& gameState)
 {
     const sf::Vector2f& position = getPosition();
     uint32_t tileUnderEnemyX = floor((position.x + enemySpritePositionOffsetX) / TILE_SIZE);
     uint32_t tileUnderEnemyY = floor((position.y + enemySpritePositionOffsetY) / TILE_SIZE);
 
     tilePosition = sf::Vector2u(tileUnderEnemyX, tileUnderEnemyY);
-    sf::Time deltaTime = gameClock.getDeltaTime();
+    sf::Time deltaTime = gameState.getClock().getDeltaTime();
 
     // TODO REFACTOR BELOW
-    int milliseconds = gameClock.getWorldTimeMs();
+    int milliseconds = gameState.getClock().getWorldTimeMs();
     if (milliseconds > entityWaitTimeBeforeMovement)
     {
         if (isEnemyInProximityOfTarget(position.x, position.y, player->getPosition().x, player->getPosition().y,
@@ -44,7 +44,7 @@ void Enemy::update(GameClock& gameClock)
         {
             moveToDestination(deltaTime.asSeconds(), player->getPosition().x, player->getPosition().y);
             if (isEnemyInProximityOfTarget(position.x, position.y, player->getPosition().x, player->getPosition().y, 24)) {
-                damagePlayer(gameClock.getWorldTimeSeconds());
+                damagePlayer(gameState.getClock().getWorldTimeSeconds());
             }
         }
         else

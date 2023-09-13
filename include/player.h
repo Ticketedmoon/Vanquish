@@ -9,6 +9,7 @@
 #include "game_entity.h"
 #include "texture_manager.h"
 #include "common_constants.h"
+#include "game_state.h"
 
 inline static constexpr uint8_t PLAYER_WIDTH = 48;
 inline static constexpr uint8_t PLAYER_HEIGHT = 50;
@@ -26,7 +27,7 @@ class Player : public GameEntity
         }
 
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
-        void update(GameClock& gameClock) override;
+        void update(GameState& gameState) override;
         void updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft) override;
         sf::Time getAnimationFrameDuration() override;
 

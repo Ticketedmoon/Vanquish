@@ -11,11 +11,11 @@ UserInterfaceManager::UserInterfaceManager(std::shared_ptr<GameEntity> gameEntit
     uiComponents.emplace_back(healthBarForEntity);
 }
 
-void UserInterfaceManager::update(GameClock& gameClock)
+void UserInterfaceManager::update(GameState& gameState)
 {
     for (auto& component : uiComponents)
     {
-        component->update(gameClock);
+        component->update(gameState);
     }
 }
 

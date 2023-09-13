@@ -34,7 +34,6 @@
 #include "common_constants.h"
 #include "game_state.h"
 #include "debug/debug_manager.h"
-#include "game_clock.h"
 
 static constexpr std::string_view WINDOW_TITLE = "vanquish";
 static const bool USE_VERTICAL_SYNC = true;
@@ -44,20 +43,17 @@ class Engine {
 
     public:
         Engine();
-        void startGameLoop();
+        static void startGameLoop();
 
     private:
         // Game loop logic
-        void listenForEvents();
-        void update();
-        void render();
+        static void listenForEvents();
+        static void update();
+        static void render();
 
         static void createGameWindow();
-        static void createGameEngineComponents();
+        static void buildGameEngineComponents();
         static void renderCoreGameComponents();
-
-        // TODO Move to ViewManager?
-        static void showGameOverScreen();
 
     private:
         // TODO Understand 'inline' and why it worked here

@@ -16,14 +16,14 @@ void DebugManager::draw(sf::RenderTarget& renderTarget, sf::RenderStates states)
     });
 }
 
-void DebugManager::update(GameClock& gameClock)
+void DebugManager::update(GameState& gameState)
 {
     std::string fps = std::to_string(1.0f / debugClock.restart().asSeconds());
     const std::string& playerPosX = std::to_string(player->getPosition().x);
     const std::string& playerPosY = std::to_string(player->getPosition().y);
     const std::string& playerTileX = std::to_string(player->tilePosition.x);
     const std::string& playerTileY = std::to_string(player->tilePosition.y);
-    const std::string& worldTimeSeconds = std::to_string(gameClock.getWorldTimeSeconds());
+    const std::string& worldTimeSeconds = std::to_string(gameState.getClock().getWorldTimeSeconds());
 
     debugTextValue =
             "fps: " + fps + "\n" +
