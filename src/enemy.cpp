@@ -1,20 +1,17 @@
 #include "../include/enemy.h"
 
 Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Player>& player,
-             sf::Vector2f position,
-             sf::Vector2u spriteSheetRectPosition,
-             sf::Vector2u levelDimensions)
-    : GameEntity(ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY_SPEED, position,
-                 sf::IntRect(spriteSheetRectPosition.x, spriteSheetRectPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT),
-                 spriteSheetRectPosition, STARTING_ENEMY_HEALTH),
-      player(player),
-      levelDimensions(levelDimensions),
-      enemySpritePositionOffsetX((std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT) * 0.5f)),
-      enemySpritePositionOffsetY((std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT)))
+        sf::Vector2f position, sf::Vector2u spriteSheetRectPosition)
+        : GameEntity(ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY_SPEED, position,
+                     sf::IntRect(spriteSheetRectPosition.x, spriteSheetRectPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT),
+                     spriteSheetRectPosition, STARTING_ENEMY_HEALTH,
+                     sf::Vector2u(std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT) * 0.5f,
+                             std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT))),
+          player(player)
 {
     sf::Texture& texture = *(textureManager->getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY));
     entitySprite = sf::Sprite(texture, entitySpriteSheetDimRect);
-    entitySprite.scale(ENEMY_SCALE_FACTOR , ENEMY_SCALE_FACTOR);
+    entitySprite.scale(ENEMY_SCALE_FACTOR, ENEMY_SCALE_FACTOR);
     entitySprite.setPosition(getPosition());
     entitySprite.setTextureRect(entitySpriteSheetDimRect);
 
@@ -29,8 +26,8 @@ Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Pl
 void Enemy::update(GameState& gameState)
 {
     const sf::Vector2f& position = getPosition();
-    uint32_t tileUnderEnemyX = floor((position.x + enemySpritePositionOffsetX) / TILE_SIZE);
-    uint32_t tileUnderEnemyY = floor((position.y + enemySpritePositionOffsetY) / TILE_SIZE);
+    uint32_t tileUnderEnemyX = floor((position.x + spritePositionOffset.x) / TILE_SIZE);
+    uint32_t tileUnderEnemyY = floor((position.y + spritePositionOffset.y) / TILE_SIZE);
 
     tilePosition = sf::Vector2u(tileUnderEnemyX, tileUnderEnemyY);
     sf::Time deltaTime = gameState.getClock().getDeltaTime();
@@ -52,7 +49,7 @@ void Enemy::update(GameState& gameState)
             if (isEnemyInProximityOfTarget(position.x, position.y, spawnPosition.x, spawnPosition.y, WANDER_DISTANCE))
             {
                 // Move randomly
-                updatePosition(deltaTime, levelDimensions.x, levelDimensions.y);
+                updatePosition(gameState.getClock());
                 if (milliseconds > (entityWaitTimeBeforeMovement + 250))
                 {
                     entityWaitTimeBeforeMovement = std::experimental::randint(milliseconds + MIN_ENEMY_MOVE_RATE, milliseconds + MAX_ENEMY_MOVE_RATE);
@@ -96,6 +93,7 @@ void Enemy::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
     renderTarget.draw(entitySprite);
 }
 
+// TODO This should use updatePosition(...)
 void Enemy::moveToDestination(const float deltaTimeSeconds, float destinationX, float destinationY) {
     velocity += sf::Vector2f(speed, speed);
     sf::Vector2f newPosition = getPosition();

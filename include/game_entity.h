@@ -19,10 +19,10 @@
 
 #include "game_component.h"
 
-enum class EntityDirection 
+enum class EntityDirection
 {
-    DOWN = 0,
-    UP = 1,
+    UP = 0,
+    DOWN = 1,
     LEFT = 2,
     RIGHT = 3
 };
@@ -33,12 +33,14 @@ enum class EntityType
     ENEMY
 };
 
-
 class GameEntity : public GameComponent
 {
     public:
+        // TODO INVESTIGATE WHAT CAN HAVE A MORE-RESTRICTIVE VISIBILITY MODIFIER;
+
         GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position,
-                   sf::IntRect entitySpriteSheetDimRect, sf::Vector2u startingAnimationPosition, uint16_t health);
+                sf::IntRect entitySpriteSheetDimRect, sf::Vector2u startingAnimationPosition, uint16_t health,
+                sf::Vector2u spritePositionOffset);
         ~GameEntity() override = default;
 
         // Not necessary to add virtual here to maintain pure-virtual function as parent method is pure-virtual.
@@ -47,15 +49,15 @@ class GameEntity : public GameComponent
 
         virtual void updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft);
         virtual sf::Time getAnimationFrameDuration() = 0;
-
         virtual EntityType getType() = 0;
 
         void updateEntityToRandomDirection();
-        void updatePosition(sf::Time deltaTime, uint32_t levelWidth, uint32_t levelHeight);
+        void updatePosition(GameClock& gameClock);
         void setDirection(EntityDirection dir);
 
+        sf::Vector2<uint32_t> findNextTileDirection(sf::Time deltaTime);
         static uint8_t getSpriteSheetAnimationOffset(EntityDirection dir);
-        EntityDirection getDirection() const;
+
         uint8_t getWidth() const;
         uint8_t getHeight() const;
 
@@ -63,9 +65,12 @@ class GameEntity : public GameComponent
         uint16_t getHealth() const;
         void setHealth(uint16_t newHealth);
 
+    public:
         sf::Vector2u tilePosition;
-        sf::Vector2f velocity;
+
+    protected:
         sf::IntRect entitySpriteSheetDimRect;
+        sf::Vector2f velocity;
 
     private:
         struct NextCoordinateVelocityPair
@@ -75,21 +80,20 @@ class GameEntity : public GameComponent
         };
 
         static NextCoordinateVelocityPair getNextCoordinatePositionWithNextVelocity(sf::Time deltaTime,
-                                                                                    uint32_t tileMapDimensionValue,
-                                                                                    float positionForCoordinate,
-                                                                                    float velocityForCoordinate);
+                uint32_t tileMapDimensionValue,
+                float positionForCoordinate,
+                float velocityForCoordinate);
+
+        bool isNextTileCollidable(GameClock& gameClock);
 
     protected:
         float speed;
-
         sf::Vector2u spawnPosition;
-
         EntityDirection direction = EntityDirection::DOWN;
-
         sf::Sprite entitySprite;
-
         sf::Vector2f startingAnimationPosition;
-        sf::Time animationFrameStartTime{ sf::Time::Zero };
+        sf::Time animationFrameStartTime{sf::Time::Zero};
+        sf::Vector2u spritePositionOffset;
 
     private:
         uint16_t health;

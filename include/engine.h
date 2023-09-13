@@ -57,16 +57,16 @@ class Engine {
 
     private:
         // TODO Understand 'inline' and why it worked here
-        inline static sf::RenderWindow window;
-        inline static std::shared_ptr<TextureManager> textureManager;
-        inline static std::unique_ptr<ViewManager> viewManager;
-        inline static std::shared_ptr<TextManager> textManager; // TODO RENAME, TOO SIMILAR TO textureManager
-        inline static std::unique_ptr<DebugManager> debugManager;
-        inline static std::shared_ptr<UserInterfaceManager> userInterfaceManager;
-        inline static std::shared_ptr<Player> player;
-        inline static Level level;
+        static inline sf::RenderWindow window;
+        static inline std::shared_ptr<TextureManager> textureManager;
+        static inline std::unique_ptr<ViewManager> viewManager;
+        static inline std::shared_ptr<TextManager> textManager; // TODO RENAME, TOO SIMILAR TO textureManager
+        static inline std::unique_ptr<DebugManager> debugManager;
+        static inline std::shared_ptr<UserInterfaceManager> userInterfaceManager;
 
-        inline static GameState gameState;
+        static inline GameState gameState;
+        static inline std::shared_ptr<Player> player;
+        static inline Level level;
 };
 
 #endif //VANQUISH_ENGINE_H

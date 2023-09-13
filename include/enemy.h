@@ -18,15 +18,13 @@ static constexpr size_t MAX_ENEMY_MOVE_RATE = 3000;
 
 static constexpr int HORIZONTAL_DIRECTION_WINDOW_SIZE_FOR_ENEMY_ANIMATION = 20;
 
-inline static constexpr uint16_t STARTING_ENEMY_HEALTH = 50;
+static inline constexpr uint16_t STARTING_ENEMY_HEALTH = 50;
 
 class Enemy : public GameEntity
 {
     public:
         explicit Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Player>& player,
-                       sf::Vector2f position,
-                       sf::Vector2u spriteSheetRectPosition,
-                       sf::Vector2u levelDimensions);
+                       sf::Vector2f position, sf::Vector2u spriteSheetRectPosition);
 
         Enemy(Enemy& enemy) : GameEntity(enemy)
         {
@@ -57,12 +55,6 @@ class Enemy : public GameEntity
 
         // TODO IMPROVE THIS, MAKE MORE DYNAMIC
         uint16_t damage = std::experimental::randint(5, 20);
-
-        sf::Vector2u levelDimensions;
-
-        // TODO Move me to parent class?
-        uint32_t enemySpritePositionOffsetX{};
-        uint32_t enemySpritePositionOffsetY{};
 
         sf::Time animationFrameDuration{ sf::seconds(1.f / 6.f) }; // 3 frames per second
 };

@@ -10,7 +10,6 @@
 #include <vector>
 #include <json.hpp>
 #include <fstream>
-#include <optional>
 
 #include "player.h"
 #include "tilemap.h"
@@ -34,15 +33,17 @@ class Level : public GameComponent
         void enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf::Color> entityTypeTileColour);
 
         void initialiseGameEntities();
-        uint32_t getWorldWidth();
-        uint32_t getWorldHeight();
+
+        static std::vector<std::vector<uint32_t>> getWorld();
+        static uint32_t getWorldWidth();
+        static uint32_t getWorldHeight();
 
     private:
         void loadLevel();
 
     private:
         TileMap map;
-        std::vector<std::vector<uint32_t>> world;
+        static inline std::vector<std::vector<uint32_t>> world;
 
         std::shared_ptr<Player> m_player;
         std::vector<std::shared_ptr<GameEntity>> gameEntities;

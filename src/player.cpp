@@ -3,9 +3,10 @@
 Player::Player(std::shared_ptr<TextureManager>& textureManager)
     : GameEntity(PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, sf::Vector2f(300, 150),
                  sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT),
-                 sf::Vector2u(0, 0), STARTING_PLAYER_HEALTH),
-      playerSpritePositionOffsetX((std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT) * 0.5f)),
-      playerSpritePositionOffsetY((std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT)))
+                 sf::Vector2u(0, 0), STARTING_PLAYER_HEALTH,
+                 sf::Vector2u(
+                         std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT) * 0.5f,
+                         std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT)))
 {
     sf::Texture& textureUp = *textureManager->getTexture(PLAYER_SPRITE_SHEET_A_WALK_KEY);
 
@@ -22,64 +23,52 @@ void Player::update(GameState& gameState)
         return;
     }
 
-    uint32_t tileUnderPlayerX = floor((getPosition().x + playerSpritePositionOffsetX) / TILE_SIZE);
-    uint32_t tileUnderPlayerY = floor((getPosition().y + playerSpritePositionOffsetY) / TILE_SIZE);
+    uint32_t tileUnderPlayerX = floor((getPosition().x + spritePositionOffset.x) / TILE_SIZE);
+    uint32_t tileUnderPlayerY = floor((getPosition().y + spritePositionOffset.y) / TILE_SIZE);
 
     tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
     entitySprite.setPosition(getPosition());
     entitySprite.setTextureRect(entitySpriteSheetDimRect);
+
+    GameClock& gameClock = gameState.getClock();
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+    {
+        startMovement(gameClock, EntityDirection::UP, 3);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+    {
+        startMovement(gameClock, EntityDirection::DOWN, 0);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+    {
+        startMovement(gameClock, EntityDirection::LEFT, 1);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+    {
+        startMovement(gameClock, EntityDirection::RIGHT, 2);
+    }
+}
+
+void Player::startMovement(GameClock& gameClock, EntityDirection direction, size_t spriteSheetTopOffset)
+{
+    setDirection(direction);
+    updatePosition(gameClock);
+
+    uint32_t spriteSheetTop = PLAYER_HEIGHT * spriteSheetTopOffset;
+    uint32_t spriteSheetLeft = entitySpriteSheetDimRect.left == (PLAYER_WIDTH * MAX_SPRITE_SHEET_FRAMES)
+            ? 0
+            : (entitySpriteSheetDimRect.left + PLAYER_WIDTH);
+
+    updateAnimation(gameClock.getDeltaTime(), spriteSheetTop, spriteSheetLeft);
 }
 
 void Player::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 {
     renderTarget.draw(entitySprite);
-}
-
-sf::Vector2<uint32_t> Player::findNextTileFromPlayerDirection(sf::Time deltaTime)
-{
-    sf::Vector2f position = getPosition();
-
-    if (direction == EntityDirection::UP)
-    {
-        position.y += (velocity.y - speed) * deltaTime.asSeconds();
-    }
-    if (direction == EntityDirection::DOWN)
-    {
-        position.y += (velocity.y + speed) * deltaTime.asSeconds();
-    }
-    if (direction == EntityDirection::LEFT)
-    {
-        position.x += (velocity.x - speed) * deltaTime.asSeconds();
-    }
-    if (direction == EntityDirection::RIGHT) 
-    {
-        position.x += (velocity.x + speed) * deltaTime.asSeconds();
-    }
-
-    float nextPlayerPosWithOffsetX = position.x + playerSpritePositionOffsetX;
-    float nextPlayerPosWithOffsetY = position.y + playerSpritePositionOffsetY;
-    uint32_t nextTileX = nextPlayerPosWithOffsetX > 0 ? std::floor(nextPlayerPosWithOffsetX / TILE_SIZE) : 0;
-    uint32_t nextTileY = nextPlayerPosWithOffsetY > 0 ? std::floor(nextPlayerPosWithOffsetY / TILE_SIZE) : 0;
-    return {nextTileX, nextTileY};
-}
-
-void Player::updatePositionBasedOnNextTile(GameClock& gameClock, std::vector<std::vector<uint32_t>>& world)
-{
-    // TODO Create a tile object rather than a pair here?
-    sf::Vector2u nextPlayerFacingTile = findNextTileFromPlayerDirection(gameClock.getDeltaTime());
-
-    bool nextTileHasCollision = world.at(nextPlayerFacingTile.y).at(nextPlayerFacingTile.x);
-    if (nextTileHasCollision)
-    {
-        // Reset player velocity if they bump into an obstacle;
-        velocity = sf::Vector2f(0, 0);
-    }
-    else
-    {
-        const unsigned long worldWidth = world.at(0).size();
-        const unsigned long worldHeight = world.size();
-        updatePosition(gameClock.getDeltaTime(), worldWidth, worldHeight);
-    }
 }
 
 EntityType Player::getType()
@@ -89,6 +78,7 @@ EntityType Player::getType()
 
 void Player::updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft)
 {
+    // Note: I don't think it's smart to use deltaTime in this calculation as it will vary across machines.
     animationFrameStartTime += deltaTime;
     if (animationFrameStartTime >= animationFrameDuration)
     {

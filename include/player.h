@@ -11,11 +11,11 @@
 #include "common_constants.h"
 #include "game_state.h"
 
-inline static constexpr uint8_t PLAYER_WIDTH = 48;
-inline static constexpr uint8_t PLAYER_HEIGHT = 50;
-inline static constexpr float PLAYER_SCALE_FACTOR = 0.85;
-inline static constexpr float PLAYER_SPEED = 60.0f;
-inline static constexpr uint16_t STARTING_PLAYER_HEALTH = 200;
+static inline constexpr uint8_t PLAYER_WIDTH = 48;
+static inline constexpr uint8_t PLAYER_HEIGHT = 50;
+static inline constexpr float PLAYER_SCALE_FACTOR = 0.85;
+static inline constexpr float PLAYER_SPEED = 60.0f;
+static inline constexpr uint16_t STARTING_PLAYER_HEALTH = 200;
 
 class Player : public GameEntity
 {
@@ -28,19 +28,19 @@ class Player : public GameEntity
 
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(GameState& gameState) override;
+
+        // TODO INVESTIGATE WHAT CAN BE PRIVATE BELOW
         void updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft) override;
         sf::Time getAnimationFrameDuration() override;
 
         EntityType getType() override;
 
-        sf::Vector2<uint32_t> findNextTileFromPlayerDirection(sf::Time deltaTime);
-        void updatePositionBasedOnNextTile(GameClock& gameClock, std::vector<std::vector<uint32_t>>& world);
+        void startMovement(GameClock& gameClock, EntityDirection direction, size_t spriteSheetTopOffset);
 
     private:
-        uint32_t playerSpritePositionOffsetX;
-        uint32_t playerSpritePositionOffsetY;
-
+        static constexpr int MAX_SPRITE_SHEET_FRAMES = 7;
         sf::Time animationFrameDuration{ sf::seconds(1.f / 16.f) };
+
 };
 
 #endif //VANQUISH_PLAYER_H

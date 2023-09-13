@@ -1,13 +1,16 @@
 #include "../include/game_entity.h"
+#include "level.h"
 
 GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position,
-                       sf::IntRect entitySpriteSheetDimRect, sf::Vector2u startingAnimationPosition, uint16_t health)
-    : entitySpriteSheetDimRect(entitySpriteSheetDimRect),
-      speed(speed),
-      startingAnimationPosition(startingAnimationPosition),
-      health(health),
-      width(width),
-      height(height)
+        sf::IntRect entitySpriteSheetDimRect, sf::Vector2u startingAnimationPosition, uint16_t health,
+        sf::Vector2u spritePositionOffset)
+        : entitySpriteSheetDimRect(entitySpriteSheetDimRect),
+          speed(speed),
+          startingAnimationPosition(startingAnimationPosition),
+          spritePositionOffset(spritePositionOffset),
+          health(health),
+          width(width),
+          height(height)
 {
     setPosition(position);
     spawnPosition = sf::Vector2u(position);
@@ -24,18 +27,17 @@ void GameEntity::updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, ui
     }
 }
 
-EntityDirection GameEntity::getDirection() const
-{
-    return direction;
-}
-
 void GameEntity::setDirection(EntityDirection dir)
 {
     this->direction = dir;
 }
 
-void GameEntity::updatePosition(sf::Time deltaTime, uint32_t levelWidth, uint32_t levelHeight)
+void GameEntity::updatePosition(GameClock& gameClock)
 {
+    if (isNextTileCollidable(gameClock))
+    {
+        return;
+    }
     const float sign = direction == EntityDirection::UP || direction == EntityDirection::LEFT ? -1.0f : 1.0f;
     float xAccel = direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT ? (speed * sign) : 0;
     float yAccel = direction == EntityDirection::UP || direction == EntityDirection::DOWN ? (speed * sign) : 0;
@@ -45,13 +47,13 @@ void GameEntity::updatePosition(sf::Time deltaTime, uint32_t levelWidth, uint32_
     velocity += acceleration;
 
     // TODO REFACTOR ME CAN WE USE tilePosition?
-    uint32_t worldWidth = (levelWidth - 1) * TILE_SIZE;
-    uint32_t worldHeight = (levelHeight - 1) * TILE_SIZE;
+    uint32_t worldWidth = (Level::getWorldWidth() - 1) * TILE_SIZE;
+    uint32_t worldHeight = (Level::getWorldHeight() - 1) * TILE_SIZE;
 
     if (direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT)
     {
         NextCoordinateVelocityPair nextCoordinatePair =
-                getNextCoordinatePositionWithNextVelocity(deltaTime, worldWidth, getPosition().x, velocity.x);
+                getNextCoordinatePositionWithNextVelocity(gameClock.getDeltaTime(), worldWidth, getPosition().x, velocity.x);
         setPosition(nextCoordinatePair.coordinatePosition, getPosition().y);
         velocity.x = nextCoordinatePair.velocity;
     }
@@ -59,16 +61,17 @@ void GameEntity::updatePosition(sf::Time deltaTime, uint32_t levelWidth, uint32_
     if (direction == EntityDirection::UP || direction == EntityDirection::DOWN)
     {
         NextCoordinateVelocityPair nextCoordinatePair =
-                getNextCoordinatePositionWithNextVelocity(deltaTime, worldHeight, getPosition().y, velocity.y);
+                getNextCoordinatePositionWithNextVelocity(gameClock.getDeltaTime(), worldHeight, getPosition().y, velocity.y);
         setPosition(getPosition().x, nextCoordinatePair.coordinatePosition);
         velocity.y = nextCoordinatePair.velocity;
     }
 }
 
 GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWithNextVelocity(const sf::Time deltaTime,
-                                                                                             uint32_t tileMapDimensionValue,
-                                                                                             float positionForCoordinate,
-                                                                                             float velocityForCoordinate) {
+        uint32_t tileMapDimensionValue,
+        float positionForCoordinate,
+        float velocityForCoordinate)
+{
     float positionDeltaForCoordinate = positionForCoordinate + (velocityForCoordinate * deltaTime.asSeconds());
     if (positionDeltaForCoordinate >= 0 && positionDeltaForCoordinate < static_cast<float>(tileMapDimensionValue))
     {
@@ -81,6 +84,46 @@ GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWith
     }
 
     return NextCoordinateVelocityPair(positionForCoordinate, velocityForCoordinate);
+}
+
+bool GameEntity::isNextTileCollidable(GameClock& gameClock)
+{
+    // TODO Introduce a tile object rather than a pair here?
+    sf::Vector2u nextTileFacingEntity = findNextTileDirection(gameClock.getDeltaTime());
+    std::vector<std::vector<uint32_t>> world = Level::getWorld();
+    return world.at(nextTileFacingEntity.y).at(nextTileFacingEntity.x) > 0;
+}
+
+sf::Vector2<uint32_t> GameEntity::findNextTileDirection(sf::Time deltaTime)
+{
+    sf::Vector2f position = getPosition();
+
+    if (direction == EntityDirection::UP)
+    {
+        position.y += (velocity.y - speed) * deltaTime.asSeconds();
+    }
+    if (direction == EntityDirection::DOWN)
+    {
+        position.y += (velocity.y + speed) * deltaTime.asSeconds();
+    }
+    if (direction == EntityDirection::LEFT)
+    {
+        position.x += (velocity.x - speed) * deltaTime.asSeconds();
+    }
+    if (direction == EntityDirection::RIGHT)
+    {
+        position.x += (velocity.x + speed) * deltaTime.asSeconds();
+    }
+
+    float nextPlayerPosWithOffsetX = position.x + spritePositionOffset.x;
+    float nextPlayerPosWithOffsetY = position.y + spritePositionOffset.y;
+    uint32_t nextTileX = nextPlayerPosWithOffsetX > 0
+            ? std::floor(nextPlayerPosWithOffsetX / TILE_SIZE)
+            : 0;
+    uint32_t nextTileY = nextPlayerPosWithOffsetY > 0
+            ? std::floor(nextPlayerPosWithOffsetY / TILE_SIZE)
+            : 0;
+    return {nextTileX, nextTileY};
 }
 
 // TODO REFACTOR

@@ -1,7 +1,7 @@
 #include "../include/tilemap.h"
 #include <SFML/Graphics/Color.hpp>
 
-bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& tiles)
+bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& world)
 {
     // load the tileset texture
     if (!m_tileset.loadFromFile(tileset))
@@ -13,16 +13,16 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std:
     m_vertices.setPrimitiveType(sf::Triangles);
 
     // extract levelWidth and levelHeight
-    uint32_t levelWidth = tiles.at(0).size();
-    uint32_t levelHeight = tiles.size();
+    uint32_t levelWidth = world.at(0).size();
+    uint32_t levelHeight = world.size();
 
     // resize vertex array based on level size
     m_vertices.resize(levelWidth * levelHeight * TOTAL_VERTICES_IN_TILE);
 
     std::cout << "vertice size: " << m_vertices.getVertexCount() << std::endl;
     std::cout << "Tileset match tile size: " << ((m_tileset.getSize().x % tileSize.x == 0) && (m_tileset.getSize().y % tileSize.y == 0)) << std::endl;
-    std::cout << "Tile Map Height: " << tiles.size() << std::endl;
-    std::cout << "Tile Map Width: " << tiles.at(0).size() << std::endl;
+    std::cout << "Tile Map Height: " << world.size() << std::endl;
+    std::cout << "Tile Map Width: " << world.at(0).size() << std::endl;
 
     // populate the vertex array, with two triangles per tile
     for (unsigned int i = 0; i < levelHeight; i++)
@@ -31,7 +31,7 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std:
         {
             // get the current tile number
             int tilePos = j + (i*levelWidth);
-            int tileNumber = tiles.at(i).at(j);
+            int tileNumber = world.at(i).at(j);
 
             // find its position in the tileset texture
             int tu = tileNumber % (m_tileset.getSize().x / tileSize.x);
