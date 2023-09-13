@@ -76,18 +76,6 @@ EntityType Player::getType()
     return EntityType::PLAYER;
 }
 
-void Player::updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft)
-{
-    // Note: I don't think it's smart to use deltaTime in this calculation as it will vary across machines.
-    animationFrameStartTime += deltaTime;
-    if (animationFrameStartTime >= animationFrameDuration)
-    {
-        entitySpriteSheetDimRect.top = spriteSheetTop;
-        entitySpriteSheetDimRect.left = spriteSheetLeft;
-        animationFrameStartTime = sf::Time::Zero;
-    }
-}
-
 sf::Time Player::getAnimationFrameDuration()
 {
     return animationFrameDuration;

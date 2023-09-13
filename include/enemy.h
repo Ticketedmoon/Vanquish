@@ -34,21 +34,21 @@ class Enemy : public GameEntity
         // TODO ADD DELTA TIME TO CONSTRUCTOR RATHER THAN NEEDING TO PASS IT IN EACH METHOD
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(GameState& gameState) override;
-        sf::Time getAnimationFrameDuration() override;
 
         EntityType getType() override;
 
-        // TODO REFACTOR
-        int entityWaitTimeBeforeMovement = std::experimental::randint(MIN_ENEMY_MOVE_RATE, MAX_ENEMY_MOVE_RATE);
-        int lastTimeEnemyAttacked = 0;
-
     private:
+        sf::Time getAnimationFrameDuration() override;
         static bool isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX,
                                                float targetLocationY, uint32_t distance);
         void moveToDestination(float deltaTimeSeconds, float destinationX, float destinationY);
         void damagePlayer(float worldTimeSeconds);
 
     private:
+        // TODO REFACTOR
+        int entityWaitTimeBeforeMovement = std::experimental::randint(MIN_ENEMY_MOVE_RATE, MAX_ENEMY_MOVE_RATE);
+
+        int lastTimeEnemyAttacked = 0;
 
         // TODO ENEMY SHOULDN't HAVE REF TO PLAYER
         std::shared_ptr<Player> player;

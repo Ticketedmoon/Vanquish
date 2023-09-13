@@ -40,7 +40,9 @@ void Enemy::update(GameState& gameState)
                                        WANDER_DISTANCE))
         {
             moveToDestination(deltaTime.asSeconds(), player->getPosition().x, player->getPosition().y);
-            if (isEnemyInProximityOfTarget(position.x, position.y, player->getPosition().x, player->getPosition().y, 24)) {
+            if (isEnemyInProximityOfTarget(position.x, position.y, player->getPosition().x, player->getPosition().y,
+                                           24))
+            {
                 damagePlayer(gameState.getClock().getWorldTimeSeconds());
             }
         }
@@ -52,7 +54,8 @@ void Enemy::update(GameState& gameState)
                 updatePosition(gameState.getClock());
                 if (milliseconds > (entityWaitTimeBeforeMovement + 250))
                 {
-                    entityWaitTimeBeforeMovement = std::experimental::randint(milliseconds + MIN_ENEMY_MOVE_RATE, milliseconds + MAX_ENEMY_MOVE_RATE);
+                    entityWaitTimeBeforeMovement = std::experimental::randint(milliseconds + MIN_ENEMY_MOVE_RATE,
+                                                                              milliseconds + MAX_ENEMY_MOVE_RATE);
                     updateEntityToRandomDirection();
                 }
             }
@@ -63,7 +66,8 @@ void Enemy::update(GameState& gameState)
             }
         }
 
-        uint32_t spriteSheetTop = startingAnimationPosition.y + (ENEMY_HEIGHT * getSpriteSheetAnimationOffset(direction));
+        uint32_t spriteSheetTop = startingAnimationPosition.y +
+                                  (ENEMY_HEIGHT * getSpriteSheetAnimationOffset(direction));
         uint32_t spriteSheetLeft = entitySpriteSheetDimRect.left == (startingAnimationPosition.x + (ENEMY_WIDTH * 2))
                 ? startingAnimationPosition.x
                 : entitySpriteSheetDimRect.left + ENEMY_WIDTH;

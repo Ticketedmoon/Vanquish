@@ -1,7 +1,7 @@
 #include "../include/level.h"
 
 Level::Level(std::shared_ptr<Player>& player, std::shared_ptr<TextureManager>& textureManager)
-    : m_player(player), m_textureManager(textureManager)
+        : m_player(player), m_textureManager(textureManager)
 {
     std::ifstream f("resources/level/forest_2.json");
     nlohmann::json data = nlohmann::json::parse(f);
@@ -17,7 +17,7 @@ void Level::update(GameState& gameState)
 {
     map.update(gameState);
 
-    for (auto& entity : gameEntities)
+    for (auto& entity: gameEntities)
     {
         entity->update(gameState);
     }
@@ -27,7 +27,7 @@ void Level::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 {
     map.draw(renderTarget, states);
 
-    for (auto& entity : gameEntities)
+    for (auto& entity: gameEntities)
     {
         entity->draw(renderTarget, sf::RenderStates::Default);
     }
@@ -35,7 +35,8 @@ void Level::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 
 void Level::enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf::Color> entityTypeTileColour)
 {
-    for (const auto& entity: gameEntities) {
+    for (const auto& entity: gameEntities)
+    {
         sf::Color tileColour = entityTypeTileColour.at(entity->getType());
         map.highlightTileForDebug(entity, world.at(0).size(), tileColour);
     }
@@ -74,12 +75,17 @@ void Level::initialiseGameEntities()
     // Load all characters on sprite sheet into memory.
     double rowCountByTotalEnemies = ceil(TOTAL_ENEMIES / 4.0f);
     size_t totalRows = std::max(rowCountByTotalEnemies, static_cast<double>(1));
-    size_t totalCols = totalRows == 1 ? TOTAL_ENEMIES : ceil(TOTAL_ENEMIES/2.0);
+    size_t totalCols = totalRows == 1
+            ? TOTAL_ENEMIES
+            : ceil(TOTAL_ENEMIES / 2.0);
     std::cout << "Loading gameEntities from sprite sheet [rows: " << totalRows << ", cols: " << totalCols << "]\n";
 
-    for (uint32_t rows = 0; rows < totalRows; rows++) {
-        for (uint32_t cols = 0; cols < totalCols; cols++) {
-            if ((rows*4) + cols >= TOTAL_ENEMIES) return;
+    for (uint32_t rows = 0; rows < totalRows; rows++)
+    {
+        for (uint32_t cols = 0; cols < totalCols; cols++)
+        {
+            if ((rows * 4) + cols >= TOTAL_ENEMIES)
+            { return; }
 
             uint32_t enemyRectLeft = ENEMY_WIDTH * (3 * cols);
             uint32_t enemyRectTop = ENEMY_HEIGHT * (4 * rows);

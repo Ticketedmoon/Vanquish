@@ -29,12 +29,10 @@ class Player : public GameEntity
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(GameState& gameState) override;
 
-        // TODO INVESTIGATE WHAT CAN BE PRIVATE BELOW
-        void updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft) override;
-        sf::Time getAnimationFrameDuration() override;
-
         EntityType getType() override;
 
+    private:
+        sf::Time getAnimationFrameDuration() override;
         void startMovement(GameClock& gameClock, EntityDirection direction, size_t spriteSheetTopOffset);
 
     private:
