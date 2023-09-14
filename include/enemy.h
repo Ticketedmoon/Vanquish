@@ -41,7 +41,7 @@ class Enemy : public GameEntity
         sf::Time getAnimationFrameDuration() override;
         static bool isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX,
                                                float targetLocationY, uint32_t distance);
-        void moveToDestination(float deltaTimeSeconds, float destinationX, float destinationY);
+        void moveToDestination(GameClock& gameClock, float destinationX, float destinationY);
         void damagePlayer(float worldTimeSeconds);
 
     private:

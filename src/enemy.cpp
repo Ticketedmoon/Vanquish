@@ -30,20 +30,23 @@ void Enemy::update(GameState& gameState)
     uint32_t tileUnderEnemyY = floor((position.y + spritePositionOffset.y) / TILE_SIZE);
 
     tilePosition = sf::Vector2u(tileUnderEnemyX, tileUnderEnemyY);
-    sf::Time deltaTime = gameState.getClock().getDeltaTime();
+    entitySprite.setPosition(position);
+    entitySprite.setTextureRect(entitySpriteSheetDimRect);
+
+    GameClock& gameClock = gameState.getClock();
 
     // TODO REFACTOR BELOW
-    int milliseconds = gameState.getClock().getWorldTimeMs();
+    int milliseconds = gameClock.getWorldTimeMs();
     if (milliseconds > entityWaitTimeBeforeMovement)
     {
         if (isEnemyInProximityOfTarget(position.x, position.y, player->getPosition().x, player->getPosition().y,
                                        WANDER_DISTANCE))
         {
-            moveToDestination(deltaTime.asSeconds(), player->getPosition().x, player->getPosition().y);
+            moveToDestination(gameClock, player->getPosition().x, player->getPosition().y);
             if (isEnemyInProximityOfTarget(position.x, position.y, player->getPosition().x, player->getPosition().y,
                                            24))
             {
-                damagePlayer(gameState.getClock().getWorldTimeSeconds());
+                damagePlayer(gameClock.getWorldTimeSeconds());
             }
         }
         else
@@ -51,7 +54,7 @@ void Enemy::update(GameState& gameState)
             if (isEnemyInProximityOfTarget(position.x, position.y, spawnPosition.x, spawnPosition.y, WANDER_DISTANCE))
             {
                 // Move randomly
-                updatePosition(gameState.getClock());
+                updatePosition(gameClock);
                 if (milliseconds > (entityWaitTimeBeforeMovement + 250))
                 {
                     entityWaitTimeBeforeMovement = std::experimental::randint(milliseconds + MIN_ENEMY_MOVE_RATE,
@@ -62,20 +65,17 @@ void Enemy::update(GameState& gameState)
             else
             {
                 // Return to spawn area if too far away.
-                moveToDestination(deltaTime.asSeconds(), spawnPosition.x, spawnPosition.y);
+                moveToDestination(gameClock, spawnPosition.x, spawnPosition.y);
             }
         }
-
-        uint32_t spriteSheetTop = startingAnimationPosition.y +
-                                  (ENEMY_HEIGHT * getSpriteSheetAnimationOffset(direction));
-        uint32_t spriteSheetLeft = entitySpriteSheetDimRect.left == (startingAnimationPosition.x + (ENEMY_WIDTH * 2))
-                ? startingAnimationPosition.x
-                : entitySpriteSheetDimRect.left + ENEMY_WIDTH;
-        updateAnimation(deltaTime, spriteSheetTop, spriteSheetLeft);
     }
 
-    entitySprite.setPosition(position);
-    entitySprite.setTextureRect(entitySpriteSheetDimRect);
+    uint32_t spriteSheetTop = startingAnimationPosition.y +
+                              (ENEMY_HEIGHT * getSpriteSheetAnimationOffset(direction));
+    uint32_t spriteSheetLeft = entitySpriteSheetDimRect.left == (startingAnimationPosition.x + (ENEMY_WIDTH * 2))
+            ? startingAnimationPosition.x
+            : entitySpriteSheetDimRect.left + ENEMY_WIDTH;
+    updateAnimation(gameClock.getDeltaTime(), spriteSheetTop, spriteSheetLeft);
 }
 
 void Enemy::damagePlayer(const float worldTimeSeconds)
@@ -97,39 +97,26 @@ void Enemy::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
     renderTarget.draw(entitySprite);
 }
 
-// TODO This should use updatePosition(...)
-void Enemy::moveToDestination(const float deltaTimeSeconds, float destinationX, float destinationY) {
-    velocity += sf::Vector2f(speed, speed);
+void Enemy::moveToDestination(GameClock& gameClock, float destinationX, float destinationY) {
+
     sf::Vector2f newPosition = getPosition();
-
     bool isEnemyToLeftOfDestination = newPosition.x < destinationX;
-    float positionDeltaX = isEnemyToLeftOfDestination
-            ? (newPosition.x + (velocity.x * deltaTimeSeconds))
-            : (newPosition.x - (velocity.x * deltaTimeSeconds));
-
     bool isEnemyAboveDestination = newPosition.y < destinationY;
-    float positionDeltaY = isEnemyAboveDestination
-            ? (newPosition.y + (velocity.y * deltaTimeSeconds))
-            : (newPosition.y - (velocity.y * deltaTimeSeconds));
 
-    bool isEnemyWithinRangeOfPlayerOnYAxis =
-            abs(newPosition.y - player->getPosition().y) < HORIZONTAL_DIRECTION_WINDOW_SIZE_FOR_ENEMY_ANIMATION;
+    bool isEnemyOutsideRangeOfPlayerOnYAxis =
+            abs(newPosition.y - player->getPosition().y) > HORIZONTAL_DIRECTION_WINDOW_SIZE_FOR_ENEMY_ANIMATION;
 
-    if (isEnemyWithinRangeOfPlayerOnYAxis)
+    EntityDirection directionHorizontal = isEnemyToLeftOfDestination ? EntityDirection::RIGHT : EntityDirection::LEFT;
+    EntityDirection directionVertical = isEnemyAboveDestination ? EntityDirection::DOWN : EntityDirection::UP;
+
+    setDirection(directionHorizontal);
+    updatePosition(gameClock);
+
+    if (isEnemyOutsideRangeOfPlayerOnYAxis)
     {
-        direction = isEnemyToLeftOfDestination ? EntityDirection::RIGHT : EntityDirection::LEFT;
+        setDirection(directionVertical);
+        updatePosition(gameClock);
     }
-    else
-    {
-        direction = isEnemyAboveDestination ? EntityDirection::DOWN : EntityDirection::UP;
-    }
-
-    newPosition.x = positionDeltaX;
-    newPosition.y = positionDeltaY;
-    setPosition(newPosition);
-
-    velocity.x *= 0.15;
-    velocity.y *= 0.15;
 }
 
 bool Enemy::isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX,
