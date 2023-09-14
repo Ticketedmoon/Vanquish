@@ -78,6 +78,8 @@ void Engine::update()
 
 void Engine::render()
 {
+    renderTexture.clear();
+
     switch (gameState.getState())
     {
         case GameState::State::PLAYING:
@@ -90,9 +92,13 @@ void Engine::render()
 
         case GameState::State::DEBUG:
             renderCoreGameComponents();
-            debugManager->draw(window, sf::RenderStates::Default);
+            debugManager->draw(renderTexture, sf::RenderStates::Default);
             break;
     }
+
+    renderTexture.display();
+    renderSprite.setTexture(renderTexture.getTexture());
+    window.draw(renderSprite);
 }
 
 void Engine::createGameWindow()
@@ -115,6 +121,10 @@ void Engine::createGameWindow()
 
 void Engine::buildGameEngineComponents()
 {
+    renderTexture.create(WINDOW_WIDTH, WINDOW_HEIGHT);
+    renderSprite.setTexture(renderTexture.getTexture());
+    renderSprite.setTextureRect(sf::IntRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
+
     textureManager = std::make_shared<TextureManager>();
     textureManager->addTexture(PLAYER_SPRITE_SHEET_A_WALK_KEY, PLAYER_SPRITE_SHEET_WALK_FILE_PATH);
     textureManager->addTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY, HUMAN_CHARACTER_SPRITE_SHEET_A_FILE_PATH);
@@ -122,9 +132,9 @@ void Engine::buildGameEngineComponents()
     player = std::make_shared<Player>(textureManager);
     level = Level(player, textureManager);
 
-    textManager = std::make_shared<TextManager>(window);
+    textManager = std::make_shared<TextManager>(renderTexture);
     userInterfaceManager = std::make_shared<UserInterfaceManager>(player);
-    viewManager = std::make_unique<ViewManager>(window, level, textManager);
+    viewManager = std::make_unique<ViewManager>(renderTexture, level, textManager);
     debugManager = std::make_unique<DebugManager>(player, level, textManager);
     gameState = GameState();
 }
@@ -132,6 +142,6 @@ void Engine::buildGameEngineComponents()
 void Engine::renderCoreGameComponents()
 {
     viewManager->centerViewOnEntity(player);
-    level.draw(window, sf::RenderStates::Default);
-    userInterfaceManager->draw(window, sf::RenderStates::Default);
+    level.draw(renderTexture, sf::RenderStates::Default);
+    userInterfaceManager->draw(renderTexture, sf::RenderStates::Default);
 }

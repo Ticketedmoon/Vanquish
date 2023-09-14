@@ -14,14 +14,14 @@ static const std::string FONT_PATH = "resources/fonts/calibri.ttf";
 class TextManager
 {
     public:
-        explicit TextManager(sf::RenderWindow& window);
+        explicit TextManager(sf::RenderTarget& renderTarget);
         void drawText(sf::String text, sf::Color fillColour, uint8_t characterSize, sf::Vector2f position);
 
     private:
         void configureTextRendering();
 
     private:
-        sf::RenderWindow& m_window;
+        sf::RenderTarget& m_renderTarget;
         sf::Font m_font;
 };
 

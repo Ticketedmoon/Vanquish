@@ -12,12 +12,12 @@
 #include "text_manager.h"
 #include "user_interface_manager.h"
 
-static const float VIEW_ZOOM_FACTOR = 0.65;
+static const float VIEW_ZOOM_FACTOR = 0.5;
 
 class ViewManager
 {
     public:
-        ViewManager(sf::RenderWindow& window, Level& level, std::shared_ptr<TextManager>& textManager);
+        ViewManager(sf::RenderTarget& renderTarget, Level& level, std::shared_ptr<TextManager>& textManager);
         void centerViewOnEntity(const std::shared_ptr<GameEntity>& entity);
         void showGameOverView();
 
@@ -26,7 +26,7 @@ class ViewManager
                                                 float windowDimensionValue, float playerDimensionValue);
 
     private:
-        sf::RenderWindow& m_window;
+        sf::RenderTarget& m_renderTarget;
         Level& m_level;
         std::shared_ptr<TextManager> m_textManager;
 };

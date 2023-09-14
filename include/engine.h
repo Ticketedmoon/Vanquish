@@ -67,6 +67,9 @@ class Engine {
         static inline GameState gameState;
         static inline std::shared_ptr<Player> player;
         static inline Level level;
+
+        static inline sf::RenderTexture renderTexture;
+        static inline sf::Sprite renderSprite;
 };
 
 #endif //VANQUISH_ENGINE_H

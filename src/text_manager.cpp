@@ -4,7 +4,7 @@
 
 #include "text_manager.h"
 
-TextManager::TextManager(sf::RenderWindow& window) : m_window(window)
+TextManager::TextManager(sf::RenderTarget& renderTarget) : m_renderTarget(renderTarget)
 {
     // This always loads, even when in dist mode - refactor at a later point.
     configureTextRendering();
@@ -16,13 +16,12 @@ void TextManager::drawText(sf::String text, sf::Color fillColour, uint8_t charac
     sf_text.setCharacterSize(characterSize); // in pixels, not points!
     sf_text.setPosition(position);
 
-
     // TODO parameterise us
     sf_text.setOutlineColor(sf::Color::Black);
     sf_text.setOutlineThickness(2.0f);
     sf_text.setLetterSpacing(3.0f);
 
-    m_window.draw(sf_text);
+    m_renderTarget.draw(sf_text);
 }
 
 void TextManager::configureTextRendering()
