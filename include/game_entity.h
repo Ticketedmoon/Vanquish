@@ -19,6 +19,9 @@
 
 #include "game_component.h"
 
+static constexpr uint16_t MIN_ENTITY_MOVE_RATE_MS = 500;
+static constexpr uint16_t MAX_ENTITY_MOVE_RATE_MS = 3000;
+
 enum class EntityDirection
 {
     UP = 0,
@@ -36,8 +39,6 @@ enum class EntityType
 class GameEntity : public GameComponent
 {
     public:
-        // TODO INVESTIGATE WHAT CAN HAVE A MORE-RESTRICTIVE VISIBILITY MODIFIER;
-
         GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position,
                 sf::IntRect entitySpriteSheetDimRect, sf::Vector2u startingAnimationPosition, uint16_t health,
                 sf::Vector2u spritePositionOffset);
@@ -47,30 +48,27 @@ class GameEntity : public GameComponent
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override = 0;
         void update(GameState& gameState) override = 0;
 
-        virtual void updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft);
-        virtual sf::Time getAnimationFrameDuration() = 0;
         virtual EntityType getType() = 0;
 
-        void updateEntityToRandomDirection();
-        void updatePosition(GameClock& gameClock);
-        void setDirection(EntityDirection dir);
-
         sf::Vector2<uint32_t> findNextTileDirection(sf::Time deltaTime);
-        static uint8_t getSpriteSheetAnimationOffset(EntityDirection dir);
 
         uint8_t getWidth() const;
         uint8_t getHeight() const;
 
-        bool isDead() const;
         uint16_t getHealth() const;
         void setHealth(uint16_t newHealth);
 
-    public:
-        sf::Vector2u tilePosition;
-
     protected:
-        sf::IntRect entitySpriteSheetDimRect;
-        sf::Vector2f velocity;
+        virtual sf::Time getAnimationFrameDuration() = 0;
+        virtual void updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft);
+        static uint8_t getSpriteSheetAnimationOffset(EntityDirection dir);
+        void performAnimation(GameClock& gameClock, uint8_t maxSpriteSheetFrames);
+
+        void updatePosition(GameClock& gameClock);
+        void setDirection(EntityDirection dir);
+        void updateEntityToRandomDirection(GameClock& gameClock);
+
+        bool isDead() const;
 
     private:
         struct NextCoordinateVelocityPair
@@ -86,17 +84,26 @@ class GameEntity : public GameComponent
 
         bool isNextTileCollidable(GameClock& gameClock);
 
+    public:
+        sf::Vector2u tilePosition;
+
     protected:
         uint8_t width;
         uint8_t height;
         float speed;
+        sf::Vector2f velocity;
         uint16_t health;
-        sf::Vector2f spawnPosition;
         EntityDirection direction = EntityDirection::DOWN;
+
         sf::Sprite entitySprite;
-        sf::Vector2f startingAnimationPosition;
-        sf::Time animationFrameStartTime{sf::Time::Zero};
+        sf::Vector2f spawnPosition;
+        uint16_t entityWaitTimeBeforeMovementMs = std::experimental::randint(MIN_ENTITY_MOVE_RATE_MS,
+                MAX_ENTITY_MOVE_RATE_MS);
+
+        sf::IntRect entitySpriteSheetDimRect;
         sf::Vector2u spritePositionOffset;
+        sf::Vector2i startingAnimationPosition;
+        sf::Time animationFrameStartTime{sf::Time::Zero};
 };
 
 #endif //VANQUISH_GAME_ENTITY_H

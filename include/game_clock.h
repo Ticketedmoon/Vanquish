@@ -5,12 +5,14 @@
 
 #include <SFML/System/Clock.hpp>
 
+#include <cstdint>
+
 class GameClock
 {
     public:
         // World Clock
         float getWorldTimeSeconds();
-        int getWorldTimeMs();
+        uint64_t getWorldTimeMs();
 
         // Delta Clock
         void restartDeltaClock();

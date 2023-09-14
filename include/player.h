@@ -7,9 +7,9 @@
 #include <SFML/System/Time.hpp>
 
 #include "game_entity.h"
-#include "texture_manager.h"
-#include "common_constants.h"
 #include "game_state.h"
+#include "common_constants.h"
+#include "texture_manager.h"
 
 static inline constexpr uint8_t PLAYER_WIDTH = 48;
 static inline constexpr uint8_t PLAYER_HEIGHT = 50;
@@ -33,11 +33,11 @@ class Player : public GameEntity
 
     private:
         sf::Time getAnimationFrameDuration() override;
-        void startMovement(GameClock& gameClock, EntityDirection direction, size_t spriteSheetTopOffset);
+        void startMovement(GameClock& gameClock, EntityDirection direction, uint8_t spriteSheetTopOffset);
 
     private:
-        static constexpr int MAX_SPRITE_SHEET_FRAMES = 7;
-        sf::Time animationFrameDuration{ sf::seconds(1.f / 16.f) };
+        static constexpr uint8_t MAX_SPRITE_SHEET_FRAMES = 7;
+        sf::Time animationFrameDuration{sf::seconds(1.f / 16.f)};
 
 };
 

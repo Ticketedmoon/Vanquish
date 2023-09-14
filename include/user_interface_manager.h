@@ -12,7 +12,7 @@
 #include "user_interface/health_bar.h"
 #include "game_state.h"
 
-static constexpr size_t TOTAL_UI_COMPONENTS = 1;
+static constexpr uint8_t TOTAL_UI_COMPONENTS = 1;
 
 class UserInterfaceManager : public GameComponent
 {

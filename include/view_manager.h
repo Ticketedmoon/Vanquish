@@ -5,11 +5,11 @@
 
 #include <SFML/Graphics/Text.hpp>
 
-#include "../include/game_entity.h"
-#include "../include/common_constants.h"
-#include "../include/level.h"
-#include "../include/player.h"
-#include "../include/text_manager.h"
+#include "game_entity.h"
+#include "common_constants.h"
+#include "level.h"
+#include "player.h"
+#include "text_manager.h"
 #include "user_interface_manager.h"
 
 static const float VIEW_ZOOM_FACTOR = 0.65;

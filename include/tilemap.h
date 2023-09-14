@@ -11,18 +11,20 @@
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Color.hpp>
 
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <vector>
 
+#include "game_component.h"
 #include "game_entity.h"
 
 // Two triangles
 static constexpr uint8_t TOTAL_VERTICES_IN_TILE = 6;
 
-class TileMap : GameComponent
+class TileMap : public GameComponent
 {
     public:
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;

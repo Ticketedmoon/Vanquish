@@ -4,8 +4,8 @@
 #define VANQUISH_ENEMY_H
 
 #include "game_entity.h"
-#include "texture_manager.h"
 #include "player.h"
+#include "texture_manager.h"
 #include "common_constants.h"
 
 static constexpr uint8_t ENEMY_WIDTH = 32;
@@ -13,8 +13,6 @@ static constexpr uint8_t ENEMY_HEIGHT = 32;
 static constexpr uint32_t WANDER_DISTANCE = 128;
 static constexpr float ENEMY_SCALE_FACTOR = 0.75;
 static constexpr float ENEMY_SPEED = 45.0f;
-static constexpr size_t MIN_ENEMY_MOVE_RATE = 500;
-static constexpr size_t MAX_ENEMY_MOVE_RATE = 3000;
 
 static constexpr int HORIZONTAL_DIRECTION_WINDOW_SIZE_FOR_ENEMY_ANIMATION = 20;
 
@@ -39,20 +37,17 @@ class Enemy : public GameEntity
 
     private:
         sf::Time getAnimationFrameDuration() override;
-        static bool isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX,
-                                               float targetLocationY, uint32_t distance);
+        static bool isEnemyInProximityOfTarget(sf::Vector2f sourceLocation, sf::Vector2f targetLocation, uint32_t distance);
         void moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoint);
-        void damagePlayer(float worldTimeSeconds);
+        void damagePlayer(GameClock& gameClock);
 
     private:
-        static constexpr int MAX_SPRITE_SHEET_FRAMES = 3;
-        // TODO REFACTOR
-        int entityWaitTimeBeforeMovement = std::experimental::randint(MIN_ENEMY_MOVE_RATE, MAX_ENEMY_MOVE_RATE);
+        static constexpr uint8_t MAX_SPRITE_SHEET_FRAMES = 3;
 
         int lastTimeEnemyAttacked = 0;
 
         // TODO ENEMY SHOULDN't HAVE REF TO PLAYER
-        std::shared_ptr<Player> player;
+        std::shared_ptr<Player> m_player;
 
         // TODO IMPROVE THIS, MAKE MORE DYNAMIC
         uint16_t damage = std::experimental::randint(5, 20);

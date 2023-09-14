@@ -5,7 +5,7 @@ float GameClock::getWorldTimeSeconds()
     return m_worldClock.getElapsedTime().asSeconds();
 }
 
-int GameClock::getWorldTimeMs()
+uint64_t GameClock::getWorldTimeMs()
 {
     return m_worldClock.getElapsedTime().asMilliseconds();
 }

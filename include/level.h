@@ -15,9 +15,10 @@
 #include "tilemap.h"
 #include "enemy.h"
 
-static constexpr size_t TOTAL_PLAYERS = 1;
-static constexpr size_t TOTAL_ENEMIES = 8;
-static constexpr size_t TOTAL_GAME_ENTITIES = TOTAL_PLAYERS + TOTAL_ENEMIES;
+static constexpr uint8_t TOTAL_PLAYERS = 1;
+static constexpr uint8_t TOTAL_ENEMIES = 8;
+static constexpr uint8_t TOTAL_ENTITIES_PER_SPRITE_SHEET_ROW = 4;
+static constexpr uint8_t TOTAL_GAME_ENTITIES = TOTAL_PLAYERS + TOTAL_ENEMIES;
 
 // TODO Rename to world.h
 class Level : public GameComponent

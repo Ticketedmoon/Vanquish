@@ -6,8 +6,8 @@ Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Pl
                      sf::IntRect(spriteSheetRectPosition.x, spriteSheetRectPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT),
                      spriteSheetRectPosition, STARTING_ENEMY_HEALTH,
                      sf::Vector2u(std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT) * 0.5f,
-                             std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT))),
-          player(player)
+                                  std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT))),
+          m_player(player)
 {
     sf::Texture& texture = *(textureManager->getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY));
     entitySprite = sf::Sprite(texture, entitySpriteSheetDimRect);
@@ -16,7 +16,7 @@ Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Pl
     entitySprite.setTextureRect(entitySpriteSheetDimRect);
 
     // TEMPORARY, NICE VISUAL QUE BUT WHAT WE WANT LONG-TERM
-    // INSTEAD HIGHLIGHT THE GROUND OR NAMEPLATE OF THE ENEMY TO INDICATE POWER LEVEL (damage).
+    // TODO INSTEAD HIGHLIGHT THE GROUND OR NAMEPLATE OF THE ENEMY TO INDICATE POWER LEVEL (damage).
     if (damage >= 15)
     {
         entitySprite.setColor(sf::Color::Red);
@@ -27,69 +27,61 @@ Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Pl
 void Enemy::update(GameState& gameState)
 {
     const sf::Vector2f& position = getPosition();
-    uint32_t tileUnderEnemyX = floor((position.x + spritePositionOffset.x) / TILE_SIZE);
-    uint32_t tileUnderEnemyY = floor((position.y + spritePositionOffset.y) / TILE_SIZE);
+    uint32_t tileUnderEnemyX = std::floor((position.x + static_cast<float>(spritePositionOffset.x)) / TILE_SIZE);
+    uint32_t tileUnderEnemyY = std::floor((position.y + static_cast<float>(spritePositionOffset.y)) / TILE_SIZE);
 
     tilePosition = sf::Vector2u(tileUnderEnemyX, tileUnderEnemyY);
     entitySprite.setPosition(position);
     entitySprite.setTextureRect(entitySpriteSheetDimRect);
 
     GameClock& gameClock = gameState.getClock();
+    uint64_t milliseconds = gameClock.getWorldTimeMs();
 
-    int milliseconds = gameClock.getWorldTimeMs();
-    if (milliseconds < entityWaitTimeBeforeMovement)
+    if (milliseconds < entityWaitTimeBeforeMovementMs)
     {
         return;
     }
 
-    if (isEnemyInProximityOfTarget(position.x, position.y, player->getPosition().x, player->getPosition().y,
-                                   WANDER_DISTANCE))
+    if (isEnemyInProximityOfTarget(position, m_player->getPosition(), WANDER_DISTANCE))
     {
-        if (isEnemyInProximityOfTarget(position.x, position.y, player->getPosition().x, player->getPosition().y, 24))
+        if (isEnemyInProximityOfTarget(position, m_player->getPosition(), 24))
         {
-            damagePlayer(gameClock.getWorldTimeSeconds());
+            damagePlayer(gameClock);
         }
 
-        moveToDestination(gameClock, player->getPosition());
+        moveToDestination(gameClock, m_player->getPosition());
         return;
     }
 
-    if (isEnemyInProximityOfTarget(position.x, position.y, spawnPosition.x, spawnPosition.y, WANDER_DISTANCE))
+    if (isEnemyInProximityOfTarget(position, spawnPosition, WANDER_DISTANCE))
     {
         // Move randomly
-        if (milliseconds > (entityWaitTimeBeforeMovement + 250))
-        {
-            entityWaitTimeBeforeMovement = std::experimental::randint(milliseconds + MIN_ENEMY_MOVE_RATE,
-                                                                      milliseconds + MAX_ENEMY_MOVE_RATE);
-            updateEntityToRandomDirection();
-        }
-
+        updateEntityToRandomDirection(gameClock);
         updatePosition(gameClock);
-        uint32_t spriteSheetTop = startingAnimationPosition.y + (height * getSpriteSheetAnimationOffset(direction));
-        uint32_t spriteSheetLeft = entitySpriteSheetDimRect.left == startingAnimationPosition.x + (width * (MAX_SPRITE_SHEET_FRAMES-1))
-                ? startingAnimationPosition.x
-                : entitySpriteSheetDimRect.left + width;
-        updateAnimation(gameClock.getDeltaTime(), spriteSheetTop, spriteSheetLeft);
+        performAnimation(gameClock, MAX_SPRITE_SHEET_FRAMES);
         return;
     }
-    else
-    {
-        // Return to spawn area if too far away.
-        moveToDestination(gameClock, spawnPosition);
-    }
 
+    // Return to spawn area if too far away.
+    moveToDestination(gameClock, spawnPosition);
 }
 
-void Enemy::damagePlayer(const float worldTimeSeconds)
+/* TODO, we don't want the enemy to have a reference to the m_player obj.
+         perhaps can we consider an event-driven approach, where entities can submit events
+         which are polled upstream and eventually applied to the appropriate entities.
+         e.g., this method can submit an event in the form { entityType: EntityType::PLayer, damage: 10 }
+         this is then read and decreased from the players health at a later point.
+         Just some thoughts.
+*/
+void Enemy::damagePlayer(GameClock& gameClock)
 {
-    uint16_t playerHealth = player->getHealth();
-    int timeNowSeconds = static_cast<int>(worldTimeSeconds);
+    uint16_t playerHealth = m_player->getHealth();
+    int timeNowSeconds = static_cast<int>(gameClock.getWorldTimeSeconds());
     bool hasEnemyAttackedAfterTimeWindow = timeNowSeconds - lastTimeEnemyAttacked >= 3;
 
     if (playerHealth > 0 && hasEnemyAttackedAfterTimeWindow) {
-        // TODO RESEARCH IF WE NEED DELTA TIME SINCE WE ARE ALREADY USING WORLD CLOCK
         uint16_t newHealth = playerHealth > damage ? playerHealth - damage : 0;
-        player->setHealth(newHealth);
+        m_player->setHealth(newHealth);
         lastTimeEnemyAttacked = timeNowSeconds;
     }
 }
@@ -99,14 +91,14 @@ void Enemy::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
     renderTarget.draw(entitySprite);
 }
 
-void Enemy::moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoint) {
-
+void Enemy::moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoint)
+{
     sf::Vector2f newPosition = getPosition();
     bool isEnemyToLeftOfDestination = newPosition.x < destinationPoint.x;
     bool isEnemyAboveDestination = newPosition.y < destinationPoint.y;
 
-    bool isEnemyOutsideRangeOfPlayerOnYAxis =
-            abs(newPosition.y - player->getPosition().y) > HORIZONTAL_DIRECTION_WINDOW_SIZE_FOR_ENEMY_ANIMATION;
+    bool isEnemyOutsideRangeOfDestinationOnYAxis =
+            std::abs(newPosition.y - destinationPoint.y) > HORIZONTAL_DIRECTION_WINDOW_SIZE_FOR_ENEMY_ANIMATION;
 
     EntityDirection directionHorizontal = isEnemyToLeftOfDestination ? EntityDirection::RIGHT : EntityDirection::LEFT;
     EntityDirection directionVertical = isEnemyAboveDestination ? EntityDirection::DOWN : EntityDirection::UP;
@@ -114,23 +106,18 @@ void Enemy::moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoin
     setDirection(directionHorizontal);
     updatePosition(gameClock);
 
-    if (isEnemyOutsideRangeOfPlayerOnYAxis)
+    if (isEnemyOutsideRangeOfDestinationOnYAxis)
     {
         setDirection(directionVertical);
         updatePosition(gameClock);
     }
 
-    uint32_t spriteSheetTop = startingAnimationPosition.y + (height * getSpriteSheetAnimationOffset(direction));
-    uint32_t spriteSheetLeft = entitySpriteSheetDimRect.left == startingAnimationPosition.x + (width * (MAX_SPRITE_SHEET_FRAMES-1))
-            ? startingAnimationPosition.x
-            : entitySpriteSheetDimRect.left + width;
-    updateAnimation(gameClock.getDeltaTime(), spriteSheetTop, spriteSheetLeft);
+    performAnimation(gameClock, MAX_SPRITE_SHEET_FRAMES);
 }
 
-bool Enemy::isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX,
-                                       float targetLocationY, uint32_t distance)
+bool Enemy::isEnemyInProximityOfTarget(sf::Vector2f sourceLocation, sf::Vector2f targetLocation, uint32_t distance)
 {
-    return sqrt(pow(sourceLocationX - targetLocationX, 2) + pow(sourceLocationY - targetLocationY, 2)) < distance;
+    return sqrt(pow(sourceLocation.x - targetLocation.x, 2) + pow(sourceLocation.y - targetLocation.y, 2)) < distance;
 }
 
 EntityType Enemy::getType()

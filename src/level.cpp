@@ -73,11 +73,13 @@ void Level::initialiseGameEntities()
     gameEntities.push_back(m_player);
 
     // Load all characters on sprite sheet into memory.
-    double rowCountByTotalEnemies = ceil(TOTAL_ENEMIES / 4.0f);
-    size_t totalRows = std::max(rowCountByTotalEnemies, static_cast<double>(1));
-    size_t totalCols = totalRows == 1
+    uint8_t rowCountByTotalEnemies = std::ceil(TOTAL_ENEMIES / TOTAL_ENTITIES_PER_SPRITE_SHEET_ROW);
+
+    uint8_t minRows = 1;
+    uint8_t totalRows = std::max(rowCountByTotalEnemies, minRows);
+    uint8_t totalCols = totalRows == minRows
             ? TOTAL_ENEMIES
-            : ceil(TOTAL_ENEMIES / 2.0);
+            : std::ceil(TOTAL_ENEMIES / totalRows);
     std::cout << "Loading gameEntities from sprite sheet [rows: " << totalRows << ", cols: " << totalCols << "]\n";
 
     for (uint32_t rows = 0; rows < totalRows; rows++)
@@ -91,8 +93,8 @@ void Level::initialiseGameEntities()
             uint32_t enemyRectTop = ENEMY_HEIGHT * (4 * rows);
 
             // Note: These positions are temporary.
-            float enemyX = std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * getWorldWidth());
-            float enemyY = std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * getWorldHeight());
+            auto enemyX = static_cast<float>(std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * getWorldWidth()));
+            auto enemyY = static_cast<float>(std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * getWorldHeight()));
 
             sf::Vector2u spritePositionGroup = sf::Vector2u(enemyRectLeft, enemyRectTop);
             sf::Vector2f enemyPosition = sf::Vector2f(enemyX, enemyY);

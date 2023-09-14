@@ -58,17 +58,11 @@ void Player::update(GameState& gameState)
     }
 }
 
-void Player::startMovement(GameClock& gameClock, EntityDirection direction, size_t spriteSheetTopOffset)
+void Player::startMovement(GameClock& gameClock, EntityDirection direction, uint8_t spriteSheetTopOffset)
 {
     setDirection(direction);
     updatePosition(gameClock);
-
-    uint32_t spriteSheetTop = PLAYER_HEIGHT * spriteSheetTopOffset;
-    uint32_t spriteSheetLeft = entitySpriteSheetDimRect.left == (PLAYER_WIDTH * MAX_SPRITE_SHEET_FRAMES)
-            ? 0
-            : (entitySpriteSheetDimRect.left + PLAYER_WIDTH);
-
-    updateAnimation(gameClock.getDeltaTime(), spriteSheetTop, spriteSheetLeft);
+    performAnimation(gameClock, MAX_SPRITE_SHEET_FRAMES);
 }
 
 EntityType Player::getType()

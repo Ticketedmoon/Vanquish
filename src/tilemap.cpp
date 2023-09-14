@@ -1,5 +1,4 @@
 #include "../include/tilemap.h"
-#include <SFML/Graphics/Color.hpp>
 
 bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& world)
 {

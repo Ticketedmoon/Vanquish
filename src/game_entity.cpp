@@ -4,13 +4,13 @@
 GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position,
         sf::IntRect entitySpriteSheetDimRect, sf::Vector2u startingAnimationPosition, uint16_t health,
         sf::Vector2u spritePositionOffset)
-        : entitySpriteSheetDimRect(entitySpriteSheetDimRect),
+        : width(width),
+          height(height),
           speed(speed),
-          startingAnimationPosition(startingAnimationPosition),
-          spritePositionOffset(spritePositionOffset),
           health(health),
-          width(width),
-          height(height)
+          entitySpriteSheetDimRect(entitySpriteSheetDimRect),
+          spritePositionOffset(spritePositionOffset),
+          startingAnimationPosition(startingAnimationPosition)
 {
     setPosition(position);
     spawnPosition = sf::Vector2f(position);
@@ -38,6 +38,7 @@ void GameEntity::updatePosition(GameClock& gameClock)
     {
         return;
     }
+
     const float sign = direction == EntityDirection::UP || direction == EntityDirection::LEFT ? -1.0f : 1.0f;
     float xAccel = direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT ? (speed * sign) : 0;
     float yAccel = direction == EntityDirection::UP || direction == EntityDirection::DOWN ? (speed * sign) : 0;
@@ -147,15 +148,26 @@ uint8_t GameEntity::getSpriteSheetAnimationOffset(const EntityDirection dir)
     }
 }
 
-void GameEntity::updateEntityToRandomDirection()
+void GameEntity::updateEntityToRandomDirection(GameClock& gameClock)
 {
-    int directionIndex = std::experimental::randint(0, 3);
-    EntityDirection newDir = directionIndex == 0
-            ? EntityDirection::UP : directionIndex == 1
-            ? EntityDirection::RIGHT : directionIndex == 2
-            ? EntityDirection::DOWN : EntityDirection::LEFT;
+    uint64_t milliseconds = gameClock.getWorldTimeMs();
+    if (milliseconds > (entityWaitTimeBeforeMovementMs + 250))
+    {
+        entityWaitTimeBeforeMovementMs = std::experimental::randint(milliseconds + MIN_ENTITY_MOVE_RATE_MS,
+                milliseconds + MAX_ENTITY_MOVE_RATE_MS);
+        int directionIndex = std::experimental::randint(0, 3);
+        auto randomDirection = static_cast<EntityDirection>(directionIndex);
+        this->setDirection(randomDirection);
+    }
+}
 
-    this->setDirection(newDir);
+void GameEntity::performAnimation(GameClock& gameClock, uint8_t maxSpriteSheetFrames)
+{
+    uint32_t spriteSheetTop = startingAnimationPosition.y + (height * getSpriteSheetAnimationOffset(direction));
+    uint32_t spriteSheetLeft = entitySpriteSheetDimRect.left == startingAnimationPosition.x + (width * (maxSpriteSheetFrames - 1))
+            ? startingAnimationPosition.x
+            : entitySpriteSheetDimRect.left + width;
+    updateAnimation(gameClock.getDeltaTime(), spriteSheetTop, spriteSheetLeft);
 }
 
 uint8_t GameEntity::getWidth() const
