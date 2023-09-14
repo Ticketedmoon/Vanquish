@@ -87,18 +87,16 @@ class GameEntity : public GameComponent
         bool isNextTileCollidable(GameClock& gameClock);
 
     protected:
+        uint8_t width;
+        uint8_t height;
         float speed;
-        sf::Vector2u spawnPosition;
+        uint16_t health;
+        sf::Vector2f spawnPosition;
         EntityDirection direction = EntityDirection::DOWN;
         sf::Sprite entitySprite;
         sf::Vector2f startingAnimationPosition;
         sf::Time animationFrameStartTime{sf::Time::Zero};
         sf::Vector2u spritePositionOffset;
-
-    private:
-        uint16_t health;
-        uint8_t width;
-        uint8_t height;
 };
 
 #endif //VANQUISH_GAME_ENTITY_H

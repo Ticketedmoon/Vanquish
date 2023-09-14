@@ -41,10 +41,11 @@ class Enemy : public GameEntity
         sf::Time getAnimationFrameDuration() override;
         static bool isEnemyInProximityOfTarget(float sourceLocationX, float sourceLocationY, float targetLocationX,
                                                float targetLocationY, uint32_t distance);
-        void moveToDestination(GameClock& gameClock, float destinationX, float destinationY);
+        void moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoint);
         void damagePlayer(float worldTimeSeconds);
 
     private:
+        static constexpr int MAX_SPRITE_SHEET_FRAMES = 3;
         // TODO REFACTOR
         int entityWaitTimeBeforeMovement = std::experimental::randint(MIN_ENEMY_MOVE_RATE, MAX_ENEMY_MOVE_RATE);
 

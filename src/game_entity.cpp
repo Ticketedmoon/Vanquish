@@ -13,7 +13,7 @@ GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f 
           height(height)
 {
     setPosition(position);
-    spawnPosition = sf::Vector2u(position);
+    spawnPosition = sf::Vector2f(position);
 }
 
 void GameEntity::updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft)
