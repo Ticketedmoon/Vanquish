@@ -33,7 +33,7 @@ class Player : public GameEntity
 
     private:
         sf::Time getAnimationFrameDuration() override;
-        void startMovement(GameClock& gameClock, EntityDirection direction, uint8_t spriteSheetTopOffset);
+        void startMovement(GameClock& gameClock, EntityDirection direction);
 
     private:
         static constexpr uint8_t MAX_SPRITE_SHEET_FRAMES = 7;

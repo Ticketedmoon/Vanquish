@@ -96,9 +96,14 @@ void Engine::render()
             break;
     }
 
+    drawRenderTextureToWindow();
+}
+
+void Engine::drawRenderTextureToWindow()
+{
     renderTexture.display();
     renderSprite.setTexture(renderTexture.getTexture());
-    window.draw(renderSprite);
+    window.draw(renderSprite, sf::RenderStates(sf::BlendAdd));
 }
 
 void Engine::createGameWindow()

@@ -17,7 +17,14 @@ Player::Player(std::shared_ptr<TextureManager>& textureManager)
 
 void Player::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 {
-    renderTarget.draw(entitySprite);
+    sf::BlendMode blendMode = sf::BlendMode();
+    blendMode.alphaDstFactor = sf::BlendMode::Factor::One;
+    blendMode.colorSrcFactor = sf::BlendMode::Factor::One;
+    //blendMode.colorDstFactor = sf::BlendMode::Factor::DstColor;
+
+    states.blendMode = blendMode;
+
+    renderTarget.draw(entitySprite, states);
 }
 
 void Player::update(GameState& gameState)
@@ -39,26 +46,26 @@ void Player::update(GameState& gameState)
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
-        startMovement(gameClock, EntityDirection::UP, 3);
+        startMovement(gameClock, EntityDirection::UP);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     {
-        startMovement(gameClock, EntityDirection::DOWN, 0);
+        startMovement(gameClock, EntityDirection::DOWN);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
-        startMovement(gameClock, EntityDirection::LEFT, 1);
+        startMovement(gameClock, EntityDirection::LEFT);
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
-        startMovement(gameClock, EntityDirection::RIGHT, 2);
+        startMovement(gameClock, EntityDirection::RIGHT);
     }
 }
 
-void Player::startMovement(GameClock& gameClock, EntityDirection direction, uint8_t spriteSheetTopOffset)
+void Player::startMovement(GameClock& gameClock, EntityDirection direction)
 {
     setDirection(direction);
     updatePosition(gameClock);

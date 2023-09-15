@@ -54,6 +54,7 @@ class Engine {
         static void createGameWindow();
         static void buildGameEngineComponents();
         static void renderCoreGameComponents();
+        static void drawRenderTextureToWindow();
 
     private:
         // TODO Understand 'inline' and why it worked here
