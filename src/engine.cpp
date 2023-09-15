@@ -38,7 +38,7 @@ void Engine::listenForEvents()
         {
             if (event.key.code == sf::Keyboard::Space)
             {
-                level.interactWithNode(gameState.getClock().getDeltaTime());
+                level.interactWithTile(gameState.getClock().getDeltaTime(), player);
             }
 
             if (event.key.code == sf::Keyboard::SemiColon)

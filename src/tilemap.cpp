@@ -5,6 +5,12 @@ TileMap::TileMap()
     std::vector<std::vector<uint8_t>> worldData = createTilesForWorld();
     TileMap::worldWidthInTiles = worldData.at(0).size();
     TileMap::worldHeightInTiles = worldData.size();
+
+    if (!load("./resources/assets/basic_tilemap.png", sf::Vector2u(TILE_SIZE, TILE_SIZE)))
+    {
+        std::cout << "Failed to load tileset" << '\n';
+        return;
+    }
 }
 
 void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -111,6 +117,50 @@ void TileMap::updateTile(uint32_t x, uint32_t y, uint32_t value)
     uint32_t row = getWorldWidthInTiles() * y;
     uint32_t positionForTile = row + x;
     world.at(positionForTile).setValue(value);
+}
+
+void TileMap::interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player)
+{
+    // TODO Create a tile object rather than a pair here?
+    sf::Vector2u nextPlayerFacingTile = player->findNextTileDirection(deltaTime);
+    Tile& tileFacingPlayer = getTile(nextPlayerFacingTile.x, nextPlayerFacingTile.y);
+
+    if (tileFacingPlayer.getValue() == 2 || tileFacingPlayer.getValue() == 3)
+    {
+        int tilePos = nextPlayerFacingTile.y + (nextPlayerFacingTile.x * worldWidthInTiles);
+        std::cout << "tile interact: " << nextPlayerFacingTile.x << ", " << nextPlayerFacingTile.y << '\n';
+
+        Tile tile = world.at(tilePos);
+        tileFacingPlayer.setValue(0);
+
+        // Note: This is working, in that the map value is being updated and listened to by the game world.
+        //       The issue is that the texture remains in the world, and instead should be wiped.
+
+        // find its position in the tileset texture
+        int tu = tile.getValue() % (m_tileset.getSize().x / TILE_SIZE);
+        int tv = tile.getValue() / (m_tileset.getSize().x / TILE_SIZE);
+
+        // get a pointer to the triangles' vertices of the current tile
+        sf::Vertex* triangles = &m_vertices[tilePos * TOTAL_VERTICES_IN_TILE];
+
+        // define the 6 corners of the two triangles
+        triangles[0].position = sf::Vector2f(nextPlayerFacingTile.y * TILE_SIZE, nextPlayerFacingTile.x * TILE_SIZE);
+        triangles[1].position = sf::Vector2f((nextPlayerFacingTile.y + 1) * TILE_SIZE, nextPlayerFacingTile.x * TILE_SIZE);
+        triangles[2].position = sf::Vector2f(nextPlayerFacingTile.y * TILE_SIZE, (nextPlayerFacingTile.x + 1) * TILE_SIZE);
+
+        triangles[3].position = sf::Vector2f(nextPlayerFacingTile.y * TILE_SIZE, (nextPlayerFacingTile.x + 1) * TILE_SIZE);
+        triangles[4].position = sf::Vector2f((nextPlayerFacingTile.y + 1) * TILE_SIZE, nextPlayerFacingTile.x * TILE_SIZE);
+        triangles[5].position = sf::Vector2f((nextPlayerFacingTile.y + 1) * TILE_SIZE, (nextPlayerFacingTile.x + 1) * TILE_SIZE);
+
+        // define the 6 matching texture coordinates
+        triangles[0].texCoords = sf::Vector2f(tu * TILE_SIZE, tv * TILE_SIZE);
+        triangles[1].texCoords = sf::Vector2f((tu + 1) * TILE_SIZE, tv * TILE_SIZE);
+        triangles[2].texCoords = sf::Vector2f(tu * TILE_SIZE, (tv + 1) * TILE_SIZE);
+
+        triangles[3].texCoords = sf::Vector2f(tu * TILE_SIZE, (tv + 1) * TILE_SIZE);
+        triangles[4].texCoords = sf::Vector2f((tu + 1) * TILE_SIZE, tv * TILE_SIZE);
+        triangles[5].texCoords = sf::Vector2f((tu + 1) * TILE_SIZE, (tv + 1) * TILE_SIZE);
+    }
 }
 
 uint32_t TileMap::getWorldWidthInTiles()

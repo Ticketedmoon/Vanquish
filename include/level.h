@@ -31,15 +31,12 @@ class Level : public GameComponent
         void update(GameState& gameState) override;
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
 
-        void interactWithNode(sf::Time deltaTime);
+        void interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player);
         void enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf::Color> entityTypeTileColour);
 
         void initialiseGameEntities();
 
         static TileMap& getTileMap();
-
-    private:
-        void createWorld();
 
     private:
         static inline TileMap tileMap;

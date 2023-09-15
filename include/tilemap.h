@@ -23,6 +23,7 @@
 #include "game_component.h"
 #include "game_entity.h"
 #include "tile.h"
+#include "player.h"
 
 // Two triangles
 static constexpr uint8_t TOTAL_VERTICES_IN_TILE = 6;
@@ -37,6 +38,7 @@ class TileMap : public GameComponent
 
         Tile& getTile(uint32_t x, uint32_t y);
         void updateTile(uint32_t x, uint32_t y, uint32_t value);
+        void interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player);
 
         void highlightTileForDebug(const std::shared_ptr<GameEntity>& entity, uint32_t levelWidth, sf::Color tileColour);
 

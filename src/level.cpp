@@ -3,7 +3,6 @@
 Level::Level(std::shared_ptr<Player>& player, std::shared_ptr<TextureManager>& textureManager)
         : m_player(player), m_textureManager(textureManager)
 {
-    createWorld();
     initialiseGameEntities();
 }
 
@@ -28,37 +27,9 @@ void Level::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
     }
 }
 
-void Level::enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf::Color> entityTypeTileColour)
+void Level::interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player)
 {
-    for (const auto& entity: gameEntities)
-    {
-        sf::Color tileColour = entityTypeTileColour.at(entity->getType());
-        tileMap.highlightTileForDebug(entity, tileMap.getWorldWidthInTiles(), tileColour);
-    }
-}
-
-void Level::interactWithNode(sf::Time deltaTime)
-{
-    // TODO Create a tile object rather than a pair here?
-    sf::Vector2u nextPlayerFacingTile = m_player->findNextTileDirection(deltaTime);
-    Tile& tileFacingPlayer = tileMap.getTile(nextPlayerFacingTile.x, nextPlayerFacingTile.y);
-
-    if (tileFacingPlayer.getValue() == 2 || tileFacingPlayer.getValue() == 3)
-    {
-        tileFacingPlayer.setValue(0);
-
-        // TODO not ideal, fix me
-        createWorld();
-    }
-}
-
-void Level::createWorld()
-{
-    if (!tileMap.load("./resources/assets/basic_tilemap.png", sf::Vector2u(TILE_SIZE, TILE_SIZE)))
-    {
-        std::cout << "Failed to load tileset" << '\n';
-        return;
-    }
+    tileMap.interactWithTile(deltaTime, player);
 }
 
 void Level::initialiseGameEntities()
@@ -105,4 +76,13 @@ void Level::initialiseGameEntities()
 TileMap& Level::getTileMap()
 {
     return tileMap;
+}
+
+void Level::enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf::Color> entityTypeTileColour)
+{
+    for (const auto& entity: gameEntities)
+    {
+        sf::Color tileColour = entityTypeTileColour.at(entity->getType());
+        tileMap.highlightTileForDebug(entity, tileMap.getWorldWidthInTiles(), tileColour);
+    }
 }
