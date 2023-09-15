@@ -52,7 +52,9 @@ void GameEntity::updatePosition(GameClock& gameClock)
     if (direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT)
     {
         NextCoordinateVelocityPair nextCoordinatePair =
-                getNextCoordinatePositionWithNextVelocity(gameClock.getDeltaTime(), Level::getWorldWidth()-1, getPosition().x, velocity.x);
+                getNextCoordinatePositionWithNextVelocity(gameClock.getDeltaTime(), TileMap::getWorldWidthInTiles() - 1,
+                        getPosition().x, velocity.x);
+
         setPosition(nextCoordinatePair.coordinatePosition, getPosition().y);
         velocity.x = nextCoordinatePair.velocity;
     }
@@ -60,7 +62,9 @@ void GameEntity::updatePosition(GameClock& gameClock)
     if (direction == EntityDirection::UP || direction == EntityDirection::DOWN)
     {
         NextCoordinateVelocityPair nextCoordinatePair =
-                getNextCoordinatePositionWithNextVelocity(gameClock.getDeltaTime(), Level::getWorldHeight()-1, getPosition().y, velocity.y);
+                getNextCoordinatePositionWithNextVelocity(gameClock.getDeltaTime(),
+                        TileMap::getWorldHeightInTiles() - 1, getPosition().y, velocity.y);
+
         setPosition(getPosition().x, nextCoordinatePair.coordinatePosition);
         velocity.y = nextCoordinatePair.velocity;
     }
@@ -91,9 +95,10 @@ bool GameEntity::isNextTileCollidable(GameClock& gameClock)
 {
     // TODO Introduce a tile object rather than a pair here?
     sf::Vector2u nextTileFacingEntity = findNextTileDirection(gameClock.getDeltaTime());
-    std::vector<std::vector<uint32_t>> world = Level::getWorld();
-    return nextTileFacingEntity.x < world.at(0).size() && nextTileFacingEntity.y < world.size()
-        && world.at(nextTileFacingEntity.y).at(nextTileFacingEntity.x) > 0;
+    TileMap& tileMap = Level::getTileMap();
+    return nextTileFacingEntity.x < tileMap.getWorldWidthInTiles() &&
+           nextTileFacingEntity.y < tileMap.getWorldHeightInTiles()
+           && tileMap.getTile(nextTileFacingEntity.x, nextTileFacingEntity.y).getValue() > 0;
 }
 
 sf::Vector2<uint32_t> GameEntity::findNextTileDirection(sf::Time deltaTime)

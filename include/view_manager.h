@@ -7,7 +7,7 @@
 
 #include "game_entity.h"
 #include "common_constants.h"
-#include "level.h"
+#include "tilemap.h"
 #include "player.h"
 #include "text_manager.h"
 #include "user_interface_manager.h"
@@ -17,7 +17,7 @@ static const float VIEW_ZOOM_FACTOR = 0.5;
 class ViewManager
 {
     public:
-        ViewManager(sf::RenderTarget& renderTarget, Level& level, std::shared_ptr<TextManager>& textManager);
+        ViewManager(sf::RenderTarget& renderTarget, std::shared_ptr<TextManager>& textManager);
         void centerViewOnEntity(const std::shared_ptr<GameEntity>& entity);
         void showGameOverView();
 
@@ -27,7 +27,6 @@ class ViewManager
 
     private:
         sf::RenderTarget& m_renderTarget;
-        Level& m_level;
         std::shared_ptr<TextManager> m_textManager;
 };
 

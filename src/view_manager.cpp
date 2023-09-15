@@ -1,7 +1,7 @@
 #include "../include/view_manager.h"
 
-ViewManager::ViewManager(sf::RenderTarget& renderTarget, Level& level, std::shared_ptr<TextManager>& textManager)
-        : m_renderTarget(renderTarget), m_level(level), m_textManager(textManager)
+ViewManager::ViewManager(sf::RenderTarget& renderTarget, std::shared_ptr<TextManager>& textManager)
+        : m_renderTarget(renderTarget), m_textManager(textManager)
 {
 }
 
@@ -9,8 +9,8 @@ void ViewManager::centerViewOnEntity(const std::shared_ptr<GameEntity>& entity)
 {
     // keep view centred/centered on entity
     sf::Vector2f entityPos = entity->getPosition();
-    float centreX = getViewCentreForCoordinate(entityPos.x, m_level.getWorldWidth(), WINDOW_WIDTH, entity->getWidth());
-    float centreY = getViewCentreForCoordinate(entityPos.y, m_level.getWorldHeight(), WINDOW_HEIGHT, entity->getHeight());
+    float centreX = getViewCentreForCoordinate(entityPos.x, TileMap::getWorldWidthInTiles(), WINDOW_WIDTH, entity->getWidth());
+    float centreY = getViewCentreForCoordinate(entityPos.y, TileMap::getWorldHeightInTiles(), WINDOW_HEIGHT, entity->getHeight());
 
     sf::View newView = m_renderTarget.getView();
     newView.zoom(VIEW_ZOOM_FACTOR);

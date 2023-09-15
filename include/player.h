@@ -23,7 +23,7 @@ class Player : public GameEntity
         explicit Player(std::shared_ptr<TextureManager>& textureManager);
         Player(Player& enemy) : GameEntity(enemy)
         {
-            std::cout << "DEBUG: copy constructor called for `Player` GameEntity object: " << &enemy << std::endl;
+            std::cout << "DEBUG: copy constructor called for `Player` GameEntity object: " << &enemy << '\n';
         }
 
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;

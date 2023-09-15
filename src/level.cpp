@@ -3,19 +3,14 @@
 Level::Level(std::shared_ptr<Player>& player, std::shared_ptr<TextureManager>& textureManager)
         : m_player(player), m_textureManager(textureManager)
 {
-    std::ifstream f("resources/level/forest_2.json");
-    nlohmann::json data = nlohmann::json::parse(f);
-    world = data["grid"];
-
-    loadLevel();
-
+    createWorld();
     initialiseGameEntities();
 }
 
-// TODO MOVE TO ENGINE CLASS NOW THAT IT SIMPLY CHECKS KEYBOARD AND THEN CALLS A FUNC? 
+// TODO MOVE TO ENGINE CLASS NOW THAT IT SIMPLY CHECKS KEYBOARD AND THEN CALLS A FUNC?
 void Level::update(GameState& gameState)
 {
-    map.update(gameState);
+    tileMap.update(gameState);
 
     for (auto& entity: gameEntities)
     {
@@ -25,7 +20,7 @@ void Level::update(GameState& gameState)
 
 void Level::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 {
-    map.draw(renderTarget, states);
+    tileMap.draw(renderTarget, states);
 
     for (auto& entity: gameEntities)
     {
@@ -38,7 +33,7 @@ void Level::enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf
     for (const auto& entity: gameEntities)
     {
         sf::Color tileColour = entityTypeTileColour.at(entity->getType());
-        map.highlightTileForDebug(entity, world.at(0).size(), tileColour);
+        tileMap.highlightTileForDebug(entity, tileMap.getWorldWidthInTiles(), tileColour);
     }
 }
 
@@ -46,22 +41,22 @@ void Level::interactWithNode(sf::Time deltaTime)
 {
     // TODO Create a tile object rather than a pair here?
     sf::Vector2u nextPlayerFacingTile = m_player->findNextTileDirection(deltaTime);
-    uint8_t nodeFacingPlayer = world.at(nextPlayerFacingTile.y).at(nextPlayerFacingTile.x);
+    Tile& tileFacingPlayer = tileMap.getTile(nextPlayerFacingTile.x, nextPlayerFacingTile.y);
 
-    if (nodeFacingPlayer == 2 || nodeFacingPlayer == 3)
+    if (tileFacingPlayer.getValue() == 2 || tileFacingPlayer.getValue() == 3)
     {
-        world.at(nextPlayerFacingTile.y).at(nextPlayerFacingTile.x) = 0;
+        tileFacingPlayer.setValue(0);
 
         // TODO not ideal, fix me
-        loadLevel();
+        createWorld();
     }
 }
 
-void Level::loadLevel()
+void Level::createWorld()
 {
-    if (!map.load("./resources/assets/basic_tilemap.png", sf::Vector2u(TILE_SIZE, TILE_SIZE), world))
+    if (!tileMap.load("./resources/assets/basic_tilemap.png", sf::Vector2u(TILE_SIZE, TILE_SIZE)))
     {
-        std::cout << "Failed to load tileset" << std::endl;
+        std::cout << "Failed to load tileset" << '\n';
         return;
     }
 }
@@ -92,9 +87,10 @@ void Level::initialiseGameEntities()
             uint32_t enemyRectLeft = ENEMY_WIDTH * (3 * cols);
             uint32_t enemyRectTop = ENEMY_HEIGHT * (4 * rows);
 
+            // TODO CONVERT THIS TO TILE FORMAT, NOT WORLD COORDS
             // Note: These positions are temporary.
-            auto enemyX = static_cast<float>(std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * getWorldWidth()));
-            auto enemyY = static_cast<float>(std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * getWorldHeight()));
+            auto enemyX = static_cast<float>(std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * tileMap.getWorldWidthInTiles()));
+            auto enemyY = static_cast<float>(std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * tileMap.getWorldHeightInTiles()));
 
             sf::Vector2u spritePositionGroup = sf::Vector2u(enemyRectLeft, enemyRectTop);
             sf::Vector2f enemyPosition = sf::Vector2f(enemyX, enemyY);
@@ -106,18 +102,7 @@ void Level::initialiseGameEntities()
     }
 }
 
-// Important to return a copy here - TODO can we do this a different way?
-std::vector<std::vector<uint32_t>> Level::getWorld()
+TileMap& Level::getTileMap()
 {
-    return world;
-}
-
-uint32_t Level::getWorldWidth()
-{
-    return world.at(0).size();
-}
-
-uint32_t Level::getWorldHeight()
-{
-    return world.size();
+    return tileMap;
 }

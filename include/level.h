@@ -14,6 +14,7 @@
 #include "player.h"
 #include "tilemap.h"
 #include "enemy.h"
+#include "tile.h"
 
 static constexpr uint8_t TOTAL_PLAYERS = 1;
 static constexpr uint8_t TOTAL_ENEMIES = 8;
@@ -35,16 +36,13 @@ class Level : public GameComponent
 
         void initialiseGameEntities();
 
-        static std::vector<std::vector<uint32_t>> getWorld();
-        static uint32_t getWorldWidth();
-        static uint32_t getWorldHeight();
+        static TileMap& getTileMap();
 
     private:
-        void loadLevel();
+        void createWorld();
 
     private:
-        TileMap map;
-        static inline std::vector<std::vector<uint32_t>> world;
+        static inline TileMap tileMap;
 
         std::shared_ptr<Player> m_player;
         std::vector<std::shared_ptr<GameEntity>> gameEntities;

@@ -18,8 +18,11 @@
 #include <iostream>
 #include <vector>
 
+#include <fstream>
+#include "json.hpp"
 #include "game_component.h"
 #include "game_entity.h"
+#include "tile.h"
 
 // Two triangles
 static constexpr uint8_t TOTAL_VERTICES_IN_TILE = 6;
@@ -27,13 +30,26 @@ static constexpr uint8_t TOTAL_VERTICES_IN_TILE = 6;
 class TileMap : public GameComponent
 {
     public:
+        TileMap();
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
         void update(GameState& gameState) override;
+        bool load(const std::string& tileset, sf::Vector2u tileSize);
 
-        bool load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& world);
+        Tile& getTile(uint32_t x, uint32_t y);
+        void updateTile(uint32_t x, uint32_t y, uint32_t value);
+
         void highlightTileForDebug(const std::shared_ptr<GameEntity>& entity, uint32_t levelWidth, sf::Color tileColour);
 
+        static uint32_t getWorldWidthInTiles();
+        static uint32_t getWorldHeightInTiles();
+
     private:
+        std::vector<std::vector<uint8_t>> createTilesForWorld();
+
+    private:
+        std::vector<Tile> world;
+        static inline uint32_t worldWidthInTiles;
+        static inline uint32_t worldHeightInTiles;
 
         sf::VertexArray m_vertices;
         sf::Texture m_tileset;

@@ -26,7 +26,7 @@ class Enemy : public GameEntity
 
         Enemy(Enemy& enemy) : GameEntity(enemy)
         {
-            std::cout << "DEBUG: copy constructor called for `Enemy` GameEntity object: " << &enemy << std::endl;
+            std::cout << "DEBUG: copy constructor called for `Enemy` GameEntity object: " << &enemy << '\n';
         }
 
         // TODO ADD DELTA TIME TO CONSTRUCTOR RATHER THAN NEEDING TO PASS IT IN EACH METHOD

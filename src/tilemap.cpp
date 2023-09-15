@@ -1,6 +1,47 @@
 #include "../include/tilemap.h"
 
-bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std::vector<std::vector<uint32_t>>& world)
+TileMap::TileMap()
+{
+    std::vector<std::vector<uint8_t>> worldData = createTilesForWorld();
+    TileMap::worldWidthInTiles = worldData.at(0).size();
+    TileMap::worldHeightInTiles = worldData.size();
+}
+
+void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+    // apply the transform
+    states.transform *= getTransform();
+
+    // apply the tile set texture
+    states.texture = &m_tileset;
+
+    // draw the vertex array
+    target.draw(m_vertices, states);
+}
+
+void TileMap::update(GameState& gameState)
+{
+    // NOT IMPLEMENTED
+}
+
+std::vector<std::vector<uint8_t>> TileMap::createTilesForWorld()
+{
+    std::ifstream f("resources/level/forest_2.json");
+    nlohmann::json data = nlohmann::json::parse(f);
+    std::vector<std::vector<uint8_t>> worldData = data["grid"];
+    for (size_t i = 0; i < worldData.size(); i++)
+    {
+        size_t rowSize = worldData.at(i).size();
+        for (size_t j = 0; j < rowSize; j++)
+        {
+            uint32_t tileValue = worldData.at(i).at(j);
+            world.emplace_back(i, j, tileValue);
+        }
+    }
+    return worldData;
+}
+
+bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize)
 {
     // load the tileset texture
     if (!m_tileset.loadFromFile(tileset))
@@ -11,30 +52,26 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std:
     // resize the vertex array to fit the level size
     m_vertices.setPrimitiveType(sf::Triangles);
 
-    // extract levelWidth and levelHeight
-    uint32_t levelWidth = world.at(0).size();
-    uint32_t levelHeight = world.size();
-
     // resize vertex array based on level size
-    m_vertices.resize(levelWidth * levelHeight * TOTAL_VERTICES_IN_TILE);
+    m_vertices.resize(worldWidthInTiles * worldHeightInTiles * TOTAL_VERTICES_IN_TILE);
 
-    std::cout << "vertice size: " << m_vertices.getVertexCount() << std::endl;
-    std::cout << "Tileset match tile size: " << ((m_tileset.getSize().x % tileSize.x == 0) && (m_tileset.getSize().y % tileSize.y == 0)) << std::endl;
-    std::cout << "Tile Map Height: " << world.size() << std::endl;
-    std::cout << "Tile Map Width: " << world.at(0).size() << std::endl;
+    std::cout << "Vertex count: " << m_vertices.getVertexCount() << '\n';
+    std::cout << "Tileset match tile size: " << ((m_tileset.getSize().x % tileSize.x == 0) && (m_tileset.getSize().y % tileSize.y == 0)) << '\n';
+    std::cout << "Tile Map Width: " << worldWidthInTiles << '\n';
+    std::cout << "Tile Map Height: " << worldHeightInTiles << '\n';
 
     // populate the vertex array, with two triangles per tile
-    for (unsigned int i = 0; i < levelHeight; i++)
+    for (unsigned int i = 0; i < worldHeightInTiles; i++)
     {
-        for (unsigned int j = 0; j < levelWidth; j++)
+        for (unsigned int j = 0; j < worldWidthInTiles; j++)
         {
             // get the current tile number
-            int tilePos = j + (i*levelWidth);
-            int tileNumber = world.at(i).at(j);
+            int tilePos = j + (i*worldWidthInTiles);
+            Tile tile = world.at(tilePos);
 
             // find its position in the tileset texture
-            int tu = tileNumber % (m_tileset.getSize().x / tileSize.x);
-            int tv = tileNumber / (m_tileset.getSize().x / tileSize.x);
+            int tu = tile.getValue() % (m_tileset.getSize().x / tileSize.x);
+            int tv = tile.getValue() / (m_tileset.getSize().x / tileSize.x);
 
             // get a pointer to the triangles' vertices of the current tile
             sf::Vertex* triangles = &m_vertices[tilePos * TOTAL_VERTICES_IN_TILE];
@@ -60,7 +97,31 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize, const std:
     }
     
     return true;
-};
+}
+
+Tile& TileMap::getTile(uint32_t x, uint32_t y)
+{
+    uint32_t row = getWorldWidthInTiles() * y;
+    uint32_t positionForTile = row + x;
+    return world.at(positionForTile);
+}
+
+void TileMap::updateTile(uint32_t x, uint32_t y, uint32_t value)
+{
+    uint32_t row = getWorldWidthInTiles() * y;
+    uint32_t positionForTile = row + x;
+    world.at(positionForTile).setValue(value);
+}
+
+uint32_t TileMap::getWorldWidthInTiles()
+{
+    return worldWidthInTiles;
+}
+
+uint32_t TileMap::getWorldHeightInTiles()
+{
+    return worldHeightInTiles;
+}
 
 // Debug feature
 // TODO put execution in separate thread?
@@ -82,21 +143,4 @@ void TileMap::highlightTileForDebug(const std::shared_ptr<GameEntity>& entity, u
     }
 
     previousEntityTilePosition[entity] = currTilePos;
-}
-
-void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
-{
-    // apply the transform
-    states.transform *= getTransform();
-
-    // apply the tile set texture
-    states.texture = &m_tileset;
-
-    // draw the vertex array
-    target.draw(m_vertices, states);
-}
-
-void TileMap::update(GameState& gameState)
-{
-    // NOT IMPLEMENTED
 }
