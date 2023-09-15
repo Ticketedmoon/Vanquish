@@ -42,28 +42,32 @@ void Enemy::update(GameState& gameState)
         return;
     }
 
+    if (isEnemyInProximityOfTarget(position, m_player->getPosition(), 24))
+    {
+        damagePlayer(gameClock);
+        return;
+    }
+
     if (isEnemyInProximityOfTarget(position, m_player->getPosition(), WANDER_DISTANCE))
     {
-        if (isEnemyInProximityOfTarget(position, m_player->getPosition(), 24))
-        {
-            damagePlayer(gameClock);
-        }
-
         moveToDestination(gameClock, m_player->getPosition());
         return;
     }
 
-    if (isEnemyInProximityOfTarget(position, spawnPosition, WANDER_DISTANCE))
+    if (!isEnemyInProximityOfTarget(position, spawnPosition, WANDER_DISTANCE))
     {
-        // Move randomly
-        updateEntityToRandomDirection(gameClock);
-        updatePosition(gameClock);
-        performAnimation(gameClock, MAX_SPRITE_SHEET_FRAMES);
+        // Return to spawn area if too far away.
+        moveToDestination(gameClock, spawnPosition);
         return;
     }
 
-    // Return to spawn area if too far away.
-    moveToDestination(gameClock, spawnPosition);
+    // Move randomly
+    updateEntityToRandomDirection(gameClock, MAX_SPRITE_SHEET_FRAMES);
+}
+
+void Enemy::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
+{
+    renderTarget.draw(entitySprite);
 }
 
 /* TODO, we don't want the enemy to have a reference to the m_player obj.
@@ -84,11 +88,6 @@ void Enemy::damagePlayer(GameClock& gameClock)
         m_player->setHealth(newHealth);
         lastTimeEnemyAttacked = timeNowSeconds;
     }
-}
-
-void Enemy::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
-{
-    renderTarget.draw(entitySprite);
 }
 
 void Enemy::moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoint)

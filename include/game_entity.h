@@ -66,7 +66,7 @@ class GameEntity : public GameComponent
 
         void updatePosition(GameClock& gameClock);
         void setDirection(EntityDirection dir);
-        void updateEntityToRandomDirection(GameClock& gameClock);
+        void updateEntityToRandomDirection(GameClock& gameClock, uint8_t maxSpriteSheetFrames);
 
         bool isDead() const;
 

@@ -148,7 +148,7 @@ uint8_t GameEntity::getSpriteSheetAnimationOffset(const EntityDirection dir)
     }
 }
 
-void GameEntity::updateEntityToRandomDirection(GameClock& gameClock)
+void GameEntity::updateEntityToRandomDirection(GameClock& gameClock, uint8_t maxSpriteSheetFrames)
 {
     uint64_t milliseconds = gameClock.getWorldTimeMs();
     if (milliseconds > (entityWaitTimeBeforeMovementMs + 250))
@@ -159,6 +159,9 @@ void GameEntity::updateEntityToRandomDirection(GameClock& gameClock)
         auto randomDirection = static_cast<EntityDirection>(directionIndex);
         this->setDirection(randomDirection);
     }
+
+    updatePosition(gameClock);
+    performAnimation(gameClock, maxSpriteSheetFrames);
 }
 
 void GameEntity::performAnimation(GameClock& gameClock, uint8_t maxSpriteSheetFrames)
