@@ -76,10 +76,10 @@ class GameEntity : public GameComponent
             float velocity;
         };
 
-        NextCoordinateVelocityPair getNextCoordinatePositionWithNextVelocity(sf::Time deltaTime,
+        static NextCoordinateVelocityPair getNextCoordinatePositionWithNextVelocity(sf::Time deltaTime,
                 uint32_t tileMapDimensionValue,
                 float positionForCoordinate,
-                float velocityForCoordinate) const;
+                float velocityForCoordinate);
 
         bool isNextTileCollidable(GameClock& gameClock);
 

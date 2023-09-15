@@ -47,14 +47,12 @@ void GameEntity::updatePosition(GameClock& gameClock)
     // update velocity through acceleration
     velocity += acceleration;
 
-    // TODO REFACTOR ME CAN WE USE tilePosition?
-    uint32_t worldWidth = (Level::getWorldWidth() - 1) * TILE_SIZE;
-    uint32_t worldHeight = (Level::getWorldHeight() - 1) * TILE_SIZE;
+    // TODO REFACTOR ME CAN WE USE tiles everywhere over world coordinates?
 
     if (direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT)
     {
         NextCoordinateVelocityPair nextCoordinatePair =
-                getNextCoordinatePositionWithNextVelocity(gameClock.getDeltaTime(), worldWidth, getPosition().x, velocity.x);
+                getNextCoordinatePositionWithNextVelocity(gameClock.getDeltaTime(), Level::getWorldWidth()-1, getPosition().x, velocity.x);
         setPosition(nextCoordinatePair.coordinatePosition, getPosition().y);
         velocity.x = nextCoordinatePair.velocity;
     }
@@ -62,7 +60,7 @@ void GameEntity::updatePosition(GameClock& gameClock)
     if (direction == EntityDirection::UP || direction == EntityDirection::DOWN)
     {
         NextCoordinateVelocityPair nextCoordinatePair =
-                getNextCoordinatePositionWithNextVelocity(gameClock.getDeltaTime(), worldHeight, getPosition().y, velocity.y);
+                getNextCoordinatePositionWithNextVelocity(gameClock.getDeltaTime(), Level::getWorldHeight()-1, getPosition().y, velocity.y);
         setPosition(getPosition().x, nextCoordinatePair.coordinatePosition);
         velocity.y = nextCoordinatePair.velocity;
     }
@@ -71,7 +69,7 @@ void GameEntity::updatePosition(GameClock& gameClock)
 GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWithNextVelocity(const sf::Time deltaTime,
         uint32_t tileMapDimensionValue,
         float positionForCoordinate,
-        float velocityForCoordinate) const
+        float velocityForCoordinate)
 {
     float positionDeltaForCoordinate = positionForCoordinate + (velocityForCoordinate * deltaTime.asSeconds());
     auto mapLimit = static_cast<float>(tileMapDimensionValue * TILE_SIZE);
