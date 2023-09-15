@@ -24,10 +24,10 @@ static constexpr uint16_t MAX_ENTITY_MOVE_RATE_MS = 3000;
 
 enum class EntityDirection
 {
-    UP = 0,
-    DOWN = 1,
-    LEFT = 2,
-    RIGHT = 3
+    DOWN = 0,
+    LEFT = 1,
+    RIGHT = 2,
+    UP = 3,
 };
 
 enum class EntityType
@@ -61,7 +61,6 @@ class GameEntity : public GameComponent
     protected:
         virtual sf::Time getAnimationFrameDuration() = 0;
         virtual void updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft);
-        static uint8_t getSpriteSheetAnimationOffset(EntityDirection dir);
         void performAnimation(GameClock& gameClock, uint8_t maxSpriteSheetFrames);
 
         void updatePosition(GameClock& gameClock);
@@ -77,10 +76,10 @@ class GameEntity : public GameComponent
             float velocity;
         };
 
-        static NextCoordinateVelocityPair getNextCoordinatePositionWithNextVelocity(sf::Time deltaTime,
+        NextCoordinateVelocityPair getNextCoordinatePositionWithNextVelocity(sf::Time deltaTime,
                 uint32_t tileMapDimensionValue,
                 float positionForCoordinate,
-                float velocityForCoordinate);
+                float velocityForCoordinate) const;
 
         bool isNextTileCollidable(GameClock& gameClock);
 

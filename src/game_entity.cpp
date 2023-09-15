@@ -71,10 +71,12 @@ void GameEntity::updatePosition(GameClock& gameClock)
 GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWithNextVelocity(const sf::Time deltaTime,
         uint32_t tileMapDimensionValue,
         float positionForCoordinate,
-        float velocityForCoordinate)
+        float velocityForCoordinate) const
 {
     float positionDeltaForCoordinate = positionForCoordinate + (velocityForCoordinate * deltaTime.asSeconds());
-    if (positionDeltaForCoordinate >= 0 && positionDeltaForCoordinate < static_cast<float>(tileMapDimensionValue))
+    auto mapLimit = static_cast<float>(tileMapDimensionValue * TILE_SIZE);
+
+    if (positionDeltaForCoordinate >= 0 && positionDeltaForCoordinate < mapLimit)
     {
         positionForCoordinate = positionDeltaForCoordinate;
         velocityForCoordinate *= 0.5f;
@@ -92,32 +94,28 @@ bool GameEntity::isNextTileCollidable(GameClock& gameClock)
     // TODO Introduce a tile object rather than a pair here?
     sf::Vector2u nextTileFacingEntity = findNextTileDirection(gameClock.getDeltaTime());
     std::vector<std::vector<uint32_t>> world = Level::getWorld();
-    return world.at(nextTileFacingEntity.y).at(nextTileFacingEntity.x) > 0;
+    return nextTileFacingEntity.x < world.at(0).size() && nextTileFacingEntity.y < world.size()
+        && world.at(nextTileFacingEntity.y).at(nextTileFacingEntity.x) > 0;
 }
 
 sf::Vector2<uint32_t> GameEntity::findNextTileDirection(sf::Time deltaTime)
 {
-    sf::Vector2f position = getPosition();
+    sf::Vector2f nextPosition = getPosition();
 
-    if (direction == EntityDirection::UP)
+    if (direction == EntityDirection::LEFT || direction == EntityDirection::RIGHT)
     {
-        position.y += (velocity.y - speed) * deltaTime.asSeconds();
-    }
-    if (direction == EntityDirection::DOWN)
-    {
-        position.y += (velocity.y + speed) * deltaTime.asSeconds();
-    }
-    if (direction == EntityDirection::LEFT)
-    {
-        position.x += (velocity.x - speed) * deltaTime.asSeconds();
-    }
-    if (direction == EntityDirection::RIGHT)
-    {
-        position.x += (velocity.x + speed) * deltaTime.asSeconds();
+        float sign = direction == EntityDirection::LEFT ? -1.0 : 1.0;
+        nextPosition.x += (velocity.x + (speed * sign)) * deltaTime.asSeconds();
     }
 
-    float nextPlayerPosWithOffsetX = position.x + spritePositionOffset.x;
-    float nextPlayerPosWithOffsetY = position.y + spritePositionOffset.y;
+    if (direction == EntityDirection::UP || direction == EntityDirection::DOWN)
+    {
+        float sign = direction == EntityDirection::UP ? -1.0 : 1.0;
+        nextPosition.y += (velocity.y + (speed * sign)) * deltaTime.asSeconds();
+    }
+
+    float nextPlayerPosWithOffsetX = nextPosition.x + spritePositionOffset.x;
+    float nextPlayerPosWithOffsetY = nextPosition.y + spritePositionOffset.y;
     uint32_t nextTileX = nextPlayerPosWithOffsetX > 0
             ? std::floor(nextPlayerPosWithOffsetX / TILE_SIZE)
             : 0;
@@ -125,27 +123,6 @@ sf::Vector2<uint32_t> GameEntity::findNextTileDirection(sf::Time deltaTime)
             ? std::floor(nextPlayerPosWithOffsetY / TILE_SIZE)
             : 0;
     return {nextTileX, nextTileY};
-}
-
-// TODO REFACTOR
-uint8_t GameEntity::getSpriteSheetAnimationOffset(const EntityDirection dir)
-{
-    if (dir == EntityDirection::DOWN)
-    {
-        return 0;
-    }
-    else if (dir == EntityDirection::LEFT)
-    {
-        return 1;
-    }
-    else if (dir == EntityDirection::RIGHT)
-    {
-        return 2;
-    }
-    else
-    {
-        return 3;
-    }
 }
 
 void GameEntity::updateEntityToRandomDirection(GameClock& gameClock, uint8_t maxSpriteSheetFrames)
@@ -166,7 +143,8 @@ void GameEntity::updateEntityToRandomDirection(GameClock& gameClock, uint8_t max
 
 void GameEntity::performAnimation(GameClock& gameClock, uint8_t maxSpriteSheetFrames)
 {
-    uint32_t spriteSheetTop = startingAnimationPosition.y + (height * getSpriteSheetAnimationOffset(direction));
+    int directionIndex = static_cast<int>(direction);
+    uint32_t spriteSheetTop = startingAnimationPosition.y + (height * directionIndex);
     uint32_t spriteSheetLeft = entitySpriteSheetDimRect.left == startingAnimationPosition.x + (width * (maxSpriteSheetFrames - 1))
             ? startingAnimationPosition.x
             : entitySpriteSheetDimRect.left + width;
