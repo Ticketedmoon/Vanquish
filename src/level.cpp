@@ -46,7 +46,8 @@ void Level::initialiseGameEntities()
     uint8_t totalCols = totalRows == minRows
             ? TOTAL_ENEMIES
             : std::ceil(TOTAL_ENEMIES / totalRows);
-    std::cout << "Loading gameEntities from sprite sheet [rows: " << totalRows << ", cols: " << totalCols << "]\n";
+    std::cout << "Loading gameEntities from sprite sheet [rows: " << std::to_string(totalRows) << ", cols: "
+        << std::to_string(totalCols) << "]\n";
 
     for (uint32_t rows = 0; rows < totalRows; rows++)
     {

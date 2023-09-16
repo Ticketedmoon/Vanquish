@@ -62,10 +62,10 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize)
     // resize vertex array based on level size
     m_vertices.resize(worldWidthInTiles * worldHeightInTiles * TOTAL_VERTICES_IN_TILE);
 
-    std::cout << "Vertex count: " << m_vertices.getVertexCount() << '\n';
-    std::cout << "Tileset match tile size: " << ((m_tileset.getSize().x % tileSize.x == 0) && (m_tileset.getSize().y % tileSize.y == 0)) << '\n';
-    std::cout << "Tile Map Width: " << worldWidthInTiles << '\n';
-    std::cout << "Tile Map Height: " << worldHeightInTiles << '\n';
+    std::cout << "Vertex count: " << m_vertices.getVertexCount() << '\n'
+              << "Tileset match tile size: " << ((m_tileset.getSize().x % tileSize.x == 0) && (m_tileset.getSize().y % tileSize.y == 0)) << '\n'
+              << "Tile Map Width: " << worldWidthInTiles << '\n'
+              << "Tile Map Height: " << worldHeightInTiles << '\n';
 
     // populate the vertex array, with two triangles per tile
     for (unsigned int y = 0; y < worldHeightInTiles; y++)
@@ -127,19 +127,19 @@ void TileMap::updateTileTexture(const Tile& tile)
     float tv = tile.getValue() / (m_tileset.getSize().x / TILE_SIZE);
 
     sf::Vertex* triangles = &m_vertices[tile.getPosition() * TOTAL_VERTICES_IN_TILE];
-    float tuTimesTileSize = (tu + 0) * TILE_SIZE;
-    float tuPlusOneTimesTileSize = (tu + 1) * TILE_SIZE;
+    float tuPositionStart = tu * TILE_SIZE;
+    float tuPositionEnd = (tu + 1) * TILE_SIZE;
 
-    float tvTimesTileSize = tv * TILE_SIZE;
-    float tvPlusOneTimesTileSize = (tv + 1) * TILE_SIZE;
+    float tvPositionStart = tv * TILE_SIZE;
+    float tvPositionEnd = (tv + 1) * TILE_SIZE;
 
-    triangles[0].texCoords = sf::Vector2f(tuTimesTileSize, tvTimesTileSize);
-    triangles[1].texCoords = sf::Vector2f(tuPlusOneTimesTileSize, tvTimesTileSize);
-    triangles[2].texCoords = sf::Vector2f(tuTimesTileSize, tvPlusOneTimesTileSize);
+    triangles[0].texCoords = sf::Vector2f(tuPositionStart, tvPositionStart);
+    triangles[1].texCoords = sf::Vector2f(tuPositionEnd, tvPositionStart);
+    triangles[2].texCoords = sf::Vector2f(tuPositionStart, tvPositionEnd);
 
-    triangles[3].texCoords = sf::Vector2f(tuTimesTileSize, tvPlusOneTimesTileSize);
-    triangles[4].texCoords = sf::Vector2f(tuPlusOneTimesTileSize, tvTimesTileSize);
-    triangles[5].texCoords = sf::Vector2f(tuPlusOneTimesTileSize, tvPlusOneTimesTileSize);
+    triangles[3].texCoords = sf::Vector2f(tuPositionStart, tvPositionEnd);
+    triangles[4].texCoords = sf::Vector2f(tuPositionEnd, tvPositionStart);
+    triangles[5].texCoords = sf::Vector2f(tuPositionEnd, tvPositionEnd);
 }
 
 uint32_t TileMap::getWorldWidthInTiles()
