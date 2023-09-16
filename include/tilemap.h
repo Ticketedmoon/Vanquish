@@ -56,7 +56,14 @@ class TileMap : public GameComponent
         static inline uint32_t worldWidthInTiles;
         static inline uint32_t worldHeightInTiles;
 
+        /* Note:
+         * Rather than having a single vertex array for the world, we should break the world into chunks, lets say
+         * 400x400 blocks.
+         * Each chunk/block will get one vertex array.
+         * Then you can simply draw only the chunks that are in a visible area of the current view.
+         */
         sf::VertexArray m_vertices;
+
         sf::Texture m_tileset;
 
         std::unordered_map<std::shared_ptr<GameEntity>, uint32_t> previousEntityTilePosition;

@@ -26,6 +26,11 @@ void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
     states.texture = &m_tileset;
 
     // draw the vertex array
+    std::cout << m_vertices.getBounds().width
+              << ", " << m_vertices.getBounds().height
+              << ", " << m_vertices.getBounds().top
+              << ", " << m_vertices.getBounds().left
+              << ", " << m_vertices.getVertexCount() << '\n';
     target.draw(m_vertices, states);
 }
 

@@ -22,7 +22,7 @@ void Level::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 
     for (auto& entity: gameEntities)
     {
-        entity->draw(renderTarget, sf::RenderStates::Default);
+        entity->draw(renderTarget, states);
     }
 }
 
