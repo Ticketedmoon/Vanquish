@@ -57,12 +57,13 @@ void Level::initialiseGameEntities()
         for (uint32_t cols = 0; cols < totalCols; cols++)
         {
             if ((rows * 4) + cols >= TOTAL_ENEMIES)
-            { return; }
+            {
+                return;
+            }
 
             uint32_t enemyRectLeft = ENEMY_WIDTH * (3 * cols);
             uint32_t enemyRectTop = ENEMY_HEIGHT * (4 * rows);
 
-            // TODO CONVERT THIS TO TILE FORMAT, NOT WORLD COORDS
             // Note: These positions are temporary.
             auto enemyX = static_cast<float>(std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * TileMap::getWorldWidthInTiles()));
             auto enemyY = static_cast<float>(std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * TileMap::getWorldHeightInTiles()));
