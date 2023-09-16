@@ -43,34 +43,33 @@ void Player::update(GameState& gameState)
     entitySprite.setPosition(getPosition());
     entitySprite.setTextureRect(entitySpriteSheetDimRect);
 
-    GameClock& gameClock = gameState.getClock();
+    startMovement(gameState.getClock());
+}
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-    {
-        startMovement(gameClock, EntityDirection::UP);
-    }
+void Player::startMovement(GameClock& gameClock)
+{
+    bool isMovingDown = tryMoveDirection(gameClock, std::make_pair(sf::Keyboard::Down, sf::Keyboard::S), EntityDirection::DOWN);
+    bool isMovingUp = tryMoveDirection(gameClock, std::make_pair(sf::Keyboard::Up, sf::Keyboard::W), EntityDirection::UP);
+    bool isMovingLeft = tryMoveDirection(gameClock, std::make_pair(sf::Keyboard::Left, sf::Keyboard::A), EntityDirection::LEFT);
+    bool isMovingRight = tryMoveDirection(gameClock, std::make_pair(sf::Keyboard::Right, sf::Keyboard::D), EntityDirection::RIGHT);
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+    if (isMovingDown || isMovingUp || isMovingLeft || isMovingRight)
     {
-        startMovement(gameClock, EntityDirection::DOWN);
-    }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-    {
-        startMovement(gameClock, EntityDirection::LEFT);
-    }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-    {
-        startMovement(gameClock, EntityDirection::RIGHT);
+        performAnimation(gameClock, MAX_SPRITE_SHEET_FRAMES);
     }
 }
 
-void Player::startMovement(GameClock& gameClock, EntityDirection direction)
+bool Player::tryMoveDirection(GameClock& gameClock, std::pair<sf::Keyboard::Key, sf::Keyboard::Key> keyboardInputGroup,
+        EntityDirection direction)
 {
-    setDirection(direction);
-    updatePosition(gameClock);
-    performAnimation(gameClock, MAX_SPRITE_SHEET_FRAMES);
+    if (sf::Keyboard::isKeyPressed(keyboardInputGroup.first) || sf::Keyboard::isKeyPressed(keyboardInputGroup.second))
+    {
+        setDirection(direction);
+        updatePosition(gameClock);
+        return true;
+    }
+
+    return false;
 }
 
 EntityType Player::getType()

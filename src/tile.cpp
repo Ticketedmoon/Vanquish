@@ -1,18 +1,18 @@
 #include "tile.h"
 
-Tile::Tile(sf::Vector2u coordinates, uint32_t position, uint32_t value)
-    : coordinates(coordinates), position(position), value(value)
+Tile::Tile(sf::Vector2u coordinates, uint32_t position, Type tileType)
+    : coordinates(coordinates), position(position), type(tileType)
 {
 }
 
-uint32_t Tile::getValue() const
+Tile::Type Tile::getType() const
 {
-    return value;
+    return type;
 }
 
-void Tile::setValue(uint32_t newValue)
+void Tile::setType(Tile::Type newTileType)
 {
-    this->value = newValue;
+    this->type = newTileType;
 }
 
 uint32_t Tile::getPosition() const

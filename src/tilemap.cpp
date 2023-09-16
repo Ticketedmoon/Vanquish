@@ -41,9 +41,9 @@ void TileMap::createTilesForWorld(const std::vector<std::vector<uint8_t>>& world
         size_t rowSize = worldData.at(y).size();
         for (size_t x = 0; x < rowSize; x++)
         {
-            uint32_t tileValue = worldData.at(y).at(x);
+            auto tileType = static_cast<Tile::Type>(worldData.at(y).at(x));
             uint32_t tilePosition = getPositionForTile(x, y);
-            world.emplace_back(sf::Vector2u(x, y), tilePosition, tileValue);
+            world.emplace_back(sf::Vector2u(x, y), tilePosition, tileType);
         }
     }
 }
@@ -104,27 +104,21 @@ uint32_t TileMap::getPositionForTile(uint32_t x, uint32_t y)
     return positionForTile;
 }
 
-void TileMap::interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player, Tile::Type tileType)
+void TileMap::updateTile(Tile& tileToUpdate, Tile::Type newTileType)
 {
-    // TODO Create a tile object rather than a pair here?
-    sf::Vector2u nextPlayerFacingTilePosition = player->findNextTileFromDirection(deltaTime);
-    Tile& nextPlayerFacingTile = getTile(nextPlayerFacingTilePosition.x, nextPlayerFacingTilePosition.y);
-
-    if (nextPlayerFacingTile.getValue() == 2 || nextPlayerFacingTile.getValue() == 3)
+    if (tileToUpdate.getType() == Tile::Type::TREE || tileToUpdate.getType() == Tile::Type::STONE)
     {
-        std::cout << "tile interact: " << nextPlayerFacingTile.getCoordinateX() << ", " << nextPlayerFacingTile.getCoordinateY() << '\n';
-
-        int tileTypeValue = static_cast<int>(tileType);
-        nextPlayerFacingTile.setValue(tileTypeValue);
-
-        updateTileTexture(nextPlayerFacingTile);
+        tileToUpdate.setType(newTileType);
+        
+        updateTileTexture(tileToUpdate);
     }
 }
 
 void TileMap::updateTileTexture(const Tile& tile)
 {
-    float tu = tile.getValue() % (m_tileset.getSize().x / TILE_SIZE);
-    float tv = tile.getValue() / (m_tileset.getSize().x / TILE_SIZE);
+    int tileTypeValue = static_cast<int>(tile.getType());
+    float tu = tileTypeValue % (m_tileset.getSize().x / TILE_SIZE);
+    float tv = tileTypeValue / (m_tileset.getSize().x / TILE_SIZE);
 
     sf::Vertex* triangles = &m_vertices[tile.getPosition() * TOTAL_VERTICES_IN_TILE];
     float tuPositionStart = tu * TILE_SIZE;

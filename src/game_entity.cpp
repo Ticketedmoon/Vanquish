@@ -103,7 +103,7 @@ bool GameEntity::isNextTileCollidable(GameClock& gameClock) const
 
     Tile& tile = TileMap::getTile(nextTileFacingEntityDirection.x, nextTileFacingEntityDirection.y);
 
-    return tile.getValue() > 0;
+    return tile.getType() != Tile::Type::GRASS;
 }
 
 sf::Vector2u GameEntity::findNextTileFromDirection(const sf::Time deltaTime) const

@@ -37,7 +37,7 @@ class TileMap : public GameComponent
         bool load(const std::string& tileset, sf::Vector2u tileSize);
 
         static Tile& getTile(uint32_t x, uint32_t y);
-        void interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player, Tile::Type tileType);
+        void updateTile(Tile& tileToUpdate, Tile::Type newTileType);
 
         void highlightTileForDebug(const std::shared_ptr<GameEntity>& entity, uint32_t levelWidth, sf::Color tileColour);
 

@@ -29,7 +29,9 @@ void Level::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 
 void Level::interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player, Tile::Type tileType)
 {
-    tileMap.interactWithTile(deltaTime, player, tileType);
+    sf::Vector2u nextPlayerFacingTilePosition = player->findNextTileFromDirection(deltaTime);
+    Tile& nextPlayerFacingTile = TileMap::getTile(nextPlayerFacingTilePosition.x, nextPlayerFacingTilePosition.y);
+    tileMap.updateTile(nextPlayerFacingTile, tileType);
 }
 
 void Level::initialiseGameEntities()
@@ -74,11 +76,6 @@ void Level::initialiseGameEntities()
             );
         }
     }
-}
-
-TileMap& Level::getTileMap()
-{
-    return tileMap;
 }
 
 void Level::enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf::Color> entityTypeTileColour)

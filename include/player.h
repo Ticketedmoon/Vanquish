@@ -33,12 +33,13 @@ class Player : public GameEntity
 
     private:
         sf::Time getAnimationFrameDuration() override;
-        void startMovement(GameClock& gameClock, EntityDirection direction);
+        void startMovement(GameClock& gameClock);
+        bool tryMoveDirection(GameClock& gameClock, std::pair<sf::Keyboard::Key, sf::Keyboard::Key> keyboardInputGroup,
+                EntityDirection direction);
 
     private:
         static constexpr uint8_t MAX_SPRITE_SHEET_FRAMES = 7;
         sf::Time animationFrameDuration{sf::seconds(1.f / 16.f)};
-
 };
 
 #endif //VANQUISH_PLAYER_H
