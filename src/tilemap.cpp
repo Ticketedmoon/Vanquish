@@ -107,7 +107,7 @@ uint32_t TileMap::getPositionForTile(uint32_t x, uint32_t y)
 void TileMap::interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player, Tile::Type tileType)
 {
     // TODO Create a tile object rather than a pair here?
-    sf::Vector2u nextPlayerFacingTilePosition = player->findNextTileDirection(deltaTime);
+    sf::Vector2u nextPlayerFacingTilePosition = player->findNextTileFromDirection(deltaTime);
     Tile& nextPlayerFacingTile = getTile(nextPlayerFacingTilePosition.x, nextPlayerFacingTilePosition.y);
 
     if (nextPlayerFacingTile.getValue() == 2 || nextPlayerFacingTile.getValue() == 3)

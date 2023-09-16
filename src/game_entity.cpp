@@ -93,7 +93,8 @@ GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWith
 
 bool GameEntity::isNextTileCollidable(GameClock& gameClock) const
 {
-    sf::Vector2u nextTileFacingEntityDirection = findNextTileDirection(gameClock.getDeltaTime());
+    sf::Vector2u nextTileFacingEntityDirection = findNextTileFromDirection(gameClock.getDeltaTime());
+
     if (nextTileFacingEntityDirection.x >= TileMap::getWorldWidthInTiles()
         || nextTileFacingEntityDirection.y >= TileMap::getWorldHeightInTiles())
     {
@@ -105,7 +106,7 @@ bool GameEntity::isNextTileCollidable(GameClock& gameClock) const
     return tile.getValue() > 0;
 }
 
-sf::Vector2u GameEntity::findNextTileDirection(const sf::Time deltaTime) const
+sf::Vector2u GameEntity::findNextTileFromDirection(const sf::Time deltaTime) const
 {
     sf::Vector2f nextPosition = getPosition();
 

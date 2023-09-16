@@ -51,7 +51,7 @@ class GameEntity : public GameComponent
 
         virtual EntityType getType() = 0;
 
-        sf::Vector2u findNextTileDirection(sf::Time deltaTime) const;
+        sf::Vector2u findNextTileFromDirection(const sf::Time deltaTime) const;
 
         uint8_t getWidth() const;
         uint8_t getHeight() const;

@@ -6,7 +6,8 @@ Player::Player(std::shared_ptr<TextureManager>& textureManager)
                  sf::Vector2u(0, 0), STARTING_PLAYER_HEALTH,
                  sf::Vector2u(
                          std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT) * 0.5f,
-                         std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT)))
+                         std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT) * 0.75f
+                         ))
 {
     sf::Texture& textureUp = *textureManager->getTexture(PLAYER_SPRITE_SHEET_A_WALK_KEY);
 
