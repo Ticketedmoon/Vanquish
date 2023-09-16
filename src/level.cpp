@@ -6,7 +6,6 @@ Level::Level(std::shared_ptr<Player>& player, std::shared_ptr<TextureManager>& t
     initialiseGameEntities();
 }
 
-// TODO MOVE TO ENGINE CLASS NOW THAT IT SIMPLY CHECKS KEYBOARD AND THEN CALLS A FUNC?
 void Level::update(GameState& gameState)
 {
     tileMap.update(gameState);
@@ -65,8 +64,8 @@ void Level::initialiseGameEntities()
 
             // TODO CONVERT THIS TO TILE FORMAT, NOT WORLD COORDS
             // Note: These positions are temporary.
-            auto enemyX = static_cast<float>(std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * tileMap.getWorldWidthInTiles()));
-            auto enemyY = static_cast<float>(std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * tileMap.getWorldHeightInTiles()));
+            auto enemyX = static_cast<float>(std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * TileMap::getWorldWidthInTiles()));
+            auto enemyY = static_cast<float>(std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * TileMap::getWorldHeightInTiles()));
 
             sf::Vector2u spritePositionGroup = sf::Vector2u(enemyRectLeft, enemyRectTop);
             sf::Vector2f enemyPosition = sf::Vector2f(enemyX, enemyY);
@@ -83,6 +82,6 @@ void Level::enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf
     for (const auto& entity: gameEntities)
     {
         sf::Color tileColour = entityTypeTileColour.at(entity->getType());
-        tileMap.highlightTileForDebug(entity, tileMap.getWorldWidthInTiles(), tileColour);
+        tileMap.highlightTileForDebug(entity, TileMap::getWorldWidthInTiles(), tileColour);
     }
 }
