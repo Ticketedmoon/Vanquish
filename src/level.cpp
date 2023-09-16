@@ -27,9 +27,9 @@ void Level::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
     }
 }
 
-void Level::interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player)
+void Level::interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player, Tile::Type tileType)
 {
-    tileMap.interactWithTile(deltaTime, player);
+    tileMap.interactWithTile(deltaTime, player, tileType);
 }
 
 void Level::initialiseGameEntities()

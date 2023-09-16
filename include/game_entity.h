@@ -18,6 +18,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include "game_component.h"
+#include "tile.h"
 
 static constexpr uint16_t MIN_ENTITY_MOVE_RATE_MS = 500;
 static constexpr uint16_t MAX_ENTITY_MOVE_RATE_MS = 3000;
@@ -50,7 +51,7 @@ class GameEntity : public GameComponent
 
         virtual EntityType getType() = 0;
 
-        sf::Vector2<uint32_t> findNextTileDirection(sf::Time deltaTime);
+        sf::Vector2u findNextTileDirection(sf::Time deltaTime) const;
 
         uint8_t getWidth() const;
         uint8_t getHeight() const;
@@ -81,7 +82,7 @@ class GameEntity : public GameComponent
                 float positionForCoordinate,
                 float velocityForCoordinate);
 
-        bool isNextTileCollidable(GameClock& gameClock);
+        bool isNextTileCollidable(GameClock& gameClock) const;
 
     public:
         sf::Vector2u tilePosition;

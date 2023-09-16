@@ -9,14 +9,26 @@
 class Tile
 {
     public:
-        Tile(uint32_t x, uint32_t y, uint32_t value);
+        enum class Type
+        {
+                GRASS = 0,
+                WATER = 1,
+                TREE = 2,
+                STONE = 3
+        };
+
+        Tile(sf::Vector2u coordinates, uint32_t position, uint32_t value);
 
     public:
+        [[nodiscard]] uint32_t getCoordinateX() const;
+        [[nodiscard]] uint32_t getCoordinateY() const;
+        [[nodiscard]] uint32_t getPosition() const;
         [[nodiscard]] uint32_t getValue() const;
         void setValue(uint32_t newValue);
 
     private:
-        sf::Vector2u position;
+        sf::Vector2u coordinates;
+        uint32_t position;
         uint32_t value;
 };
 

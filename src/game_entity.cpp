@@ -91,17 +91,21 @@ GameEntity::NextCoordinateVelocityPair GameEntity::getNextCoordinatePositionWith
     return NextCoordinateVelocityPair(positionForCoordinate, velocityForCoordinate);
 }
 
-bool GameEntity::isNextTileCollidable(GameClock& gameClock)
+bool GameEntity::isNextTileCollidable(GameClock& gameClock) const
 {
-    // TODO Introduce a tile object rather than a pair here?
-    sf::Vector2u nextTileFacingEntity = findNextTileDirection(gameClock.getDeltaTime());
-    TileMap& tileMap = Level::getTileMap();
-    return nextTileFacingEntity.x < tileMap.getWorldWidthInTiles() &&
-           nextTileFacingEntity.y < tileMap.getWorldHeightInTiles()
-           && tileMap.getTile(nextTileFacingEntity.x, nextTileFacingEntity.y).getValue() > 0;
+    sf::Vector2u nextTileFacingEntityDirection = findNextTileDirection(gameClock.getDeltaTime());
+    if (nextTileFacingEntityDirection.x >= TileMap::getWorldWidthInTiles()
+        || nextTileFacingEntityDirection.y >= TileMap::getWorldHeightInTiles())
+    {
+        return false;
+    }
+
+    Tile& tile = TileMap::getTile(nextTileFacingEntityDirection.x, nextTileFacingEntityDirection.y);
+
+    return tile.getValue() > 0;
 }
 
-sf::Vector2<uint32_t> GameEntity::findNextTileDirection(sf::Time deltaTime)
+sf::Vector2u GameEntity::findNextTileDirection(const sf::Time deltaTime) const
 {
     sf::Vector2f nextPosition = getPosition();
 
@@ -125,6 +129,7 @@ sf::Vector2<uint32_t> GameEntity::findNextTileDirection(sf::Time deltaTime)
     uint32_t nextTileY = nextPlayerPosWithOffsetY > 0
             ? std::floor(nextPlayerPosWithOffsetY / TILE_SIZE)
             : 0;
+
     return {nextTileX, nextTileY};
 }
 

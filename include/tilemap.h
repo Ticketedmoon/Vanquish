@@ -36,9 +36,8 @@ class TileMap : public GameComponent
         void update(GameState& gameState) override;
         bool load(const std::string& tileset, sf::Vector2u tileSize);
 
-        Tile& getTile(uint32_t x, uint32_t y);
-        void updateTile(uint32_t x, uint32_t y, uint32_t value);
-        void interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player);
+        static Tile& getTile(uint32_t x, uint32_t y);
+        void interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player, Tile::Type tileType);
 
         void highlightTileForDebug(const std::shared_ptr<GameEntity>& entity, uint32_t levelWidth, sf::Color tileColour);
 
@@ -46,10 +45,12 @@ class TileMap : public GameComponent
         static uint32_t getWorldHeightInTiles();
 
     private:
-        std::vector<std::vector<uint8_t>> createTilesForWorld();
+        static void createTilesForWorld(const std::vector<std::vector<uint8_t>>& worldData);
+        static uint32_t getPositionForTile(uint32_t x, uint32_t y) ;
+        void updateTileTexture(const Tile& tile);
 
     private:
-        std::vector<Tile> world;
+        static inline std::vector<Tile> world;
         static inline uint32_t worldWidthInTiles;
         static inline uint32_t worldHeightInTiles;
 
