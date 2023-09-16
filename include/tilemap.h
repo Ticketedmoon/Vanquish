@@ -47,6 +47,8 @@ class TileMap : public GameComponent
     private:
         static void createTilesForWorld(const std::vector<std::vector<uint8_t>>& worldData);
         static uint32_t getPositionForTile(uint32_t x, uint32_t y) ;
+
+        void updateVertexPositionsForTile(const Tile& tile);
         void updateTileTexture(const Tile& tile);
 
     private:

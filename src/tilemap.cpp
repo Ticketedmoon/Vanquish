@@ -73,17 +73,7 @@ bool TileMap::load(const std::string& tileset, sf::Vector2u tileSize)
         for (unsigned int x = 0; x < worldWidthInTiles; x++)
         {
             Tile& tile = getTile(x, y);
-
-            sf::Vertex* triangles = &m_vertices[tile.getPosition() * TOTAL_VERTICES_IN_TILE];
-
-            triangles[0].position = sf::Vector2f(x * tileSize.x, y * tileSize.y);
-            triangles[1].position = sf::Vector2f((x + 1) * tileSize.x, y * tileSize.y);
-            triangles[2].position = sf::Vector2f(x * tileSize.x, (y + 1) * tileSize.y);
-
-            triangles[3].position = sf::Vector2f(x * tileSize.x, (y + 1) * tileSize.y);
-            triangles[4].position = sf::Vector2f((x + 1) * tileSize.x, y * tileSize.y);
-            triangles[5].position = sf::Vector2f((x + 1) * tileSize.x, (y + 1) * tileSize.y);
-
+            updateVertexPositionsForTile(tile);
             updateTileTexture(tile);
         }
     }
@@ -112,6 +102,22 @@ void TileMap::updateTile(Tile& tileToUpdate, Tile::Type newTileType)
         
         updateTileTexture(tileToUpdate);
     }
+}
+
+void TileMap::updateVertexPositionsForTile(const Tile& tile)
+{
+    sf::Vertex* triangles = &m_vertices[tile.getPosition() * TOTAL_VERTICES_IN_TILE];
+
+    uint32_t x = tile.getCoordinateX();
+    uint32_t y = tile.getCoordinateY();
+
+    triangles[0].position = sf::Vector2f(x * TILE_SIZE, y * TILE_SIZE);
+    triangles[1].position = sf::Vector2f((x + 1) * TILE_SIZE, y * TILE_SIZE);
+    triangles[2].position = sf::Vector2f(x * TILE_SIZE, (y + 1) * TILE_SIZE);
+
+    triangles[3].position = sf::Vector2f(x * TILE_SIZE, (y + 1) * TILE_SIZE);
+    triangles[4].position = sf::Vector2f((x + 1) * TILE_SIZE, y * TILE_SIZE);
+    triangles[5].position = sf::Vector2f((x + 1) * TILE_SIZE, (y + 1) * TILE_SIZE);
 }
 
 void TileMap::updateTileTexture(const Tile& tile)
