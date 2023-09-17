@@ -35,22 +35,26 @@ sf::VertexArray TileMap::getTileVerticesInView(const sf::RenderTarget& target) c
 {
     sf::VertexArray tileVerticesInView{sf::Triangles, 0};
     sf::Vector2f viewCentre = target.getView().getCenter();
+    
+    float minOffsetX = viewCentre.x - (TILE_SIZE * TOTAL_TILES_VISIBLE_X);
+    float maxOffsetX = viewCentre.x + (TILE_SIZE * TOTAL_TILES_VISIBLE_X);
 
-    // twice view
-    float offsetX = viewCentre.x * 2;
-    float offsetY = viewCentre.y * 2;
+    float minOffsetY = viewCentre.y - (TILE_SIZE * TOTAL_TILES_VISIBLE_Y);
+    float maxOffsetY = viewCentre.y + (TILE_SIZE * TOTAL_TILES_VISIBLE_Y);
 
     for (int i = 0; i < m_vertices.getVertexCount(); i++)
     {
-        sf::Vertex v  = m_vertices.operator[](i);
-        bool vertexInViewOnX = v.position.x >= (viewCentre.x - offsetX) && v.position.x < (viewCentre.x + offsetX);
-        bool vertexInViewOnY = v.position.y >= (viewCentre.y - offsetY) && v.position.y < (viewCentre.y + offsetY);
+        sf::Vertex vertex = m_vertices.operator[](i);
+        bool vertexInViewOnX = vertex.position.x >= minOffsetX && vertex.position.x < maxOffsetX;
+        bool vertexInViewOnY = (vertex.position.y == 0 || vertex.position.y >= minOffsetY) &&
+                               vertex.position.y < maxOffsetY;
 
         if (vertexInViewOnX && vertexInViewOnY)
         {
-            tileVerticesInView.append(v);
+            tileVerticesInView.append(vertex);
         }
     }
+
     return tileVerticesInView;
 }
 

@@ -56,6 +56,9 @@ class TileMap : public GameComponent
         static inline uint32_t worldWidthInTiles;
         static inline uint32_t worldHeightInTiles;
 
+        static const uint32_t TOTAL_TILES_VISIBLE_X = std::ceil(WINDOW_WIDTH / TILE_SIZE / 3);
+        static const uint32_t TOTAL_TILES_VISIBLE_Y = std::ceil(WINDOW_HEIGHT / TILE_SIZE / 3);
+
         /* Note:
          * Rather than having a single vertex array for the world, we should break the world into chunks, lets say
          * 400x400 blocks.
