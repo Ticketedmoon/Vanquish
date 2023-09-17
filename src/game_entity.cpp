@@ -15,25 +15,27 @@ GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f 
 }
 
 // TODO why are we using deltaTime to move animation - different per cpu?
-void GameEntity::performAnimation(GameClock& gameClock, std::string animationKey)
+void GameEntity::performAnimation(GameClock& gameClock, std::string animationKey, bool stopAnimationAfterRow)
 {
     std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(animationKey);
     animationGroup->currentAnimationTime += gameClock.getDeltaTime();
     if (animationGroup->currentAnimationTime >= animationGroup->animationCompletionTime)
     {
-        updateAnimation(animationGroup);
+        updateAnimation(animationGroup, stopAnimationAfterRow);
     }
 }
 
-void GameEntity::updateAnimation(std::shared_ptr<AnimationGroup>& animationGroup)
+void GameEntity::updateAnimation(std::shared_ptr<AnimationGroup>& animationGroup, bool stopAnimationAfterRow)
 {
-    bool shouldResetAnimation =animationGroup->entitySpriteSheetDimRect.left
+    bool shouldResetAnimation = animationGroup->entitySpriteSheetDimRect.left
             == animationGroup->startingAnimationPosition.x + (width * (animationGroup->framesPerRow - 1));
+
     int directionIndex = static_cast<int>(direction);
     uint32_t spriteSheetTop = animationGroup->startingAnimationPosition.y + (height * directionIndex);
     uint32_t spriteSheetLeft = shouldResetAnimation
-            ? animationGroup->startingAnimationPosition.x
+            ? (stopAnimationAfterRow ? animationGroup->entitySpriteSheetDimRect.left : animationGroup->startingAnimationPosition.x)
             : animationGroup->entitySpriteSheetDimRect.left + width;
+
     animationGroup->entitySpriteSheetDimRect.top = spriteSheetTop;
     animationGroup->entitySpriteSheetDimRect.left = spriteSheetLeft;
     animationGroup->currentAnimationTime = sf::Time::Zero;
@@ -159,7 +161,7 @@ void GameEntity::updateEntityToRandomDirection(GameClock& gameClock, std::string
     }
 
     updatePosition(gameClock);
-    performAnimation(gameClock, animationKey);
+    performAnimation(gameClock, animationKey, false);
 }
 
 uint8_t GameEntity::getWidth() const

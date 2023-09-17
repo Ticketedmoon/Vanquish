@@ -101,7 +101,7 @@ void Enemy::moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoin
         updatePosition(gameClock);
     }
 
-    performAnimation(gameClock, HUMAN_CHARACTER_SPRITE_SHEET_A_KEY);
+    performAnimation(gameClock, HUMAN_CHARACTER_SPRITE_SHEET_A_KEY, false);
 }
 
 bool Enemy::isEnemyInProximityOfTarget(sf::Vector2f sourceLocation, sf::Vector2f targetLocation, uint32_t distance)

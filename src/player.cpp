@@ -21,7 +21,12 @@ Player::Player(std::shared_ptr<TextureManager>& textureManager)
                         },
                         {
                                 PLAYER_SPRITE_SHEET_A_HURT_KEY,
-                                std::make_shared<AnimationGroup>(3, sf::Vector2u(0, 0), sf::seconds(1.f / 32.f),
+                                std::make_shared<AnimationGroup>(3, sf::Vector2u(0, 0), sf::seconds(1.f / 4.f),
+                                        sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT))
+                        },
+                        {
+                                PLAYER_SPRITE_SHEET_A_DEATH_KEY,
+                                std::make_shared<AnimationGroup>(3, sf::Vector2u(0, 0), sf::seconds(1.f / 6.f),
                                         sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT))
                         }
                 }
@@ -50,22 +55,64 @@ void Player::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 
 void Player::update(GameState& gameState)
 {
-    if (isDead())
-    {
-        gameState.updateState(GameState::State::GAME_OVER);
-        return;
-    }
-
+    GameClock& gameClock = gameState.getClock();
     uint32_t tileUnderPlayerX = floor((getPosition().x + spritePositionOffset.x) / TILE_SIZE);
     uint32_t tileUnderPlayerY = floor((getPosition().y + spritePositionOffset.y) / TILE_SIZE);
 
     tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
     entitySprite.setPosition(getPosition());
 
-    startMovement(gameState.getClock());
+    // TODO: Refactor this block
+    if (isDead())
+    {
+        if (deathTimeSeconds == 0)
+        {
+            deathTimeSeconds = gameClock.getWorldTimeSeconds();
+        }
+
+        if (gameClock.getWorldTimeSeconds() > (deathTimeSeconds + 2))
+        {
+            gameState.updateState(GameState::State::GAME_OVER);
+        }
+
+        startAction(gameClock, PLAYER_SPRITE_SHEET_A_DEATH_KEY, true);
+        return;
+    }
+
+    bool isMoving = startMovement(gameClock);
+    if (isMoving)
+    {
+        // if is hurt (2 second window), play hurt animation
+        if (painTimeSeconds > gameClock.getWorldTimeSeconds())
+        {
+            startAction(gameClock, PLAYER_SPRITE_SHEET_A_HURT_KEY, true);
+            return;
+        }
+        else
+        {
+            startAction(gameClock, PLAYER_SPRITE_SHEET_A_WALK_KEY, false);
+            return;
+        }
+    }
+
+    // if is hurt (2 second window), play hurt animation
+    if (painTimeSeconds > gameClock.getWorldTimeSeconds())
+    {
+        startAction(gameClock, PLAYER_SPRITE_SHEET_A_HURT_KEY, true);
+        return;
+    }
+    else
+    {
+        startAction(gameClock, PLAYER_SPRITE_SHEET_A_IDLE_KEY, false);
+        return;
+    }
 }
 
-void Player::startMovement(GameClock& gameClock)
+// TODO small bug here, we need to update the animation to the idle animation with the current direction.
+//      this is due to the walk animation being performed but the old animation remaining static.
+//      ideally at the before this conditional logic, we keep all animations aligned with which 'direction'
+//      they are facing.
+bool Player::startMovement(GameClock& gameClock)
 {
     bool isMovingDown = tryMoveDirection(gameClock, std::make_pair(sf::Keyboard::Down, sf::Keyboard::S),
             EntityDirection::DOWN);
@@ -75,32 +122,16 @@ void Player::startMovement(GameClock& gameClock)
             EntityDirection::LEFT);
     bool isMovingRight = tryMoveDirection(gameClock, std::make_pair(sf::Keyboard::Right, sf::Keyboard::D),
             EntityDirection::RIGHT);
+    return isMovingDown || isMovingUp || isMovingLeft || isMovingRight;
+}
 
-    if (isMovingDown || isMovingUp || isMovingLeft || isMovingRight)
-    {
-        const std::string& animationKey = PLAYER_SPRITE_SHEET_A_WALK_KEY;
-        std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(animationKey);
-        sf::Texture& texture = *m_textureManager->getTexture(animationKey);
-        entitySprite.setTexture(texture);
-        entitySprite.setTextureRect(animationGroup->entitySpriteSheetDimRect);
-        performAnimation(gameClock, animationKey);
-        return;
-    }
-    else
-    {
-        // TODO small bug here, we need to update the animation to the idle animation with the current direction.
-        //      this is due to the walk animation being performed but the old animation remaining static.
-        //      ideally at the before this conditional logic, we keep all animations aligned with which 'direction'
-        //      they are facing.
-
-        // Idle animation
-        const std::string& animationKey = PLAYER_SPRITE_SHEET_A_IDLE_KEY;
-        std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(animationKey);
-        sf::Texture& texture = *m_textureManager->getTexture(animationKey);
-        entitySprite.setTexture(texture);
-        entitySprite.setTextureRect(animationGroup->entitySpriteSheetDimRect);
-        performAnimation(gameClock, animationKey);
-    }
+void Player::startAction(GameClock& gameClock, const std::string& animationKey, bool stopAnimationAfterRow)
+{
+    std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(animationKey);
+    sf::Texture& texture = *m_textureManager->getTexture(animationKey);
+    entitySprite.setTexture(texture);
+    entitySprite.setTextureRect(animationGroup->entitySpriteSheetDimRect);
+    performAnimation(gameClock, animationKey, stopAnimationAfterRow);
 }
 
 bool Player::tryMoveDirection(GameClock& gameClock, std::pair<sf::Keyboard::Key, sf::Keyboard::Key> keyboardInputGroup,
@@ -127,14 +158,8 @@ void Player::takeDamage(GameClock& gameClock, uint16_t damage)
     bool hasEnemyAttackedAfterTimeWindow = timeNowSeconds - lastPlayerWasAttackedSeconds >= 3;
     if (health > 0 && hasEnemyAttackedAfterTimeWindow)
     {
-        const std::string animationId = PLAYER_SPRITE_SHEET_A_HURT_KEY;
-        std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(PLAYER_SPRITE_SHEET_A_HURT_KEY);
-        sf::Texture& texture = *m_textureManager->getTexture(animationId);
-        entitySprite.setTexture(texture);
-        entitySprite.setTextureRect(animationGroup->entitySpriteSheetDimRect);
-
-        // update attributes
         GameEntity::takeDamage(gameClock, damage);
         lastPlayerWasAttackedSeconds = timeNowSeconds;
+        painTimeSeconds = gameClock.getWorldTimeSeconds() + HURT_ANIMATION_TIME_OFFSET;
     }
 }

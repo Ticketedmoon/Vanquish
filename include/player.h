@@ -33,14 +33,20 @@ class Player : public GameEntity
         void takeDamage(GameClock& gameClock, uint16_t damage) override;
 
     private:
-        void startMovement(GameClock& gameClock);
+        bool startMovement(GameClock& gameClock);
         bool tryMoveDirection(GameClock& gameClock, std::pair<sf::Keyboard::Key, sf::Keyboard::Key> keyboardInputGroup,
                 EntityDirection direction);
+        void startAction(GameClock& gameClock, const std::string& animationKey, bool stopAnimationAfterRow);
 
     private:
         std::shared_ptr<TextureManager> m_textureManager;
 
+        static constexpr float HURT_ANIMATION_TIME_OFFSET = 0.25;
+
         uint lastPlayerWasAttackedSeconds = 0;
+
+        float deathTimeSeconds;
+        float painTimeSeconds;
 };
 
 #endif //VANQUISH_PLAYER_H
