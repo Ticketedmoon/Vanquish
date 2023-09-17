@@ -53,14 +53,14 @@ void Player::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
     renderTarget.draw(entitySprite, states);
 }
 
+/* FIXME - Bug Note:
+ *  - First damage to player doesn't trigger hurt animation, but subsequent damage does.
+ *  - Idle animation needs to be aware which movement animation is happening, so there isn't a flicker when the player
+ *    stops moving.
+ */
 void Player::update(GameState& gameState)
 {
     GameClock& gameClock = gameState.getClock();
-    uint32_t tileUnderPlayerX = floor((getPosition().x + spritePositionOffset.x) / TILE_SIZE);
-    uint32_t tileUnderPlayerY = floor((getPosition().y + spritePositionOffset.y) / TILE_SIZE);
-
-    tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
-    entitySprite.setPosition(getPosition());
 
     // TODO: Refactor this block
     if (isDead())
@@ -75,36 +75,35 @@ void Player::update(GameState& gameState)
             gameState.updateState(GameState::State::GAME_OVER);
         }
 
-        startAction(gameClock, PLAYER_SPRITE_SHEET_A_DEATH_KEY, true);
+        startAnimationFromAnimationGroup(gameClock, PLAYER_SPRITE_SHEET_A_DEATH_KEY, true);
         return;
     }
 
+    uint32_t tileUnderPlayerX = floor((getPosition().x + spritePositionOffset.x) / TILE_SIZE);
+    uint32_t tileUnderPlayerY = floor((getPosition().y + spritePositionOffset.y) / TILE_SIZE);
+
+    tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
+    entitySprite.setPosition(getPosition());
     bool isMoving = startMovement(gameClock);
+
     if (isMoving)
     {
-        // if is hurt (2 second window), play hurt animation
-        if (painTimeSeconds > gameClock.getWorldTimeSeconds())
-        {
-            startAction(gameClock, PLAYER_SPRITE_SHEET_A_HURT_KEY, true);
-            return;
-        }
-        else
-        {
-            startAction(gameClock, PLAYER_SPRITE_SHEET_A_WALK_KEY, false);
-            return;
-        }
+        startAnimation(gameClock, PLAYER_SPRITE_SHEET_A_HURT_KEY, PLAYER_SPRITE_SHEET_A_WALK_KEY);
+        return;
     }
 
-    // if is hurt (2 second window), play hurt animation
+    startAnimation(gameClock, PLAYER_SPRITE_SHEET_A_HURT_KEY, PLAYER_SPRITE_SHEET_A_IDLE_KEY);
+}
+
+void Player::startAnimation(GameClock& gameClock, const std::string& animationKeyA, const std::string& animationKeyB)
+{
     if (painTimeSeconds > gameClock.getWorldTimeSeconds())
     {
-        startAction(gameClock, PLAYER_SPRITE_SHEET_A_HURT_KEY, true);
-        return;
+        startAnimationFromAnimationGroup(gameClock, animationKeyA, true);
     }
     else
     {
-        startAction(gameClock, PLAYER_SPRITE_SHEET_A_IDLE_KEY, false);
-        return;
+        startAnimationFromAnimationGroup(gameClock, animationKeyB, false);
     }
 }
 
@@ -125,13 +124,13 @@ bool Player::startMovement(GameClock& gameClock)
     return isMovingDown || isMovingUp || isMovingLeft || isMovingRight;
 }
 
-void Player::startAction(GameClock& gameClock, const std::string& animationKey, bool stopAnimationAfterRow)
+void Player::startAnimationFromAnimationGroup(GameClock& gameClock, const std::string& animationKey, bool stopAnimationAfterRow)
 {
     std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(animationKey);
     sf::Texture& texture = *m_textureManager->getTexture(animationKey);
     entitySprite.setTexture(texture);
     entitySprite.setTextureRect(animationGroup->entitySpriteSheetDimRect);
-    performAnimation(gameClock, animationKey, stopAnimationAfterRow);
+    performAnimationByKey(gameClock, animationKey, stopAnimationAfterRow);
 }
 
 bool Player::tryMoveDirection(GameClock& gameClock, std::pair<sf::Keyboard::Key, sf::Keyboard::Key> keyboardInputGroup,
@@ -154,12 +153,9 @@ EntityType Player::getType()
 
 void Player::takeDamage(GameClock& gameClock, uint16_t damage)
 {
-    int timeNowSeconds = static_cast<int>(gameClock.getWorldTimeSeconds());
-    bool hasEnemyAttackedAfterTimeWindow = timeNowSeconds - lastPlayerWasAttackedSeconds >= 3;
-    if (health > 0 && hasEnemyAttackedAfterTimeWindow)
+    if (health > 0)
     {
         GameEntity::takeDamage(gameClock, damage);
-        lastPlayerWasAttackedSeconds = timeNowSeconds;
         painTimeSeconds = gameClock.getWorldTimeSeconds() + HURT_ANIMATION_TIME_OFFSET;
     }
 }

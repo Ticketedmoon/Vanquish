@@ -52,8 +52,7 @@ void Enemy::update(GameState& gameState)
 
     if (isEnemyInProximityOfTarget(position, m_player->getPosition(), 24))
     {
-        // Damage player if close enough.
-        m_player->takeDamage(gameClock, damage);
+        damagePlayer(gameClock);
         return;
     }
 
@@ -73,6 +72,17 @@ void Enemy::update(GameState& gameState)
 
     // Move randomly
     updateEntityToRandomDirection(gameClock, HUMAN_CHARACTER_SPRITE_SHEET_A_KEY);
+}
+
+void Enemy::damagePlayer(GameClock& gameClock)
+{
+    int timeNowSeconds = static_cast<int>(gameClock.getWorldTimeSeconds());
+    bool hasEnemyAttackedAfterTimeWindow = timeNowSeconds - lastPlayerAttackSeconds >= 3;
+    if (hasEnemyAttackedAfterTimeWindow)
+    {
+        m_player->takeDamage(gameClock, damage);
+        lastPlayerAttackSeconds = timeNowSeconds;
+    }
 }
 
 void Enemy::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
@@ -101,7 +111,7 @@ void Enemy::moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoin
         updatePosition(gameClock);
     }
 
-    performAnimation(gameClock, HUMAN_CHARACTER_SPRITE_SHEET_A_KEY, false);
+    performAnimationByKey(gameClock, HUMAN_CHARACTER_SPRITE_SHEET_A_KEY, false);
 }
 
 bool Enemy::isEnemyInProximityOfTarget(sf::Vector2f sourceLocation, sf::Vector2f targetLocation, uint32_t distance)

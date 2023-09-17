@@ -15,17 +15,17 @@ GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f 
 }
 
 // TODO why are we using deltaTime to move animation - different per cpu?
-void GameEntity::performAnimation(GameClock& gameClock, std::string animationKey, bool stopAnimationAfterRow)
+void GameEntity::performAnimationByKey(GameClock& gameClock, std::string animationKey, bool stopAnimationAfterRow)
 {
     std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(animationKey);
     animationGroup->currentAnimationTime += gameClock.getDeltaTime();
     if (animationGroup->currentAnimationTime >= animationGroup->animationCompletionTime)
     {
-        updateAnimation(animationGroup, stopAnimationAfterRow);
+        updateAnimationGroup(animationGroup, stopAnimationAfterRow);
     }
 }
 
-void GameEntity::updateAnimation(std::shared_ptr<AnimationGroup>& animationGroup, bool stopAnimationAfterRow)
+void GameEntity::updateAnimationGroup(std::shared_ptr<AnimationGroup>& animationGroup, bool stopAnimationAfterRow)
 {
     bool shouldResetAnimation = animationGroup->entitySpriteSheetDimRect.left
             == animationGroup->startingAnimationPosition.x + (width * (animationGroup->framesPerRow - 1));
@@ -161,7 +161,7 @@ void GameEntity::updateEntityToRandomDirection(GameClock& gameClock, std::string
     }
 
     updatePosition(gameClock);
-    performAnimation(gameClock, animationKey, false);
+    performAnimationByKey(gameClock, animationKey, false);
 }
 
 uint8_t GameEntity::getWidth() const

@@ -36,17 +36,16 @@ class Player : public GameEntity
         bool startMovement(GameClock& gameClock);
         bool tryMoveDirection(GameClock& gameClock, std::pair<sf::Keyboard::Key, sf::Keyboard::Key> keyboardInputGroup,
                 EntityDirection direction);
-        void startAction(GameClock& gameClock, const std::string& animationKey, bool stopAnimationAfterRow);
+        void startAnimation(GameClock& gameClock, const std::string& animationKeyA, const std::string& animationKeyB);
+        void startAnimationFromAnimationGroup(GameClock& gameClock, const std::string& animationKey, bool stopAnimationAfterRow);
 
     private:
         std::shared_ptr<TextureManager> m_textureManager;
 
         static constexpr float HURT_ANIMATION_TIME_OFFSET = 0.25;
 
-        uint lastPlayerWasAttackedSeconds = 0;
-
-        float deathTimeSeconds;
-        float painTimeSeconds;
+        float deathTimeSeconds = 0.0f;
+        float painTimeSeconds = 0.0f;
 };
 
 #endif //VANQUISH_PLAYER_H

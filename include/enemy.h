@@ -39,6 +39,7 @@ class Enemy : public GameEntity
     private:
         static bool isEnemyInProximityOfTarget(sf::Vector2f sourceLocation, sf::Vector2f targetLocation, uint32_t distance);
         void moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoint);
+        void damagePlayer(GameClock& gameClock);
 
     private:
 
@@ -54,6 +55,8 @@ class Enemy : public GameEntity
 
         // TODO IMPROVE THIS, MAKE MORE DYNAMIC
         uint16_t damage = std::experimental::randint(5, 20);
+
+        uint32_t lastPlayerAttackSeconds;
 };
 
 #endif //VANQUISH_ENEMY_H

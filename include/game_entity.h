@@ -61,7 +61,7 @@ class GameEntity : public GameComponent
         uint16_t getHealth() const;
 
     protected:
-        void performAnimation(GameClock& gameClock, std::string animationKey, bool stopAnimationAfterRow);
+        void performAnimationByKey(GameClock& gameClock, std::string animationKey, bool stopAnimationAfterRow);
 
         void updatePosition(GameClock& gameClock);
         void setDirection(EntityDirection dir);
@@ -82,7 +82,7 @@ class GameEntity : public GameComponent
                 float velocityForCoordinate);
 
         bool isNextTileCollidable(GameClock& gameClock) const;
-        void updateAnimation(std::shared_ptr<AnimationGroup>& animationGroup, bool stopAnimationAfterRow);
+        void updateAnimationGroup(std::shared_ptr<AnimationGroup>& animationGroup, bool stopAnimationAfterRow);
 
     public:
         sf::Vector2u tilePosition;
