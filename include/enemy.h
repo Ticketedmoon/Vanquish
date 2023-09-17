@@ -46,7 +46,14 @@ class Enemy : public GameEntity
 
         int lastTimeEnemyAttacked = 0;
 
-        // TODO ENEMY SHOULDN't HAVE REF TO PLAYER
+        /* TODO:
+         *  We don't want the enemy to have a reference to the m_player obj.
+         *  Perhaps can we consider an event-driven approach, where entities can submit events which are polled
+         *  upstream and eventually applied to the appropriate entities.
+         *  e.g., this method can submit an event in the form { entityType: EntityType::PLayer, damage: 10 }
+         *  this is then read and decreased from the players health at a later point.
+         *  --Just some thoughts.
+        */
         std::shared_ptr<Player> m_player;
 
         // TODO IMPROVE THIS, MAKE MORE DYNAMIC

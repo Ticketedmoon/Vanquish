@@ -70,13 +70,6 @@ void Enemy::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
     renderTarget.draw(entitySprite);
 }
 
-/* TODO, we don't want the enemy to have a reference to the m_player obj.
-         perhaps can we consider an event-driven approach, where entities can submit events
-         which are polled upstream and eventually applied to the appropriate entities.
-         e.g., this method can submit an event in the form { entityType: EntityType::PLayer, damage: 10 }
-         this is then read and decreased from the players health at a later point.
-         Just some thoughts.
-*/
 void Enemy::damagePlayer(GameClock& gameClock)
 {
     uint16_t playerHealth = m_player->getHealth();
