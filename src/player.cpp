@@ -81,18 +81,10 @@ void Player::update(GameState& gameState)
 
     uint32_t tileUnderPlayerX = floor((getPosition().x + spritePositionOffset.x) / TILE_SIZE);
     uint32_t tileUnderPlayerY = floor((getPosition().y + spritePositionOffset.y) / TILE_SIZE);
-
     tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
     entitySprite.setPosition(getPosition());
-    bool isMoving = startMovement(gameClock);
 
-    if (isMoving)
-    {
-        startAnimation(gameClock, PLAYER_SPRITE_SHEET_A_HURT_KEY, PLAYER_SPRITE_SHEET_A_WALK_KEY);
-        return;
-    }
-
-    startAnimation(gameClock, PLAYER_SPRITE_SHEET_A_HURT_KEY, PLAYER_SPRITE_SHEET_A_IDLE_KEY);
+    startMovement(gameClock);
 }
 
 void Player::startAnimation(GameClock& gameClock, const std::string& animationKeyA, const std::string& animationKeyB)
@@ -111,7 +103,7 @@ void Player::startAnimation(GameClock& gameClock, const std::string& animationKe
 //      this is due to the walk animation being performed but the old animation remaining static.
 //      ideally at the before this conditional logic, we keep all animations aligned with which 'direction'
 //      they are facing.
-bool Player::startMovement(GameClock& gameClock)
+void Player::startMovement(GameClock& gameClock)
 {
     bool isMovingDown = tryMoveDirection(gameClock, std::make_pair(sf::Keyboard::Down, sf::Keyboard::S),
             EntityDirection::DOWN);
@@ -121,7 +113,14 @@ bool Player::startMovement(GameClock& gameClock)
             EntityDirection::LEFT);
     bool isMovingRight = tryMoveDirection(gameClock, std::make_pair(sf::Keyboard::Right, sf::Keyboard::D),
             EntityDirection::RIGHT);
-    return isMovingDown || isMovingUp || isMovingLeft || isMovingRight;
+
+    if (isMovingDown || isMovingUp || isMovingLeft || isMovingRight)
+    {
+        startAnimation(gameClock, PLAYER_SPRITE_SHEET_A_HURT_KEY, PLAYER_SPRITE_SHEET_A_WALK_KEY);
+        return;
+    }
+
+    startAnimation(gameClock, PLAYER_SPRITE_SHEET_A_HURT_KEY, PLAYER_SPRITE_SHEET_A_IDLE_KEY);
 }
 
 void Player::startAnimationFromAnimationGroup(GameClock& gameClock, const std::string& animationKey, bool stopAnimationAfterRow)

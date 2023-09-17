@@ -33,7 +33,7 @@ class Player : public GameEntity
         void takeDamage(GameClock& gameClock, uint16_t damage) override;
 
     private:
-        bool startMovement(GameClock& gameClock);
+        void startMovement(GameClock& gameClock);
         bool tryMoveDirection(GameClock& gameClock, std::pair<sf::Keyboard::Key, sf::Keyboard::Key> keyboardInputGroup,
                 EntityDirection direction);
         void startAnimation(GameClock& gameClock, const std::string& animationKeyA, const std::string& animationKeyB);
