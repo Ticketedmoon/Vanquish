@@ -1,7 +1,3 @@
-//
-// Created by shane on 08/09/23.
-//
-
 #include "text_manager.h"
 
 TextManager::TextManager(sf::RenderTarget& renderTarget) : m_renderTarget(renderTarget)

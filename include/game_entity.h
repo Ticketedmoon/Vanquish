@@ -19,6 +19,8 @@
 
 #include "game_component.h"
 #include "tile.h"
+#include "texture_manager.h"
+#include "animation_group.h"
 
 static constexpr uint16_t MIN_ENTITY_MOVE_RATE_MS = 500;
 static constexpr uint16_t MAX_ENTITY_MOVE_RATE_MS = 3000;
@@ -40,9 +42,8 @@ enum class EntityType
 class GameEntity : public GameComponent
 {
     public:
-        GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position,
-                sf::IntRect entitySpriteSheetDimRect, sf::Vector2u startingAnimationPosition, uint16_t health,
-                sf::Vector2u spritePositionOffset);
+        GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position, uint16_t health,
+                sf::Vector2u spritePositionOffset, std::unordered_map<std::string, std::shared_ptr<AnimationGroup>> animationGroup);
         ~GameEntity() override = default;
 
         // Not necessary to add virtual here to maintain pure-virtual function as parent method is pure-virtual.
@@ -50,6 +51,7 @@ class GameEntity : public GameComponent
         void update(GameState& gameState) override = 0;
 
         virtual EntityType getType() = 0;
+        virtual void takeDamage(GameClock& gameClock, uint16_t damage);
 
         sf::Vector2u findNextTileFromDirection(const sf::Time deltaTime) const;
 
@@ -57,16 +59,13 @@ class GameEntity : public GameComponent
         uint8_t getHeight() const;
 
         uint16_t getHealth() const;
-        void setHealth(uint16_t newHealth);
 
     protected:
-        virtual sf::Time getAnimationFrameDuration() = 0;
-        virtual void updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft);
-        void performAnimation(GameClock& gameClock, uint8_t maxSpriteSheetFrames);
+        void performAnimation(GameClock& gameClock, std::string animationKey);
 
         void updatePosition(GameClock& gameClock);
         void setDirection(EntityDirection dir);
-        void updateEntityToRandomDirection(GameClock& gameClock, uint8_t maxSpriteSheetFrames);
+        void updateEntityToRandomDirection(GameClock& gameClock, std::string animationKey);
 
         bool isDead() const;
 
@@ -83,6 +82,7 @@ class GameEntity : public GameComponent
                 float velocityForCoordinate);
 
         bool isNextTileCollidable(GameClock& gameClock) const;
+        void updateAnimation(std::shared_ptr<AnimationGroup>& animationGroup);
 
     public:
         sf::Vector2u tilePosition;
@@ -90,20 +90,21 @@ class GameEntity : public GameComponent
     protected:
         uint8_t width;
         uint8_t height;
+
         float speed;
         sf::Vector2f velocity;
-        uint16_t health;
+
         EntityDirection direction = EntityDirection::DOWN;
+        std::unordered_map<std::string, std::shared_ptr<AnimationGroup>> animationGroupMap;
+
+        uint16_t health;
 
         sf::Sprite entitySprite;
-        sf::Vector2f spawnPosition;
-        uint16_t entityWaitTimeBeforeMovementMs = std::experimental::randint(MIN_ENTITY_MOVE_RATE_MS,
-                MAX_ENTITY_MOVE_RATE_MS);
-
-        sf::IntRect entitySpriteSheetDimRect;
         sf::Vector2u spritePositionOffset;
-        sf::Vector2i startingAnimationPosition;
-        sf::Time animationFrameStartTime{sf::Time::Zero};
+        sf::Vector2f spawnPosition;
+
+        // TODO Move to enemy class?
+        uint16_t waitTimeBeforeMovementMs = std::experimental::randint(MIN_ENTITY_MOVE_RATE_MS, MAX_ENTITY_MOVE_RATE_MS);
 };
 
 #endif //VANQUISH_GAME_ENTITY_H

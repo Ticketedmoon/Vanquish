@@ -131,7 +131,13 @@ void Engine::buildGameEngineComponents()
     renderSprite.setTextureRect(sf::IntRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
 
     textureManager = std::make_shared<TextureManager>();
+
+    // Player Animations
     textureManager->addTexture(PLAYER_SPRITE_SHEET_A_WALK_KEY, PLAYER_SPRITE_SHEET_WALK_FILE_PATH);
+    textureManager->addTexture(PLAYER_SPRITE_SHEET_A_HURT_KEY, PLAYER_SPRITE_SHEET_HURT_FILE_PATH);
+    textureManager->addTexture(PLAYER_SPRITE_SHEET_A_IDLE_KEY, PLAYER_SPRITE_SHEET_IDLE_FILE_PATH);
+
+    // Enemy Animations
     textureManager->addTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY, HUMAN_CHARACTER_SPRITE_SHEET_A_FILE_PATH);
 
     player = std::make_shared<Player>(textureManager);

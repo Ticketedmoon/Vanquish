@@ -1,30 +1,42 @@
 #include "../include/game_entity.h"
 #include "level.h"
 
-GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position,
-        sf::IntRect entitySpriteSheetDimRect, sf::Vector2u startingAnimationPosition, uint16_t health,
-        sf::Vector2u spritePositionOffset)
+GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position, uint16_t health,
+        sf::Vector2u spritePositionOffset, std::unordered_map<std::string, std::shared_ptr<AnimationGroup>> animationGroup)
         : width(width),
           height(height),
           speed(speed),
+          animationGroupMap(animationGroup),
           health(health),
-          entitySpriteSheetDimRect(entitySpriteSheetDimRect),
-          spritePositionOffset(spritePositionOffset),
-          startingAnimationPosition(startingAnimationPosition)
+          spritePositionOffset(spritePositionOffset)
 {
     setPosition(position);
     spawnPosition = sf::Vector2f(position);
 }
 
-void GameEntity::updateAnimation(sf::Time deltaTime, uint32_t spriteSheetTop, uint32_t spriteSheetLeft)
+// TODO why are we using deltaTime to move animation - different per cpu?
+void GameEntity::performAnimation(GameClock& gameClock, std::string animationKey)
 {
-    animationFrameStartTime += deltaTime;
-    if (animationFrameStartTime >= getAnimationFrameDuration())
+    std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(animationKey);
+    animationGroup->currentAnimationTime += gameClock.getDeltaTime();
+    if (animationGroup->currentAnimationTime >= animationGroup->animationCompletionTime)
     {
-        entitySpriteSheetDimRect.top = spriteSheetTop;
-        entitySpriteSheetDimRect.left = spriteSheetLeft;
-        animationFrameStartTime = sf::Time::Zero;
+        updateAnimation(animationGroup);
     }
+}
+
+void GameEntity::updateAnimation(std::shared_ptr<AnimationGroup>& animationGroup)
+{
+    bool shouldResetAnimation =animationGroup->entitySpriteSheetDimRect.left
+            == animationGroup->startingAnimationPosition.x + (width * (animationGroup->framesPerRow - 1));
+    int directionIndex = static_cast<int>(direction);
+    uint32_t spriteSheetTop = animationGroup->startingAnimationPosition.y + (height * directionIndex);
+    uint32_t spriteSheetLeft = shouldResetAnimation
+            ? animationGroup->startingAnimationPosition.x
+            : animationGroup->entitySpriteSheetDimRect.left + width;
+    animationGroup->entitySpriteSheetDimRect.top = spriteSheetTop;
+    animationGroup->entitySpriteSheetDimRect.left = spriteSheetLeft;
+    animationGroup->currentAnimationTime = sf::Time::Zero;
 }
 
 void GameEntity::setDirection(EntityDirection dir)
@@ -134,12 +146,12 @@ sf::Vector2u GameEntity::findNextTileFromDirection(const sf::Time deltaTime) con
     return {nextTileX, nextTileY};
 }
 
-void GameEntity::updateEntityToRandomDirection(GameClock& gameClock, uint8_t maxSpriteSheetFrames)
+void GameEntity::updateEntityToRandomDirection(GameClock& gameClock, std::string animationKey)
 {
     uint64_t milliseconds = gameClock.getWorldTimeMs();
-    if (milliseconds > (entityWaitTimeBeforeMovementMs + 250))
+    if (milliseconds > (waitTimeBeforeMovementMs + 250))
     {
-        entityWaitTimeBeforeMovementMs = std::experimental::randint(milliseconds + MIN_ENTITY_MOVE_RATE_MS,
+        waitTimeBeforeMovementMs = std::experimental::randint(milliseconds + MIN_ENTITY_MOVE_RATE_MS,
                 milliseconds + MAX_ENTITY_MOVE_RATE_MS);
         int directionIndex = std::experimental::randint(0, 3);
         auto randomDirection = static_cast<EntityDirection>(directionIndex);
@@ -147,17 +159,7 @@ void GameEntity::updateEntityToRandomDirection(GameClock& gameClock, uint8_t max
     }
 
     updatePosition(gameClock);
-    performAnimation(gameClock, maxSpriteSheetFrames);
-}
-
-void GameEntity::performAnimation(GameClock& gameClock, uint8_t maxSpriteSheetFrames)
-{
-    int directionIndex = static_cast<int>(direction);
-    uint32_t spriteSheetTop = startingAnimationPosition.y + (height * directionIndex);
-    uint32_t spriteSheetLeft = entitySpriteSheetDimRect.left == startingAnimationPosition.x + (width * (maxSpriteSheetFrames - 1))
-            ? startingAnimationPosition.x
-            : entitySpriteSheetDimRect.left + width;
-    updateAnimation(gameClock.getDeltaTime(), spriteSheetTop, spriteSheetLeft);
+    performAnimation(gameClock, animationKey);
 }
 
 uint8_t GameEntity::getWidth() const
@@ -175,8 +177,9 @@ uint16_t GameEntity::getHealth() const
     return this->health;
 }
 
-void GameEntity::setHealth(uint16_t newHealth)
+void GameEntity::takeDamage(GameClock& gameClock, uint16_t damage)
 {
+    uint16_t newHealth = health > damage ? health - damage : 0;
     this->health = newHealth;
 }
 

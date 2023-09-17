@@ -2,18 +2,26 @@
 
 Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Player>& player,
         sf::Vector2f position, sf::Vector2u spriteSheetRectPosition)
-        : GameEntity(ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY_SPEED, position,
-                     sf::IntRect(spriteSheetRectPosition.x, spriteSheetRectPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT),
-                     spriteSheetRectPosition, STARTING_ENEMY_HEALTH,
-                     sf::Vector2u(std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT) * 0.5f,
-                                  std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT))),
-          m_player(player)
+        : GameEntity(ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY_SPEED, position, STARTING_ENEMY_HEALTH,
+        sf::Vector2u(std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT) * 0.5f,
+                std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT)),
+        {
+                {
+                        HUMAN_CHARACTER_SPRITE_SHEET_A_KEY,
+                        std::make_shared<AnimationGroup>(3, spriteSheetRectPosition, sf::seconds(1.f / 6.f),
+                                sf::IntRect(spriteSheetRectPosition.x, spriteSheetRectPosition.y, ENEMY_WIDTH,
+                                        ENEMY_HEIGHT))
+                }
+        }),
+        m_player(player)
 {
     sf::Texture& texture = *(textureManager->getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY));
-    entitySprite = sf::Sprite(texture, entitySpriteSheetDimRect);
+    std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY);
+
+    entitySprite = sf::Sprite(texture, animationGroup->entitySpriteSheetDimRect);
     entitySprite.scale(ENEMY_SCALE_FACTOR, ENEMY_SCALE_FACTOR);
     entitySprite.setPosition(getPosition());
-    entitySprite.setTextureRect(entitySpriteSheetDimRect);
+    entitySprite.setTextureRect(animationGroup->entitySpriteSheetDimRect);
 
     // TEMPORARY, NICE VISUAL QUE BUT WHAT WE WANT LONG-TERM
     // TODO INSTEAD HIGHLIGHT THE GROUND OR NAMEPLATE OF THE ENEMY TO INDICATE POWER LEVEL (damage).
@@ -23,33 +31,35 @@ Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Pl
     }
 }
 
-// TODO REFACTOR BELOW
 void Enemy::update(GameState& gameState)
 {
     const sf::Vector2f& position = getPosition();
     uint32_t tileUnderEnemyX = std::floor((position.x + static_cast<float>(spritePositionOffset.x)) / TILE_SIZE);
     uint32_t tileUnderEnemyY = std::floor((position.y + static_cast<float>(spritePositionOffset.y)) / TILE_SIZE);
 
+    std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY);
     tilePosition = sf::Vector2u(tileUnderEnemyX, tileUnderEnemyY);
     entitySprite.setPosition(position);
-    entitySprite.setTextureRect(entitySpriteSheetDimRect);
+    entitySprite.setTextureRect(animationGroup->entitySpriteSheetDimRect);
 
     GameClock& gameClock = gameState.getClock();
     uint64_t milliseconds = gameClock.getWorldTimeMs();
 
-    if (milliseconds < entityWaitTimeBeforeMovementMs)
+    if (milliseconds < waitTimeBeforeMovementMs)
     {
         return;
     }
 
     if (isEnemyInProximityOfTarget(position, m_player->getPosition(), 24))
     {
-        damagePlayer(gameClock);
+        // Damage player if close enough.
+        m_player->takeDamage(gameClock, damage);
         return;
     }
 
     if (isEnemyInProximityOfTarget(position, m_player->getPosition(), WANDER_DISTANCE))
     {
+        // Chase player
         moveToDestination(gameClock, m_player->getPosition());
         return;
     }
@@ -62,25 +72,12 @@ void Enemy::update(GameState& gameState)
     }
 
     // Move randomly
-    updateEntityToRandomDirection(gameClock, MAX_SPRITE_SHEET_FRAMES);
+    updateEntityToRandomDirection(gameClock, HUMAN_CHARACTER_SPRITE_SHEET_A_KEY);
 }
 
 void Enemy::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 {
     renderTarget.draw(entitySprite);
-}
-
-void Enemy::damagePlayer(GameClock& gameClock)
-{
-    uint16_t playerHealth = m_player->getHealth();
-    int timeNowSeconds = static_cast<int>(gameClock.getWorldTimeSeconds());
-    bool hasEnemyAttackedAfterTimeWindow = timeNowSeconds - lastTimeEnemyAttacked >= 3;
-
-    if (playerHealth > 0 && hasEnemyAttackedAfterTimeWindow) {
-        uint16_t newHealth = playerHealth > damage ? playerHealth - damage : 0;
-        m_player->setHealth(newHealth);
-        lastTimeEnemyAttacked = timeNowSeconds;
-    }
 }
 
 void Enemy::moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoint)
@@ -104,7 +101,7 @@ void Enemy::moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoin
         updatePosition(gameClock);
     }
 
-    performAnimation(gameClock, MAX_SPRITE_SHEET_FRAMES);
+    performAnimation(gameClock, HUMAN_CHARACTER_SPRITE_SHEET_A_KEY);
 }
 
 bool Enemy::isEnemyInProximityOfTarget(sf::Vector2f sourceLocation, sf::Vector2f targetLocation, uint32_t distance)
@@ -115,9 +112,4 @@ bool Enemy::isEnemyInProximityOfTarget(sf::Vector2f sourceLocation, sf::Vector2f
 EntityType Enemy::getType()
 {
     return EntityType::ENEMY;
-}
-
-sf::Time Enemy::getAnimationFrameDuration()
-{
-    return animationFrameDuration;
 }

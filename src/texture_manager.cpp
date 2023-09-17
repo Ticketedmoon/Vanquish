@@ -24,12 +24,11 @@ void TextureManager::addTexture(const std::string &id, const std::string &textur
 }
 
 std::shared_ptr<sf::Texture> TextureManager::getTexture(const std::string &id) {
-    std::unordered_map<std::string, std::shared_ptr<sf::Texture>>::iterator it = textureMap_.find(id);
+    auto it = textureMap_.find(id);
     if (it == textureMap_.end()) {
         std::cout << "Unable to load texture: " << id << " doesn't exist";
         return nullptr;
     }
 
-    // TODO REFACTOR
     return it->second;
 }

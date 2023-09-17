@@ -21,25 +21,26 @@ class Player : public GameEntity
 {
     public:
         explicit Player(std::shared_ptr<TextureManager>& textureManager);
-        Player(Player& enemy) : GameEntity(enemy)
+        Player(Player& player) : GameEntity(player)
         {
-            std::cout << "DEBUG: copy constructor called for `Player` GameEntity object: " << &enemy << '\n';
+            std::cout << "DEBUG: copy constructor called for `Player` GameEntity object: " << &player << '\n';
         }
 
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(GameState& gameState) override;
 
         EntityType getType() override;
+        void takeDamage(GameClock& gameClock, uint16_t damage) override;
 
     private:
-        sf::Time getAnimationFrameDuration() override;
         void startMovement(GameClock& gameClock);
         bool tryMoveDirection(GameClock& gameClock, std::pair<sf::Keyboard::Key, sf::Keyboard::Key> keyboardInputGroup,
                 EntityDirection direction);
 
     private:
-        static constexpr uint8_t MAX_SPRITE_SHEET_FRAMES = 7;
-        sf::Time animationFrameDuration{sf::seconds(1.f / 16.f)};
+        std::shared_ptr<TextureManager> m_textureManager;
+
+        uint lastPlayerWasAttackedSeconds = 0;
 };
 
 #endif //VANQUISH_PLAYER_H
