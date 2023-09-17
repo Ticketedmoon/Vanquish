@@ -25,13 +25,33 @@ void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
     // apply the tile set texture
     states.texture = &m_tileset;
 
-    // draw the vertex array
-    std::cout << m_vertices.getBounds().width
-              << ", " << m_vertices.getBounds().height
-              << ", " << m_vertices.getBounds().top
-              << ", " << m_vertices.getBounds().left
-              << ", " << m_vertices.getVertexCount() << '\n';
-    target.draw(m_vertices, states);
+    sf::VertexArray tileVerticesToDraw = getTileVerticesInView(target);
+
+    target.draw(tileVerticesToDraw, states);
+}
+
+// Note: Should some of this be moved to ViewManager?
+sf::VertexArray TileMap::getTileVerticesInView(const sf::RenderTarget& target) const
+{
+    sf::VertexArray tileVerticesInView{sf::Triangles, 0};
+    sf::Vector2f viewCentre = target.getView().getCenter();
+
+    // twice view
+    float offsetX = viewCentre.x * 2;
+    float offsetY = viewCentre.y * 2;
+
+    for (int i = 0; i < m_vertices.getVertexCount(); i++)
+    {
+        sf::Vertex v  = m_vertices.operator[](i);
+        bool vertexInViewOnX = v.position.x >= (viewCentre.x - offsetX) && v.position.x < (viewCentre.x + offsetX);
+        bool vertexInViewOnY = v.position.y >= (viewCentre.y - offsetY) && v.position.y < (viewCentre.y + offsetY);
+
+        if (vertexInViewOnX && vertexInViewOnY)
+        {
+            tileVerticesInView.append(v);
+        }
+    }
+    return tileVerticesInView;
 }
 
 void TileMap::update(GameState& gameState)

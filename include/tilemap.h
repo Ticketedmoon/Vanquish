@@ -67,6 +67,7 @@ class TileMap : public GameComponent
         sf::Texture m_tileset;
 
         std::unordered_map<std::shared_ptr<GameEntity>, uint32_t> previousEntityTilePosition;
+        sf::VertexArray getTileVerticesInView(const sf::RenderTarget& target) const;
 };
 
 #endif //VANQUISH_TILEMAP_H
