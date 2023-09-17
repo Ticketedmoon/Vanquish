@@ -12,6 +12,7 @@ A 2D RPG where you begin as a prisoner and find your way in the world.
 
 ##### 2023-07-18
 
+**'Setting up the world'**
 - Simple top down view.  
 - Playable character with animations moving in the cardinal directions.  
 - Camera moves upon movement  
@@ -23,6 +24,7 @@ A 2D RPG where you begin as a prisoner and find your way in the world.
 
 ##### 2023-09-16
 
+**'World Entities'**
 - World expanded
 - Tilemap Logic improved.
 - New Player Spritesheet with 8 animations per direction.
@@ -39,6 +41,19 @@ A 2D RPG where you begin as a prisoner and find your way in the world.
 **Debug View:** 
 
 ![Sat 16 Sep 2023 18:45:57 IST](https://github.com/Ticketedmoon/vanquish/assets/21260839/ff08f4a9-c724-4c8f-a0d8-291557f2b8fc)
+
+---
+
+##### 2023-09-18
+
+**'Animation Overhaul'**
+- Overhauled the animation system to easily add animations to entities.
+- Animations added:
+  - idle animation
+  - hurt/damage-taken animation
+  - death animation
+
+![Mon 18 Sep 2023 00:35:11 IST](https://github.com/Ticketedmoon/vanquish/assets/21260839/eb3d50d7-b8c3-4cd9-9869-a036aeaaae34)
 
 ---
 
