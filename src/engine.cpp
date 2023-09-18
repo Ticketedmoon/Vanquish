@@ -145,7 +145,7 @@ void Engine::buildGameEngineComponents()
     level = Level(player, textureManager);
 
     textManager = std::make_shared<TextManager>(renderTexture);
-    userInterfaceManager = std::make_shared<UserInterfaceManager>(player);
+    userInterfaceManager = std::make_shared<UserInterfaceManager>(player, textManager);
     viewManager = std::make_unique<ViewManager>(renderTexture, textManager);
     debugManager = std::make_unique<DebugManager>(player, level, textManager);
     gameState = GameState();

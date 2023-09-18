@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef VANQUISH_XP_BAR_H
-#define VANQUISH_XP_BAR_H
+#ifndef VANQUISH_EXPERIENCE_POINTS_BAR_H
+#define VANQUISH_EXPERIENCE_POINTS_BAR_H
 
 
 #include <memory>
@@ -25,4 +25,4 @@ class ExperiencePointsBar : public GameComponent
 };
 
 
-#endif //VANQUISH_XP_BAR_H
+#endif //VANQUISH_EXPERIENCE_POINTS_BAR_H

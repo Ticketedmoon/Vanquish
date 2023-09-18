@@ -197,3 +197,8 @@ bool GameEntity::isDead() const
 {
     return this->health == 0;
 }
+
+uint8_t GameEntity::getLevel()
+{
+    return level;
+}

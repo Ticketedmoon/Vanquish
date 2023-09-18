@@ -68,7 +68,8 @@ class GameEntity : public GameComponent
         // TODO this should be in the player, not game_entity.h
         //      unless we plan for enemies to level up as well.
         float getTotalExperiencePoints() const;
-        static float getTotalExperiencePointsRequiredForLevelUp() ;
+        static float getTotalExperiencePointsRequiredForLevelUp();
+        uint8_t getLevel();
         void increaseLevel(float xpPointsDelta);
 
     protected:
