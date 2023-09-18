@@ -21,7 +21,6 @@ void Level::update(GameState& gameState)
     }
 
     checkForPlayerAttackOnEnemy(gameState);
-
 }
 
 void Level::checkForPlayerAttackOnEnemy(GameState& gameState)
@@ -69,10 +68,14 @@ void Level::interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player
     tileMap.updateTile(nextPlayerFacingTile, tileType);
 }
 
+// FIXME: This logic simply just updates the position of the target toward the direction the player faces.
+//        This is not satisfying and instead we want to see the velocity and acceleration of the pushback.
 void Level::tryDamageEnemy(GameState& gameState, std::shared_ptr<GameEntity>& entity,
         std::pair<EntityDirection, EntityDirection> facingDirections)
 {
-    if (entity->getDirection() == facingDirections.first && m_player->getDirection() == facingDirections.second)
+    EntityDirection enemyDirection = facingDirections.first;
+    EntityDirection playerDirection = facingDirections.second;
+    if (entity->getDirection() == enemyDirection && m_player->getDirection() == playerDirection)
     {
         // damage enemy
         if (gameState.getClock().getWorldTimeSeconds() > entity->lastTimeTakenDamageSeconds)
@@ -85,12 +88,23 @@ void Level::tryDamageEnemy(GameState& gameState, std::shared_ptr<GameEntity>& en
             {
                 m_player->addExperiencePoints(entity);
             }
-            entity->lastTimeTakenDamageSeconds = gameState.getClock().getWorldTimeSeconds() + 0.25;
+
+            entity->lastTimeTakenDamageSeconds = gameState.getClock().getWorldTimeSeconds() + 0.5;
         }
 
-        // perform pushback
-        // temporary
-        entity->setPosition(sf::Vector2f(entity->getPosition() - sf::Vector2f(80, 80)));
+        // Perform pushback
+        // NOTE: If the pushback amount is small, the enemy will stay in the range of the blade and take repeated damage.
+        //       This could be a useful 'skill' or type of attack in the future.
+        int pushbackAmount = 80;
+        sf::Vector2<float> newPositionAfterPushback = playerDirection == EntityDirection::UP
+                ? sf::Vector2f(entity->getPosition().x, entity->getPosition().y - pushbackAmount)
+                : playerDirection == EntityDirection::DOWN
+                        ? sf::Vector2f(entity->getPosition().x, entity->getPosition().y + pushbackAmount)
+                        : playerDirection == EntityDirection::LEFT
+                                ? sf::Vector2f(entity->getPosition().x - pushbackAmount, entity->getPosition().y)
+                                : sf::Vector2f(entity->getPosition().x + pushbackAmount, entity->getPosition().y);
+
+        entity->setPosition(newPositionAfterPushback);
     }
 }
 

@@ -116,8 +116,8 @@ void Player::update(GameState& gameState)
     {
         startAnimationFromAnimationGroup(gameClock, PLAYER_SPRITE_SHEET_A_ATTACK_KEY);
 
-        // 3/4 through animation
-        if (swingTimeSeconds - gameClock.getWorldTimeSeconds() < 0.7f)
+        // 1/2 through animation
+        if (swingTimeSeconds - gameClock.getWorldTimeSeconds() < 0.5f)
         {
             gameState.updatePlayerState(GameState::PlayerState::ATTACK);
         }
