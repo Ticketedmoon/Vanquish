@@ -85,6 +85,22 @@ void Enemy::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
     renderTarget.draw(entitySprite);
 }
 
+void Enemy::updateEntityToRandomDirection(GameClock& gameClock, std::string animationKey)
+{
+    uint64_t milliseconds = gameClock.getWorldTimeMs();
+    if (milliseconds > (waitTimeBeforeMovementMs + 250))
+    {
+        waitTimeBeforeMovementMs = std::experimental::randint(milliseconds + MIN_ENTITY_MOVE_RATE_MS,
+                milliseconds + MAX_ENTITY_MOVE_RATE_MS);
+        int directionIndex = std::experimental::randint(0, 3);
+        auto randomDirection = static_cast<EntityDirection>(directionIndex);
+        this->setDirection(randomDirection);
+    }
+
+    updatePosition(gameClock);
+    performAnimationByKey(gameClock, animationKey);
+}
+
 void Enemy::moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoint)
 {
     sf::Vector2f newPosition = getPosition();
@@ -112,6 +128,17 @@ void Enemy::moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoin
 bool Enemy::isEnemyInProximityOfTarget(sf::Vector2f sourceLocation, sf::Vector2f targetLocation, uint32_t distance)
 {
     return sqrt(pow(sourceLocation.x - targetLocation.x, 2) + pow(sourceLocation.y - targetLocation.y, 2)) < distance;
+}
+
+void Enemy::damageTarget(GameClock& gameClock, const std::shared_ptr<GameEntity>& target)
+{
+    int timeNowSeconds = static_cast<int>(gameClock.getWorldTimeSeconds());
+    bool hasEnemyAttackedAfterTimeWindow = timeNowSeconds - lastTimeAttacked >= 3;
+    if (hasEnemyAttackedAfterTimeWindow)
+    {
+        target->applyDamage(gameClock, damage);
+        lastTimeAttacked = timeNowSeconds;
+    }
 }
 
 EntityType Enemy::getType()

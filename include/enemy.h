@@ -39,6 +39,8 @@ class Enemy : public GameEntity
     private:
         static bool isEnemyInProximityOfTarget(sf::Vector2f sourceLocation, sf::Vector2f targetLocation, uint32_t distance);
         void moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoint);
+        void damageTarget(GameClock& gameClock, const std::shared_ptr<GameEntity>& target) override;
+        void updateEntityToRandomDirection(GameClock& gameClock, std::string animationKey);
 
     private:
 
@@ -51,6 +53,8 @@ class Enemy : public GameEntity
          *  --Just some thoughts.
         */
         std::shared_ptr<Player> m_player;
+
+        uint32_t lastTimeAttacked = 0;
 };
 
 #endif //VANQUISH_ENEMY_H

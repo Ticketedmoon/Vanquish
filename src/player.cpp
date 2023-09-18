@@ -103,7 +103,7 @@ void Player::update(GameState& gameState)
     }
 
     // TODO: Refactor this block
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+    if (swingTimeSeconds < gameClock.getWorldTimeSeconds() && sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
     {
         // reset animation
         std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(PLAYER_SPRITE_SHEET_A_ATTACK_KEY);
@@ -186,6 +186,11 @@ bool Player::tryMoveDirection(GameClock& gameClock, std::pair<sf::Keyboard::Key,
     }
 
     return false;
+}
+
+void Player::damageTarget(GameClock& gameClock, const std::shared_ptr<GameEntity>& target)
+{
+    target->applyDamage(gameClock, damage);
 }
 
 EntityType Player::getType()

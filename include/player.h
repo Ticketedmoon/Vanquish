@@ -30,7 +30,7 @@ class Player : public GameEntity
         void update(GameState& gameState) override;
 
         EntityType getType() override;
-        void applyDamage(GameClock& gameClock, uint16_t damage) override;
+        void damageTarget(GameClock& gameClock, const std::shared_ptr<GameEntity>& target) override;
         void addExperiencePoints(std::shared_ptr<GameEntity>& entityKilled);
 
     private:
@@ -39,6 +39,7 @@ class Player : public GameEntity
                 EntityDirection direction);
         void startAnimation(GameClock& gameClock, const std::string& animationKeyA, const std::string& animationKeyB);
         void startAnimationFromAnimationGroup(GameClock& gameClock, const std::string& animationKey);
+        void applyDamage(GameClock& gameClock, uint16_t damage) override;
 
     private:
         std::shared_ptr<TextureManager> m_textureManager;

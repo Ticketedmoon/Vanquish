@@ -42,7 +42,7 @@ sf::VertexArray TileMap::getTileVerticesInView(const sf::RenderTarget& target) c
     float minOffsetY = viewCentre.y - (TILE_SIZE * TOTAL_TILES_VISIBLE_Y);
     float maxOffsetY = viewCentre.y + (TILE_SIZE * TOTAL_TILES_VISIBLE_Y);
 
-    for (int i = 0; i < m_vertices.getVertexCount(); i++)
+    for (size_t i = 0; i < m_vertices.getVertexCount(); i++)
     {
         sf::Vertex vertex = m_vertices.operator[](i);
         bool vertexInViewOnX = vertex.position.x >= minOffsetX && vertex.position.x < maxOffsetX;

@@ -78,7 +78,9 @@ void Level::tryDamageEnemy(GameState& gameState, std::shared_ptr<GameEntity>& en
         if (gameState.getClock().getWorldTimeSeconds() > entity->lastTimeTakenDamageSeconds)
         {
             entity->updateSpriteColour(sf::Color::Red);
+
             m_player->damageTarget(gameState.getClock(), entity);
+
             if (entity->isDead())
             {
                 m_player->addExperiencePoints(entity);

@@ -57,7 +57,7 @@ class GameEntity : public GameComponent
 
         sf::Vector2u findNextTileFromDirection(sf::Time deltaTime) const;
         void updateSpriteColour(sf::Color spriteColour);
-        void damageTarget(GameClock& gameClock, const std::shared_ptr<GameEntity>& target);
+        virtual void damageTarget(GameClock& gameClock, const std::shared_ptr<GameEntity>& target) = 0;
 
         uint8_t getWidth() const;
         uint8_t getHeight() const;
@@ -76,7 +76,6 @@ class GameEntity : public GameComponent
 
         void updatePosition(GameClock& gameClock);
         void setDirection(EntityDirection dir);
-        void updateEntityToRandomDirection(GameClock& gameClock, std::string animationKey);
 
     private:
         struct NextCoordinateVelocityPair
@@ -97,7 +96,6 @@ class GameEntity : public GameComponent
 
         // FIXME temporary
         float lastTimeTakenDamageSeconds = 0.0f;
-        uint32_t lastTimeAttacked = 0;
 
     protected:
         uint8_t width;
@@ -119,7 +117,7 @@ class GameEntity : public GameComponent
         sf::Vector2f spawnPosition;
 
         // TODO Move to enemy class?
-        uint16_t waitTimeBeforeMovementMs = std::experimental::randint(MIN_ENTITY_MOVE_RATE_MS, MAX_ENTITY_MOVE_RATE_MS);
+        uint64_t waitTimeBeforeMovementMs = std::experimental::randint(MIN_ENTITY_MOVE_RATE_MS, MAX_ENTITY_MOVE_RATE_MS);
 };
 
 #endif //VANQUISH_GAME_ENTITY_H
