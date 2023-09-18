@@ -52,6 +52,7 @@ A 2D RPG where you begin as a prisoner and find your way in the world.
   - idle animation
   - hurt/damage-taken animation
   - death animation
+  - sword swing animation
 
 ![Mon 18 Sep 2023 00:35:11 IST](https://github.com/Ticketedmoon/vanquish/assets/21260839/eb3d50d7-b8c3-4cd9-9869-a036aeaaae34)
 
