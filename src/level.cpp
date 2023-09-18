@@ -14,6 +14,45 @@ void Level::update(GameState& gameState)
     {
         entity->update(gameState);
     }
+
+    // FIXME, note as long as user holds down space bar, the PlayerState will be 'attacking'
+    //        this is not good as therefore can distribute infinite damage in a particular direction.
+    //        solution is to automatically reset state after animation completes, or shortly after.
+    if (gameState.getPlayerState() != GameState::PlayerState::ATTACKING)
+    {
+        return;
+    }
+
+    checkForPlayerAttackOnEnemy(gameState);
+
+}
+
+void Level::checkForPlayerAttackOnEnemy(GameState& gameState)
+{
+    for (auto& entity: gameEntities)
+    {
+        // Note: This check is a little silly. If the polymorphism is forcing these checks, maybe it's worth splitting
+        //       out the draw calls.
+        if (entity->getType() != EntityType::ENEMY)
+        {
+            continue;
+        }
+
+        if (std::abs(entity->getPosition().y - m_player->getPosition().y) < TILE_SIZE
+            && std::abs(entity->getPosition().x - m_player->getPosition().x) < TILE_SIZE)
+        {
+            tryDamageEnemy(gameState, entity, std::make_pair(EntityDirection::LEFT, EntityDirection::RIGHT));
+            tryDamageEnemy(gameState, entity, std::make_pair(EntityDirection::RIGHT, EntityDirection::LEFT));
+            tryDamageEnemy(gameState, entity, std::make_pair(EntityDirection::UP, EntityDirection::DOWN));
+            tryDamageEnemy(gameState, entity, std::make_pair(EntityDirection::DOWN, EntityDirection::UP));
+        }
+    }
+
+    auto it = std::remove_if(gameEntities.begin(), gameEntities.end(),
+            [](std::shared_ptr<GameEntity> entity) {
+                return entity->isDead();
+            });
+    gameEntities.erase(it, gameEntities.end());
 }
 
 void Level::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
@@ -31,6 +70,24 @@ void Level::interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player
     sf::Vector2u nextPlayerFacingTilePosition = player->findNextTileFromDirection(deltaTime);
     Tile& nextPlayerFacingTile = TileMap::getTile(nextPlayerFacingTilePosition.x, nextPlayerFacingTilePosition.y);
     tileMap.updateTile(nextPlayerFacingTile, tileType);
+}
+
+void Level::tryDamageEnemy(GameState& gameState, std::shared_ptr<GameEntity>& entity,
+        std::pair<EntityDirection, EntityDirection> facingDirections)
+{
+    if (entity->getDirection() == facingDirections.first && m_player->getDirection() == facingDirections.second)
+    {
+        // damage enemy
+        if (gameState.getClock().getWorldTimeSeconds() > entity->lastTimeTakenDamageSeconds)
+        {
+            entity->updateSpriteColour(sf::Color::Red);
+            entity->applyDamage(gameState.getClock(), 10);
+            entity->lastTimeTakenDamageSeconds = gameState.getClock().getWorldTimeSeconds() + 1;
+        }
+
+        // perform pushback
+        // TBD
+    }
 }
 
 void Level::initialiseGameEntities()

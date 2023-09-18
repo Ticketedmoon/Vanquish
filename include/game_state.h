@@ -8,6 +8,7 @@
 class GameState
 {
     public:
+
         enum class State
         {
             PLAYING,
@@ -15,14 +16,31 @@ class GameState
             DEBUG
         };
 
+        enum class PlayerState
+        {
+                IDLE,
+                MOVING,
+                ATTACKING
+        };
+
         [[nodiscard]] State getState() const
         {
             return m_state;
         }
 
-        void updateState(const State state)
+        [[nodiscard]] PlayerState getPlayerState() const
+        {
+            return m_playerState;
+        }
+
+        void updateGameState(const State state)
         {
             this->m_state = state;
+        };
+
+        void updatePlayerState(const PlayerState state)
+        {
+            this->m_playerState = state;
         };
 
         GameClock& getClock()
@@ -32,6 +50,7 @@ class GameState
 
     private:
         State m_state = State::PLAYING;
+        PlayerState m_playerState = PlayerState::IDLE;
         GameClock gameClock;
 };
 

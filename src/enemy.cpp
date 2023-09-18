@@ -45,6 +45,11 @@ void Enemy::update(GameState& gameState)
     GameClock& gameClock = gameState.getClock();
     uint64_t milliseconds = gameClock.getWorldTimeMs();
 
+    if (gameState.getClock().getWorldTimeSeconds() > lastTimeTakenDamageSeconds)
+    {
+        updateSpriteColour(sf::Color::White);
+    }
+
     if (milliseconds < waitTimeBeforeMovementMs)
     {
         return;
@@ -77,11 +82,11 @@ void Enemy::update(GameState& gameState)
 void Enemy::damagePlayer(GameClock& gameClock)
 {
     int timeNowSeconds = static_cast<int>(gameClock.getWorldTimeSeconds());
-    bool hasEnemyAttackedAfterTimeWindow = timeNowSeconds - lastPlayerAttackSeconds >= 3;
+    bool hasEnemyAttackedAfterTimeWindow = timeNowSeconds - lastEnemyAttackSeconds >= 3;
     if (hasEnemyAttackedAfterTimeWindow)
     {
-        m_player->takeDamage(gameClock, damage);
-        lastPlayerAttackSeconds = timeNowSeconds;
+        m_player->applyDamage(gameClock, damage);
+        lastEnemyAttackSeconds = timeNowSeconds;
     }
 }
 

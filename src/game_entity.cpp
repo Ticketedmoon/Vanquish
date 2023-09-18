@@ -179,10 +179,20 @@ uint16_t GameEntity::getHealth() const
     return this->health;
 }
 
-void GameEntity::takeDamage(GameClock& gameClock, uint16_t damage)
+EntityDirection GameEntity::getDirection() const
+{
+    return direction;
+}
+
+void GameEntity::applyDamage(GameClock& gameClock, uint16_t damage)
 {
     uint16_t newHealth = health > damage ? health - damage : 0;
     this->health = newHealth;
+}
+
+void GameEntity::updateSpriteColour(sf::Color spriteColour)
+{
+    entitySprite.setColor(spriteColour);
 }
 
 bool GameEntity::isDead() const

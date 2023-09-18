@@ -30,10 +30,10 @@ class Player : public GameEntity
         void update(GameState& gameState) override;
 
         EntityType getType() override;
-        void takeDamage(GameClock& gameClock, uint16_t damage) override;
+        void applyDamage(GameClock& gameClock, uint16_t damage) override;
 
     private:
-        void startMovement(GameClock& gameClock);
+        void startMovement(GameState& gameState);
         bool tryMoveDirection(GameClock& gameClock, std::pair<sf::Keyboard::Key, sf::Keyboard::Key> keyboardInputGroup,
                 EntityDirection direction);
         void startAnimation(GameClock& gameClock, const std::string& animationKeyA, const std::string& animationKeyB);

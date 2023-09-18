@@ -51,14 +51,16 @@ class GameEntity : public GameComponent
         void update(GameState& gameState) override = 0;
 
         virtual EntityType getType() = 0;
-        virtual void takeDamage(GameClock& gameClock, uint16_t damage);
+        virtual void applyDamage(GameClock& gameClock, uint16_t damage);
 
         sf::Vector2u findNextTileFromDirection(const sf::Time deltaTime) const;
+        void updateSpriteColour(sf::Color spriteColour);
 
         uint8_t getWidth() const;
         uint8_t getHeight() const;
-
+        EntityDirection getDirection() const;
         uint16_t getHealth() const;
+        bool isDead() const;
 
     protected:
         void performAnimationByKey(GameClock& gameClock, std::string animationKey, bool stopAnimationAfterRow);
@@ -66,8 +68,6 @@ class GameEntity : public GameComponent
         void updatePosition(GameClock& gameClock);
         void setDirection(EntityDirection dir);
         void updateEntityToRandomDirection(GameClock& gameClock, std::string animationKey);
-
-        bool isDead() const;
 
     private:
         struct NextCoordinateVelocityPair
@@ -86,6 +86,9 @@ class GameEntity : public GameComponent
 
     public:
         sf::Vector2u tilePosition;
+
+        // FIXME temporary
+        float lastTimeTakenDamageSeconds = 0.0f;
 
     protected:
         uint8_t width;

@@ -34,8 +34,11 @@ class Level : public GameComponent
         static void interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player, Tile::Type tileType);
         void enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf::Color> entityTypeTileColour);
 
+    private:
         void initialiseGameEntities();
-
+        void checkForPlayerAttackOnEnemy(GameState& gameState);
+        void tryDamageEnemy(GameState& gameState, std::shared_ptr<GameEntity>& entity,
+                std::pair<EntityDirection, EntityDirection> facingDirections);
     private:
         static inline TileMap tileMap;
 

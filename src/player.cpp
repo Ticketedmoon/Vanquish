@@ -77,7 +77,7 @@ void Player::update(GameState& gameState)
 
         if (gameClock.getWorldTimeSeconds() > (deathTimeSeconds + 2))
         {
-            gameState.updateState(GameState::State::GAME_OVER);
+            gameState.updateGameState(GameState::State::GAME_OVER);
         }
 
         startAnimationFromAnimationGroup(gameClock, PLAYER_SPRITE_SHEET_A_DEATH_KEY, true);
@@ -92,10 +92,11 @@ void Player::update(GameState& gameState)
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
     {
         startAnimationFromAnimationGroup(gameClock, PLAYER_SPRITE_SHEET_A_ATTACK_KEY, false);
+        gameState.updatePlayerState(GameState::PlayerState::ATTACKING);
         return;
     }
 
-    startMovement(gameClock);
+    startMovement(gameState);
 }
 
 void Player::startAnimation(GameClock& gameClock, const std::string& animationKeyA, const std::string& animationKeyB)
@@ -114,8 +115,9 @@ void Player::startAnimation(GameClock& gameClock, const std::string& animationKe
 //      this is due to the walk animation being performed but the old animation remaining static.
 //      ideally at the before this conditional logic, we keep all animations aligned with which 'direction'
 //      they are facing.
-void Player::startMovement(GameClock& gameClock)
+void Player::startMovement(GameState& gameState)
 {
+    GameClock& gameClock = gameState.getClock();
     bool isMovingDown = tryMoveDirection(gameClock, std::make_pair(sf::Keyboard::Down, sf::Keyboard::S),
             EntityDirection::DOWN);
     bool isMovingUp = tryMoveDirection(gameClock, std::make_pair(sf::Keyboard::Up, sf::Keyboard::W),
@@ -128,10 +130,12 @@ void Player::startMovement(GameClock& gameClock)
     if (isMovingDown || isMovingUp || isMovingLeft || isMovingRight)
     {
         startAnimation(gameClock, PLAYER_SPRITE_SHEET_A_HURT_KEY, PLAYER_SPRITE_SHEET_A_WALK_KEY);
+        gameState.updatePlayerState(GameState::PlayerState::MOVING);
         return;
     }
 
     startAnimation(gameClock, PLAYER_SPRITE_SHEET_A_HURT_KEY, PLAYER_SPRITE_SHEET_A_IDLE_KEY);
+    gameState.updatePlayerState(GameState::PlayerState::IDLE);
 }
 
 void Player::startAnimationFromAnimationGroup(GameClock& gameClock, const std::string& animationKey, bool stopAnimationAfterRow)
@@ -161,11 +165,11 @@ EntityType Player::getType()
     return EntityType::PLAYER;
 }
 
-void Player::takeDamage(GameClock& gameClock, uint16_t damage)
+void Player::applyDamage(GameClock& gameClock, uint16_t damage)
 {
     if (health > 0)
     {
-        GameEntity::takeDamage(gameClock, damage);
+        GameEntity::applyDamage(gameClock, damage);
         painTimeSeconds = gameClock.getWorldTimeSeconds() + HURT_ANIMATION_TIME_OFFSET;
     }
 }

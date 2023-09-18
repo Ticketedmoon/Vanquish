@@ -36,11 +36,11 @@ void DebugManager::updateDebugState(GameState& gameState)
 {
     if (gameState.getState() == GameState::State::PLAYING)
     {
-        gameState.updateState(GameState::State::DEBUG);
+        gameState.updateGameState(GameState::State::DEBUG);
     }
     else
     {
-        gameState.updateState(GameState::State::PLAYING);
+        gameState.updateGameState(GameState::State::PLAYING);
         // Clear tiles of highlighting
         level.enableEntityTileHighlightsForDebug({
             {EntityType::PLAYER, sf::Color::White},

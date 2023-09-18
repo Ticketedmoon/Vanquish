@@ -47,7 +47,7 @@ class Enemy : public GameEntity
          *  We don't want the enemy to have a reference to the m_player obj.
          *  Perhaps can we consider an event-driven approach, where entities can submit events which are polled
          *  upstream and eventually applied to the appropriate entities.
-         *  e.g., this method can submit an event in the form { entityType: EntityType::PLayer, takeDamage: 10 }
+         *  e.g., this method can submit an event in the form { entityType: EntityType::PLayer, damage: 10 }
          *  this is then read and decreased from the players health at a later point.
          *  --Just some thoughts.
         */
@@ -56,7 +56,7 @@ class Enemy : public GameEntity
         // TODO IMPROVE THIS, MAKE MORE DYNAMIC
         uint16_t damage = std::experimental::randint(5, 20);
 
-        uint32_t lastPlayerAttackSeconds;
+        uint32_t lastEnemyAttackSeconds;
 };
 
 #endif //VANQUISH_ENEMY_H
