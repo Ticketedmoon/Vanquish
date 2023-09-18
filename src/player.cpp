@@ -28,6 +28,11 @@ Player::Player(std::shared_ptr<TextureManager>& textureManager)
                                 PLAYER_SPRITE_SHEET_A_DEATH_KEY,
                                 std::make_shared<AnimationGroup>(3, sf::Vector2u(0, 0), sf::seconds(1.f / 6.f),
                                         sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT))
+                        },
+                        {
+                                PLAYER_SPRITE_SHEET_A_ATTACK_KEY,
+                                std::make_shared<AnimationGroup>(5, sf::Vector2u(0, 0), sf::seconds(1.f / 6.f),
+                                        sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT))
                         }
                 }
         ),
@@ -83,6 +88,12 @@ void Player::update(GameState& gameState)
     uint32_t tileUnderPlayerY = floor((getPosition().y + spritePositionOffset.y) / TILE_SIZE);
     tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
     entitySprite.setPosition(getPosition());
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+    {
+        startAnimationFromAnimationGroup(gameClock, PLAYER_SPRITE_SHEET_A_ATTACK_KEY, false);
+        return;
+    }
 
     startMovement(gameClock);
 }

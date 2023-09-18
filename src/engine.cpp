@@ -53,7 +53,6 @@ void Engine::listenForEvents()
                     buildGameEngineComponents();
                 }
             }
-
         }
     }
 }
@@ -137,6 +136,7 @@ void Engine::buildGameEngineComponents()
     textureManager->addTexture(PLAYER_SPRITE_SHEET_A_HURT_KEY, PLAYER_SPRITE_SHEET_HURT_FILE_PATH);
     textureManager->addTexture(PLAYER_SPRITE_SHEET_A_IDLE_KEY, PLAYER_SPRITE_SHEET_IDLE_FILE_PATH);
     textureManager->addTexture(PLAYER_SPRITE_SHEET_A_DEATH_KEY, PLAYER_SPRITE_SHEET_DEATH_FILE_PATH);
+    textureManager->addTexture(PLAYER_SPRITE_SHEET_A_ATTACK_KEY, PLAYER_SPRITE_SHEET_ATTACK_FILE_PATH);
 
     // Enemy Animations
     textureManager->addTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY, HUMAN_CHARACTER_SPRITE_SHEET_A_FILE_PATH);
