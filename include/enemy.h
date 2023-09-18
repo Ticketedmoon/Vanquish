@@ -23,7 +23,7 @@ class Enemy : public GameEntity
 {
     public:
         explicit Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Player>& player,
-                sf::Vector2f position, sf::Vector2u spriteSheetRectPosition);
+                sf::Vector2f position, sf::Vector2u spriteSheetRectPosition, uint16_t damage, float experiencePoints);
 
         Enemy(Enemy& enemy) : GameEntity(enemy)
         {
@@ -39,7 +39,6 @@ class Enemy : public GameEntity
     private:
         static bool isEnemyInProximityOfTarget(sf::Vector2f sourceLocation, sf::Vector2f targetLocation, uint32_t distance);
         void moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoint);
-        void damagePlayer(GameClock& gameClock);
 
     private:
 
@@ -52,11 +51,6 @@ class Enemy : public GameEntity
          *  --Just some thoughts.
         */
         std::shared_ptr<Player> m_player;
-
-        // TODO IMPROVE THIS, MAKE MORE DYNAMIC
-        uint16_t damage = std::experimental::randint(5, 20);
-
-        uint32_t lastEnemyAttackSeconds;
 };
 
 #endif //VANQUISH_ENEMY_H

@@ -1,17 +1,18 @@
 #pragma once
 
-#ifndef VANQUISH_HEALTH_BAR_H
-#define VANQUISH_HEALTH_BAR_H
+#ifndef VANQUISH_XP_BAR_H
+#define VANQUISH_XP_BAR_H
 
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
 
+#include <memory>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include "game_entity.h"
 
-class HealthBar : public GameComponent
+class ExperiencePointsBar : public GameComponent
 {
     public:
-        HealthBar(std::shared_ptr<GameEntity>& gameEntity, sf::Vector2f fillDimensions,
+        ExperiencePointsBar(std::shared_ptr<GameEntity>& gameEntity, sf::Vector2f fillDimensions,
                 sf::Vector2f backgroundDimensions, sf::Vector2f position, sf::Color fillColor, sf::Color outlineColour,
                 float outlineThickness);
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
@@ -19,9 +20,9 @@ class HealthBar : public GameComponent
 
     private:
         std::shared_ptr<GameEntity> entity;
-        sf::RectangleShape healthBar;
-        sf::RectangleShape healthBarBackground;
-
+        sf::RectangleShape experienceBar;
+        sf::RectangleShape experienceBarBackground;
 };
 
-#endif //VANQUISH_HEALTH_BAR_H
+
+#endif //VANQUISH_XP_BAR_H

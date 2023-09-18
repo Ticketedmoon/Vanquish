@@ -2,12 +2,15 @@
 #include "level.h"
 
 GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position, uint16_t health,
-        sf::Vector2u spritePositionOffset, std::unordered_map<std::string, std::shared_ptr<AnimationGroup>> animationGroup)
+        sf::Vector2u spritePositionOffset, std::unordered_map<std::string, std::shared_ptr<AnimationGroup>> animationGroup,
+        uint16_t damage, float experiencePoints)
         : width(width),
           height(height),
           speed(speed),
           animationGroupMap(std::move(animationGroup)),
           health(health),
+          damage(damage),
+          totalExperiencePoints(experiencePoints),
           spritePositionOffset(spritePositionOffset)
 {
     setPosition(position);
@@ -163,14 +166,51 @@ uint16_t GameEntity::getHealth() const
     return this->health;
 }
 
+float GameEntity::getTotalExperiencePoints() const
+{
+    return this->totalExperiencePoints / level;
+}
+
+
+// TODO make static constant?
+float GameEntity::getTotalExperiencePointsRequiredForLevelUp()
+{
+    return 200;
+}
+
+void GameEntity::increaseLevel(float xpPointsDelta)
+{
+    std::cout << "Level Up!" << '\n';
+
+    // Update level
+     this->level += 1;
+
+     // Update attributes
+     damage += 5;
+
+     // reset xp
+     totalExperiencePoints = xpPointsDelta;
+}
+
 EntityDirection GameEntity::getDirection() const
 {
     return direction;
 }
 
-void GameEntity::applyDamage(GameClock& gameClock, uint16_t damage)
+void GameEntity::damageTarget(GameClock& gameClock, const std::shared_ptr<GameEntity>& target)
 {
-    uint16_t newHealth = health > damage ? health - damage : 0;
+    int timeNowSeconds = static_cast<int>(gameClock.getWorldTimeSeconds());
+    bool hasEnemyAttackedAfterTimeWindow = timeNowSeconds - lastTimeAttacked >= 3;
+    if (hasEnemyAttackedAfterTimeWindow)
+    {
+        target->applyDamage(gameClock, damage);
+        lastTimeAttacked = timeNowSeconds;
+    }
+}
+
+void GameEntity::applyDamage(GameClock& gameClock, uint16_t damageAmount)
+{
+    uint16_t newHealth = health > damageAmount ? health - damageAmount : 0;
     this->health = newHealth;
 }
 

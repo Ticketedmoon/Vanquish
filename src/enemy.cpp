@@ -1,7 +1,7 @@
 #include "../include/enemy.h"
 
 Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Player>& player,
-        sf::Vector2f position, sf::Vector2u spriteSheetRectPosition)
+        sf::Vector2f position, sf::Vector2u spriteSheetRectPosition, uint16_t damage, float experiencePoints)
         : GameEntity(ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY_SPEED, position, STARTING_ENEMY_HEALTH,
         sf::Vector2u(std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT) * 0.5f,
                 std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT)),
@@ -9,11 +9,12 @@ Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Pl
                 {
                         HUMAN_CHARACTER_SPRITE_SHEET_A_KEY,
                         std::make_shared<AnimationGroup>(3, spriteSheetRectPosition, sf::seconds(1.f / 6.f),
-                                sf::IntRect(spriteSheetRectPosition.x, spriteSheetRectPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT),
+                                sf::IntRect(spriteSheetRectPosition.x, spriteSheetRectPosition.y, ENEMY_WIDTH,
+                                        ENEMY_HEIGHT),
                                 AnimationGroup::AnimationCompletionType::REPEAT_ANIMATION_AFTER_EXECUTING_ALL_FRAMES)
                 }
-        }),
-        m_player(player)
+        }, damage, experiencePoints),
+          m_player(player)
 {
     sf::Texture& texture = *(textureManager->getTexture(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY));
     std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(HUMAN_CHARACTER_SPRITE_SHEET_A_KEY);
@@ -57,7 +58,7 @@ void Enemy::update(GameState& gameState)
 
     if (isEnemyInProximityOfTarget(position, m_player->getPosition(), 24))
     {
-        damagePlayer(gameClock);
+        damageTarget(gameClock, m_player);
         return;
     }
 
@@ -77,17 +78,6 @@ void Enemy::update(GameState& gameState)
 
     // Move randomly
     updateEntityToRandomDirection(gameClock, HUMAN_CHARACTER_SPRITE_SHEET_A_KEY);
-}
-
-void Enemy::damagePlayer(GameClock& gameClock)
-{
-    int timeNowSeconds = static_cast<int>(gameClock.getWorldTimeSeconds());
-    bool hasEnemyAttackedAfterTimeWindow = timeNowSeconds - lastEnemyAttackSeconds >= 3;
-    if (hasEnemyAttackedAfterTimeWindow)
-    {
-        m_player->applyDamage(gameClock, damage);
-        lastEnemyAttackSeconds = timeNowSeconds;
-    }
 }
 
 void Enemy::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const

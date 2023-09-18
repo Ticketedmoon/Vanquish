@@ -44,7 +44,8 @@ class GameEntity : public GameComponent
 {
     public:
         GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position, uint16_t health,
-                sf::Vector2u spritePositionOffset, std::unordered_map<std::string, std::shared_ptr<AnimationGroup>> animationGroup);
+                sf::Vector2u spritePositionOffset, std::unordered_map<std::string, std::shared_ptr<AnimationGroup>> animationGroup,
+                uint16_t damage, float experiencePoints);
         ~GameEntity() override = default;
 
         // Not necessary to add virtual here to maintain pure-virtual function as parent method is pure-virtual.
@@ -52,16 +53,23 @@ class GameEntity : public GameComponent
         void update(GameState& gameState) override = 0;
 
         virtual EntityType getType() = 0;
-        virtual void applyDamage(GameClock& gameClock, uint16_t damage);
+        virtual void applyDamage(GameClock& gameClock, uint16_t damageAmount);
 
         sf::Vector2u findNextTileFromDirection(sf::Time deltaTime) const;
         void updateSpriteColour(sf::Color spriteColour);
+        void damageTarget(GameClock& gameClock, const std::shared_ptr<GameEntity>& target);
 
         uint8_t getWidth() const;
         uint8_t getHeight() const;
         EntityDirection getDirection() const;
         uint16_t getHealth() const;
         bool isDead() const;
+
+        // TODO this should be in the player, not game_entity.h
+        //      unless we plan for enemies to level up as well.
+        float getTotalExperiencePoints() const;
+        static float getTotalExperiencePointsRequiredForLevelUp() ;
+        void increaseLevel(float xpPointsDelta);
 
     protected:
         void performAnimationByKey(GameClock& gameClock, const std::string& animationKey);
@@ -89,6 +97,7 @@ class GameEntity : public GameComponent
 
         // FIXME temporary
         float lastTimeTakenDamageSeconds = 0.0f;
+        uint32_t lastTimeAttacked = 0;
 
     protected:
         uint8_t width;
@@ -101,6 +110,9 @@ class GameEntity : public GameComponent
         std::unordered_map<std::string, std::shared_ptr<AnimationGroup>> animationGroupMap;
 
         uint16_t health;
+        uint16_t damage;
+        float totalExperiencePoints;
+        uint8_t level{1};
 
         sf::Sprite entitySprite;
         sf::Vector2u spritePositionOffset;

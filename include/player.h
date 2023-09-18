@@ -31,6 +31,7 @@ class Player : public GameEntity
 
         EntityType getType() override;
         void applyDamage(GameClock& gameClock, uint16_t damage) override;
+        void addExperiencePoints(std::shared_ptr<GameEntity>& entityKilled);
 
     private:
         void startMovement(GameState& gameState);

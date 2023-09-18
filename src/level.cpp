@@ -78,8 +78,12 @@ void Level::tryDamageEnemy(GameState& gameState, std::shared_ptr<GameEntity>& en
         if (gameState.getClock().getWorldTimeSeconds() > entity->lastTimeTakenDamageSeconds)
         {
             entity->updateSpriteColour(sf::Color::Red);
-            entity->applyDamage(gameState.getClock(), 10);
-            entity->lastTimeTakenDamageSeconds = gameState.getClock().getWorldTimeSeconds() + 1;
+            m_player->damageTarget(gameState.getClock(), entity);
+            if (entity->isDead())
+            {
+                m_player->addExperiencePoints(entity);
+            }
+            entity->lastTimeTakenDamageSeconds = gameState.getClock().getWorldTimeSeconds() + 0.25;
         }
 
         // perform pushback
@@ -126,8 +130,11 @@ void Level::initialiseGameEntities()
             sf::Vector2u spritePositionGroup = sf::Vector2u(enemyRectLeft, enemyRectTop);
             sf::Vector2f enemyPosition = sf::Vector2f(enemyX, enemyY);
 
+            uint16_t damage = std::experimental::randint(5, 20);
+            int enemyXp = damage * 12;
+
             gameEntities.emplace_back(
-                    std::make_shared<Enemy>(m_textureManager, m_player, enemyPosition, spritePositionGroup)
+                    std::make_shared<Enemy>(m_textureManager, m_player, enemyPosition, spritePositionGroup, damage, enemyXp)
             );
         }
     }

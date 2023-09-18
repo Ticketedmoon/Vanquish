@@ -39,7 +39,9 @@ Player::Player(std::shared_ptr<TextureManager>& textureManager)
                                         sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT),
                                         AnimationGroup::AnimationCompletionType::COMPLETE_ANIMATION_AFTER_EXECUTING_ALL_FRAMES)
                         }
-                }
+                },
+                10,
+                0.0f
         ),
         m_textureManager(textureManager)
 {
@@ -94,6 +96,11 @@ void Player::update(GameState& gameState)
     tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
     entitySprite.setPosition(getPosition());
 
+    float xpPointsLevelUpDelta = getTotalExperiencePoints() - getTotalExperiencePointsRequiredForLevelUp();
+    if (xpPointsLevelUpDelta >= 0)
+    {
+        increaseLevel(xpPointsLevelUpDelta);
+    }
 
     // TODO: Refactor this block
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
@@ -193,4 +200,9 @@ void Player::applyDamage(GameClock& gameClock, uint16_t damage)
         GameEntity::applyDamage(gameClock, damage);
         painTimeSeconds = gameClock.getWorldTimeSeconds() + HURT_ANIMATION_TIME_OFFSET;
     }
+}
+
+void Player::addExperiencePoints(std::shared_ptr<GameEntity>& entityKilled)
+{
+    this->totalExperiencePoints += entityKilled->getTotalExperiencePoints();
 }

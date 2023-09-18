@@ -10,6 +10,7 @@
 
 #include "game_entity.h"
 #include "user_interface/health_bar.h"
+#include "experience_points_bar.h"
 #include "game_state.h"
 
 static constexpr uint8_t TOTAL_UI_COMPONENTS = 1;
