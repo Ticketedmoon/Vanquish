@@ -58,5 +58,20 @@ A 2D RPG where you begin as a prisoner and find your way in the world.
 
 ---
 
+##### 2023-09-21
+
+**'Usual RPG updates'**
+- Enemies can die after enough player sword swings.
+- The player gains experience points (`exp`) from these fallen enemies and can level up.
+- Basic GUI to show player banner, player level and `exp` bar. 
+
+### Starting Off
+![Mon 18 Sep 2023 21:07:50 IST](https://github.com/Ticketedmoon/vanquish/assets/21260839/e632dbd2-e4f1-4b16-9543-d8769972014b)
+
+### Exp. gained
+![Mon 18 Sep 2023 21:14:17 IST](https://github.com/Ticketedmoon/vanquish/assets/21260839/868d2785-eaec-4b1e-9107-75dba4928842)
+
+---
+
 Resources:
 - https://route1rodent.itch.io/16x16-rpg-character-sprite-sheet
