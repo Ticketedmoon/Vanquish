@@ -15,10 +15,7 @@ void Level::update(GameState& gameState)
         entity->update(gameState);
     }
 
-    // FIXME, note as long as user holds down space bar, the PlayerState will be 'attacking'
-    //        this is not good as therefore can distribute infinite damage in a particular direction.
-    //        solution is to automatically reset state after animation completes, or shortly after.
-    if (gameState.getPlayerState() != GameState::PlayerState::ATTACKING)
+    if (gameState.getPlayerState() != GameState::PlayerState::ATTACK)
     {
         return;
     }
@@ -86,7 +83,8 @@ void Level::tryDamageEnemy(GameState& gameState, std::shared_ptr<GameEntity>& en
         }
 
         // perform pushback
-        // TBD
+        // temporary
+        entity->setPosition(sf::Vector2f(entity->getPosition() - sf::Vector2f(80, 80)));
     }
 }
 

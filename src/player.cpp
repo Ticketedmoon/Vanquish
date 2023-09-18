@@ -12,27 +12,32 @@ Player::Player(std::shared_ptr<TextureManager>& textureManager)
                         {
                                 PLAYER_SPRITE_SHEET_A_WALK_KEY,
                                 std::make_shared<AnimationGroup>(7, sf::Vector2u(0, 0), sf::seconds(1.f / 12.f),
-                                        sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT))
+                                        sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT),
+                                        AnimationGroup::AnimationCompletionType::REPEAT_ANIMATION_AFTER_EXECUTING_ALL_FRAMES)
                         },
                         {
                                 PLAYER_SPRITE_SHEET_A_IDLE_KEY,
                                 std::make_shared<AnimationGroup>(3, sf::Vector2u(0, 0), sf::seconds(1.f / 6.f),
-                                        sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT))
+                                        sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT),
+                                        AnimationGroup::AnimationCompletionType::REPEAT_ANIMATION_AFTER_EXECUTING_ALL_FRAMES)
                         },
                         {
                                 PLAYER_SPRITE_SHEET_A_HURT_KEY,
                                 std::make_shared<AnimationGroup>(3, sf::Vector2u(0, 0), sf::seconds(1.f / 4.f),
-                                        sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT))
+                                        sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT),
+                                        AnimationGroup::AnimationCompletionType::RESET_ANIMATION_AFTER_EXECUTING_ALL_FRAMES)
                         },
                         {
                                 PLAYER_SPRITE_SHEET_A_DEATH_KEY,
                                 std::make_shared<AnimationGroup>(3, sf::Vector2u(0, 0), sf::seconds(1.f / 6.f),
-                                        sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT))
+                                        sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT),
+                                        AnimationGroup::AnimationCompletionType::COMPLETE_ANIMATION_AFTER_EXECUTING_ALL_FRAMES)
                         },
                         {
                                 PLAYER_SPRITE_SHEET_A_ATTACK_KEY,
                                 std::make_shared<AnimationGroup>(5, sf::Vector2u(0, 0), sf::seconds(1.f / 6.f),
-                                        sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT))
+                                        sf::IntRect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT),
+                                        AnimationGroup::AnimationCompletionType::COMPLETE_ANIMATION_AFTER_EXECUTING_ALL_FRAMES)
                         }
                 }
         ),
@@ -80,7 +85,7 @@ void Player::update(GameState& gameState)
             gameState.updateGameState(GameState::State::GAME_OVER);
         }
 
-        startAnimationFromAnimationGroup(gameClock, PLAYER_SPRITE_SHEET_A_DEATH_KEY, true);
+        startAnimationFromAnimationGroup(gameClock, PLAYER_SPRITE_SHEET_A_DEATH_KEY);
         return;
     }
 
@@ -89,10 +94,26 @@ void Player::update(GameState& gameState)
     tilePosition = sf::Vector2u(tileUnderPlayerX, tileUnderPlayerY);
     entitySprite.setPosition(getPosition());
 
+
+    // TODO: Refactor this block
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
     {
-        startAnimationFromAnimationGroup(gameClock, PLAYER_SPRITE_SHEET_A_ATTACK_KEY, false);
-        gameState.updatePlayerState(GameState::PlayerState::ATTACKING);
+        // reset animation
+        std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(PLAYER_SPRITE_SHEET_A_ATTACK_KEY);
+        AnimationManager::resetAnimation(animationGroup);
+        swingTimeSeconds = gameClock.getWorldTimeSeconds() + 1;
+    }
+
+    // TODO: Refactor this block
+    if (swingTimeSeconds > gameClock.getWorldTimeSeconds())
+    {
+        startAnimationFromAnimationGroup(gameClock, PLAYER_SPRITE_SHEET_A_ATTACK_KEY);
+
+        // 3/4 through animation
+        if (swingTimeSeconds - gameClock.getWorldTimeSeconds() < 0.7f)
+        {
+            gameState.updatePlayerState(GameState::PlayerState::ATTACK);
+        }
         return;
     }
 
@@ -103,11 +124,11 @@ void Player::startAnimation(GameClock& gameClock, const std::string& animationKe
 {
     if (painTimeSeconds > gameClock.getWorldTimeSeconds())
     {
-        startAnimationFromAnimationGroup(gameClock, animationKeyA, true);
+        startAnimationFromAnimationGroup(gameClock, animationKeyA);
     }
     else
     {
-        startAnimationFromAnimationGroup(gameClock, animationKeyB, false);
+        startAnimationFromAnimationGroup(gameClock, animationKeyB);
     }
 }
 
@@ -138,13 +159,13 @@ void Player::startMovement(GameState& gameState)
     gameState.updatePlayerState(GameState::PlayerState::IDLE);
 }
 
-void Player::startAnimationFromAnimationGroup(GameClock& gameClock, const std::string& animationKey, bool stopAnimationAfterRow)
+void Player::startAnimationFromAnimationGroup(GameClock& gameClock, const std::string& animationKey)
 {
     std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(animationKey);
     sf::Texture& texture = *m_textureManager->getTexture(animationKey);
     entitySprite.setTexture(texture);
     entitySprite.setTextureRect(animationGroup->entitySpriteSheetDimRect);
-    performAnimationByKey(gameClock, animationKey, stopAnimationAfterRow);
+    performAnimationByKey(gameClock, animationKey);
 }
 
 bool Player::tryMoveDirection(GameClock& gameClock, std::pair<sf::Keyboard::Key, sf::Keyboard::Key> keyboardInputGroup,

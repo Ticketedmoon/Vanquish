@@ -9,8 +9,8 @@ Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Pl
                 {
                         HUMAN_CHARACTER_SPRITE_SHEET_A_KEY,
                         std::make_shared<AnimationGroup>(3, spriteSheetRectPosition, sf::seconds(1.f / 6.f),
-                                sf::IntRect(spriteSheetRectPosition.x, spriteSheetRectPosition.y, ENEMY_WIDTH,
-                                        ENEMY_HEIGHT))
+                                sf::IntRect(spriteSheetRectPosition.x, spriteSheetRectPosition.y, ENEMY_WIDTH, ENEMY_HEIGHT),
+                                AnimationGroup::AnimationCompletionType::REPEAT_ANIMATION_AFTER_EXECUTING_ALL_FRAMES)
                 }
         }),
         m_player(player)
@@ -116,7 +116,7 @@ void Enemy::moveToDestination(GameClock& gameClock, sf::Vector2f destinationPoin
         updatePosition(gameClock);
     }
 
-    performAnimationByKey(gameClock, HUMAN_CHARACTER_SPRITE_SHEET_A_KEY, false);
+    performAnimationByKey(gameClock, HUMAN_CHARACTER_SPRITE_SHEET_A_KEY);
 }
 
 bool Enemy::isEnemyInProximityOfTarget(sf::Vector2f sourceLocation, sf::Vector2f targetLocation, uint32_t distance)

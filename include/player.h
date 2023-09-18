@@ -37,15 +37,17 @@ class Player : public GameEntity
         bool tryMoveDirection(GameClock& gameClock, std::pair<sf::Keyboard::Key, sf::Keyboard::Key> keyboardInputGroup,
                 EntityDirection direction);
         void startAnimation(GameClock& gameClock, const std::string& animationKeyA, const std::string& animationKeyB);
-        void startAnimationFromAnimationGroup(GameClock& gameClock, const std::string& animationKey, bool stopAnimationAfterRow);
+        void startAnimationFromAnimationGroup(GameClock& gameClock, const std::string& animationKey);
 
     private:
         std::shared_ptr<TextureManager> m_textureManager;
 
         static constexpr float HURT_ANIMATION_TIME_OFFSET = 0.25;
 
+        // TODO refactor these, centralise in some way and perhaps try use the same timer for each action.
         float deathTimeSeconds = 0.0f;
         float painTimeSeconds = 0.0f;
+        float swingTimeSeconds = 0.0f;
 };
 
 #endif //VANQUISH_PLAYER_H

@@ -20,7 +20,7 @@ class GameState
         {
                 IDLE,
                 MOVING,
-                ATTACKING
+                ATTACK
         };
 
         [[nodiscard]] State getState() const

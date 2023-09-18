@@ -6,7 +6,7 @@ GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f 
         : width(width),
           height(height),
           speed(speed),
-          animationGroupMap(animationGroup),
+          animationGroupMap(std::move(animationGroup)),
           health(health),
           spritePositionOffset(spritePositionOffset)
 {
@@ -15,30 +15,14 @@ GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f 
 }
 
 // TODO why are we using deltaTime to move animation - different per cpu?
-void GameEntity::performAnimationByKey(GameClock& gameClock, std::string animationKey, bool stopAnimationAfterRow)
+void GameEntity::performAnimationByKey(GameClock& gameClock, const std::string& animationKey)
 {
     std::shared_ptr<AnimationGroup>& animationGroup = animationGroupMap.at(animationKey);
     animationGroup->currentAnimationTime += gameClock.getDeltaTime();
     if (animationGroup->currentAnimationTime >= animationGroup->animationCompletionTime)
     {
-        updateAnimationGroup(animationGroup, stopAnimationAfterRow);
+        AnimationManager::updateAnimationGroup(width, height, static_cast<int>(direction), animationGroup);
     }
-}
-
-void GameEntity::updateAnimationGroup(std::shared_ptr<AnimationGroup>& animationGroup, bool stopAnimationAfterRow)
-{
-    bool shouldResetAnimation = animationGroup->entitySpriteSheetDimRect.left
-            == animationGroup->startingAnimationPosition.x + (width * (animationGroup->framesPerRow - 1));
-
-    int directionIndex = static_cast<int>(direction);
-    uint32_t spriteSheetTop = animationGroup->startingAnimationPosition.y + (height * directionIndex);
-    uint32_t spriteSheetLeft = shouldResetAnimation
-            ? (stopAnimationAfterRow ? animationGroup->entitySpriteSheetDimRect.left : animationGroup->startingAnimationPosition.x)
-            : animationGroup->entitySpriteSheetDimRect.left + width;
-
-    animationGroup->entitySpriteSheetDimRect.top = spriteSheetTop;
-    animationGroup->entitySpriteSheetDimRect.left = spriteSheetLeft;
-    animationGroup->currentAnimationTime = sf::Time::Zero;
 }
 
 void GameEntity::setDirection(EntityDirection dir)
@@ -161,7 +145,7 @@ void GameEntity::updateEntityToRandomDirection(GameClock& gameClock, std::string
     }
 
     updatePosition(gameClock);
-    performAnimationByKey(gameClock, animationKey, false);
+    performAnimationByKey(gameClock, animationKey);
 }
 
 uint8_t GameEntity::getWidth() const

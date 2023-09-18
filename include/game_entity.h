@@ -20,6 +20,7 @@
 #include "game_component.h"
 #include "tile.h"
 #include "texture_manager.h"
+#include "animation_manager.h"
 #include "animation_group.h"
 
 static constexpr uint16_t MIN_ENTITY_MOVE_RATE_MS = 500;
@@ -53,7 +54,7 @@ class GameEntity : public GameComponent
         virtual EntityType getType() = 0;
         virtual void applyDamage(GameClock& gameClock, uint16_t damage);
 
-        sf::Vector2u findNextTileFromDirection(const sf::Time deltaTime) const;
+        sf::Vector2u findNextTileFromDirection(sf::Time deltaTime) const;
         void updateSpriteColour(sf::Color spriteColour);
 
         uint8_t getWidth() const;
@@ -63,7 +64,7 @@ class GameEntity : public GameComponent
         bool isDead() const;
 
     protected:
-        void performAnimationByKey(GameClock& gameClock, std::string animationKey, bool stopAnimationAfterRow);
+        void performAnimationByKey(GameClock& gameClock, const std::string& animationKey);
 
         void updatePosition(GameClock& gameClock);
         void setDirection(EntityDirection dir);
@@ -82,7 +83,6 @@ class GameEntity : public GameComponent
                 float velocityForCoordinate);
 
         bool isNextTileCollidable(GameClock& gameClock) const;
-        void updateAnimationGroup(std::shared_ptr<AnimationGroup>& animationGroup, bool stopAnimationAfterRow);
 
     public:
         sf::Vector2u tilePosition;
