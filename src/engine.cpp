@@ -83,9 +83,11 @@ void Engine::render()
     {
         case GameState::State::PLAYING:
             renderCoreGameComponents();
+            renderTexture.setView(renderTexture.getDefaultView());
             break;
 
         case GameState::State::GAME_OVER:
+            renderTexture.setView(renderTexture.getDefaultView());
             viewManager->showGameOverView();
             break;
 
@@ -147,13 +149,14 @@ void Engine::buildGameEngineComponents()
     textManager = std::make_shared<TextManager>(renderTexture);
     userInterfaceManager = std::make_shared<UserInterfaceManager>(player, level.getEnemies(), textManager);
     viewManager = std::make_unique<ViewManager>(renderTexture, textManager);
-    debugManager = std::make_unique<DebugManager>(player, level, textManager);
+    debugManager = std::make_unique<DebugManager>(player, level.getEnemies(), level, textManager);
     gameState = GameState();
 }
 
 void Engine::renderCoreGameComponents()
 {
-    viewManager->centerViewOnEntity(player);
+    sf::View playerView = viewManager->centerViewOnEntity(player);
     level.draw(renderTexture, sf::RenderStates::Default);
     userInterfaceManager->draw(renderTexture, sf::RenderStates::Default);
+    renderTexture.setView(playerView);
 }

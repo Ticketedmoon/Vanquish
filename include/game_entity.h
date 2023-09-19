@@ -43,7 +43,7 @@ enum class EntityType
 class GameEntity : public GameComponent
 {
     public:
-        GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position, uint16_t health,
+        GameEntity(uint32_t id, uint8_t width, uint8_t height, float speed, sf::Vector2f position, uint16_t health,
                 sf::Vector2u spritePositionOffset, std::unordered_map<std::string, std::shared_ptr<AnimationGroup>> animationGroup,
                 uint16_t damage, float experiencePoints);
         ~GameEntity() override = default;
@@ -59,6 +59,8 @@ class GameEntity : public GameComponent
         void updateSpriteColour(sf::Color spriteColour);
         virtual void damageTarget(GameClock& gameClock, const std::shared_ptr<GameEntity>& target) = 0;
 
+        // TODO this is only needed for enemies, so move to enemy.cpp?
+        uint32_t getId() const;
         uint8_t getWidth() const;
         uint8_t getHeight() const;
         EntityDirection getDirection() const;
@@ -69,7 +71,7 @@ class GameEntity : public GameComponent
         //      unless we plan for enemies to level up as well.
         float getTotalExperiencePoints() const;
         static float getTotalExperiencePointsRequiredForLevelUp();
-        uint8_t getLevel();
+        uint8_t getLevel() const;
         void increaseLevel(float xpPointsDelta);
 
     protected:
@@ -99,6 +101,7 @@ class GameEntity : public GameComponent
         float lastTimeTakenDamageSeconds = 0.0f;
 
     protected:
+        uint32_t id;
         uint8_t width;
         uint8_t height;
 

@@ -2,7 +2,7 @@
 
 Player::Player(std::shared_ptr<TextureManager>& textureManager)
         :
-        GameEntity(PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, sf::Vector2f(300, 150),
+        GameEntity(1, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, sf::Vector2f(300, 150),
                 STARTING_PLAYER_HEALTH,
                 sf::Vector2u(
                         std::floor(PLAYER_SCALE_FACTOR * PLAYER_HEIGHT) * 0.5f,

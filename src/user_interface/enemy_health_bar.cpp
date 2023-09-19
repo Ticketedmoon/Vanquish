@@ -10,16 +10,24 @@ EnemyHealthBar::EnemyHealthBar(const std::shared_ptr<GameEntity>& entity, sf::Ve
 
 void EnemyHealthBar::update(GameState& gameState)
 {
-    sf::Vector2f newSize = sf::Vector2f(entity->getHealth(), healthBar.getSize().y);
-    healthBar.setSize(newSize);
-    healthBarBackground.setPosition(sf::Vector2f(entity->getPosition().x - HEALTH_BAR_OFFSET_POSITION_X,
-            entity->getPosition().y + HEALTH_BAR_OFFSET_POSITION_Y));
-    healthBar.setPosition(sf::Vector2f(entity->getPosition().x - HEALTH_BAR_OFFSET_POSITION_X,
-            entity->getPosition().y + HEALTH_BAR_OFFSET_POSITION_Y));
+    sf::Vector2f healthBarDimensions = sf::Vector2f(entity->getHealth(), healthBar.getSize().y);
+    healthBar.setSize(healthBarDimensions);
+    
+    float healthBarPositionX = (entity->getPosition().x + entity->getWidth()/2) - healthBarDimensions.x / 2;
+    float healthBarPositionY = (entity->getPosition().y + entity->getHeight()) + 5;
+
+    std::cout << healthBarPositionX << ", " << entity->getPosition().x << '\n';
+    healthBarBackground.setPosition(sf::Vector2f(healthBarPositionX, healthBarPositionY));
+    healthBar.setPosition(sf::Vector2f(healthBarPositionX, healthBarPositionY));
 }
 
 void EnemyHealthBar::draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const
 {
     renderTarget.draw(healthBarBackground);
     renderTarget.draw(healthBar);
+}
+
+std::shared_ptr<GameEntity> EnemyHealthBar::getEntity() const
+{
+    return entity;
 }

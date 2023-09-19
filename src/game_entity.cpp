@@ -1,10 +1,12 @@
 #include "../include/game_entity.h"
 #include "level.h"
 
-GameEntity::GameEntity(uint8_t width, uint8_t height, float speed, sf::Vector2f position, uint16_t health,
-        sf::Vector2u spritePositionOffset, std::unordered_map<std::string, std::shared_ptr<AnimationGroup>> animationGroup,
+GameEntity::GameEntity(uint32_t id, uint8_t width, uint8_t height, float speed, sf::Vector2f position, uint16_t health,
+        sf::Vector2u spritePositionOffset,
+        std::unordered_map<std::string, std::shared_ptr<AnimationGroup>> animationGroup,
         uint16_t damage, float experiencePoints)
-        : width(width),
+        : id(id),
+          width(width),
           height(height),
           speed(speed),
           animationGroupMap(std::move(animationGroup)),
@@ -198,7 +200,12 @@ bool GameEntity::isDead() const
     return this->health == 0;
 }
 
-uint8_t GameEntity::getLevel()
+uint8_t GameEntity::getLevel() const
 {
     return level;
+}
+
+uint32_t GameEntity::getId() const
+{
+    return id;
 }

@@ -44,7 +44,7 @@ A 2D RPG where you begin as a prisoner and find your way in the world.
 
 ---
 
-##### 2023-09-18
+##### 2023-09-17
 
 **'Animation Overhaul'**
 - Overhauled the animation system to easily add animations to entities.
@@ -58,7 +58,7 @@ A 2D RPG where you begin as a prisoner and find your way in the world.
 
 ---
 
-##### 2023-09-21
+##### 2023-09-18
 
 **'Usual RPG updates'**
 - Enemies can die after enough player sword swings.
@@ -70,6 +70,18 @@ A 2D RPG where you begin as a prisoner and find your way in the world.
 
 ### Exp. gained
 ![Mon 18 Sep 2023 21:14:17 IST](https://github.com/Ticketedmoon/vanquish/assets/21260839/868d2785-eaec-4b1e-9107-75dba4928842)
+
+---
+
+##### 2023-09-19
+
+**'More UI additions'**
+
+- Enemy health bars are displayed by default and will reduce upon receiving damage as one might expect. 
+- Debug UI also improved in this update to show bounding box around player and other world entities. 
+
+### Enemy health bars
+![Tue 19 Sep 2023 18:28:15 IST](https://github.com/Ticketedmoon/vanquish/assets/21260839/66159f67-c8b8-4152-aa40-a28f0efb1c72)
 
 ---
 

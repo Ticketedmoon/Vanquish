@@ -1,8 +1,8 @@
 #include "../include/enemy.h"
 
-Enemy::Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Player>& player,
+Enemy::Enemy(uint32_t id, std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Player>& player,
         sf::Vector2f position, sf::Vector2u spriteSheetRectPosition, uint16_t damage, float experiencePoints)
-        : GameEntity(ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY_SPEED, position, STARTING_ENEMY_HEALTH,
+        : GameEntity(id, ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY_SPEED, position, STARTING_ENEMY_HEALTH,
         sf::Vector2u(std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT) * 0.5f,
                 std::floor(ENEMY_SCALE_FACTOR * ENEMY_HEIGHT)),
         {

@@ -34,8 +34,9 @@ void Level::checkForPlayerAttackOnEnemy(GameState& gameState)
             continue;
         }
 
-        if (std::abs(entity->getPosition().y - m_player->getPosition().y) < TILE_SIZE
-            && std::abs(entity->getPosition().x - m_player->getPosition().x) < TILE_SIZE)
+        uint32_t damageDistanceThreshold = TILE_SIZE;
+        if (std::abs(entity->getPosition().y - m_player->getPosition().y) < damageDistanceThreshold
+            && std::abs(entity->getPosition().x - m_player->getPosition().x) < damageDistanceThreshold)
         {
             tryDamageEnemy(gameState, entity, std::make_pair(EntityDirection::LEFT, EntityDirection::RIGHT));
             tryDamageEnemy(gameState, entity, std::make_pair(EntityDirection::RIGHT, EntityDirection::LEFT));
@@ -140,17 +141,26 @@ void Level::initialiseGameEntities()
             uint32_t enemyRectTop = ENEMY_HEIGHT * (4 * rows);
 
             // Note: These positions are temporary.
-            auto enemyX = static_cast<float>(std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * TileMap::getWorldWidthInTiles()));
-            auto enemyY = static_cast<float>(std::experimental::randint(TILE_SIZE, (TILE_SIZE - 1) * TileMap::getWorldHeightInTiles()));
+            auto enemyX = static_cast<float>(std::experimental::randint(TILE_SIZE,
+                    (TILE_SIZE - 1) * TileMap::getWorldWidthInTiles()));
+            auto enemyY = static_cast<float>(std::experimental::randint(TILE_SIZE,
+                    (TILE_SIZE - 1) * TileMap::getWorldHeightInTiles()));
 
             sf::Vector2u spritePositionGroup = sf::Vector2u(enemyRectLeft, enemyRectTop);
             sf::Vector2f enemyPosition = sf::Vector2f(enemyX, enemyY);
 
             uint16_t damage = std::experimental::randint(5, 20);
             int enemyXp = damage * 12;
+            uint32_t enemyId = ((TOTAL_ENTITIES_PER_SPRITE_SHEET_ROW * rows) + cols + 1);
 
             gameEntities.emplace_back(
-                    std::make_shared<Enemy>(m_textureManager, m_player, enemyPosition, spritePositionGroup, damage, enemyXp)
+                    std::make_shared<Enemy>(enemyId,
+                            m_textureManager,
+                            m_player,
+                            enemyPosition,
+                            spritePositionGroup,
+                            damage,
+                            enemyXp)
             );
         }
     }

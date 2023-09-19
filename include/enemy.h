@@ -22,7 +22,7 @@ static inline constexpr uint16_t STARTING_ENEMY_HEALTH = 40;
 class Enemy : public GameEntity
 {
     public:
-        explicit Enemy(std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Player>& player,
+        explicit Enemy(uint32_t id, std::shared_ptr<TextureManager>& textureManager, std::shared_ptr<Player>& player,
                 sf::Vector2f position, sf::Vector2u spriteSheetRectPosition, uint16_t damage, float experiencePoints);
 
         Enemy(Enemy& enemy) : GameEntity(enemy)

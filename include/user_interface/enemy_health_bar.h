@@ -18,9 +18,7 @@ class EnemyHealthBar : public HealthBar
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
         void update(GameState& gameState) override;
 
-    public:
-        static const uint8_t HEALTH_BAR_OFFSET_POSITION_Y = 30;
-        static const uint8_t HEALTH_BAR_OFFSET_POSITION_X = 8;
+        std::shared_ptr<GameEntity> getEntity() const;
 
 };
 

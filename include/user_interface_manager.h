@@ -12,7 +12,6 @@
 #include "user_interface/health_bar.h"
 #include "experience_points_bar.h"
 #include "player.h"
-#include "enemy.h"
 #include "player_banner.h"
 #include "player_health_bar.h"
 #include "enemy_health_bar.h"
@@ -33,7 +32,7 @@ class UserInterfaceManager : public GameComponent
 
     private:
         std::vector<std::shared_ptr<GameComponent>> playerUiComponents;
-        std::vector<std::shared_ptr<HealthBar>> enemyHealthBarComponents;
+        std::unordered_map<uint32_t, std::shared_ptr<EnemyHealthBar>> enemyHealthBarComponents;
 
         std::shared_ptr<TextManager> textManager;
 };

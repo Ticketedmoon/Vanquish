@@ -40,23 +40,46 @@ UserInterfaceManager::UserInterfaceManager(const std::shared_ptr<Player>& player
 
     for (const std::shared_ptr<GameEntity>& enemyEntity : enemies)
     {
+        const sf::Vector2<float>& healthBarSize = sf::Vector2f(enemyEntity->getHealth(), 2);
+        const float healthBarPositionX = ((enemyEntity->getPosition().x + enemyEntity->getWidth()) / 2) - (healthBarSize.x / 2);
+        const float healthBarPositionY = ((enemyEntity->getPosition().y + enemyEntity->getHeight()) / 2) + 10;
+
         std::shared_ptr<EnemyHealthBar> healthBarForEnemy = std::make_shared<EnemyHealthBar>(enemyEntity,
-                sf::Vector2f(enemyEntity->getHealth(), 2),
-                sf::Vector2f(enemyEntity->getHealth(), 2),
-                sf::Vector2f(enemyEntity->getPosition().x - EnemyHealthBar::HEALTH_BAR_OFFSET_POSITION_X,
-                        enemyEntity->getPosition().y + EnemyHealthBar::HEALTH_BAR_OFFSET_POSITION_Y),
+                healthBarSize,
+                healthBarSize,
+                sf::Vector2f(healthBarPositionX, healthBarPositionY),
                 sf::Color::Red,
                 sf::Color::Black,
                 2.0f);
-        enemyHealthBarComponents.emplace_back(healthBarForEnemy);
+        enemyHealthBarComponents.insert({enemyEntity->getId(), healthBarForEnemy});
     }
 }
 
+// FIXME, this is not great, instead we should perhaps store the ui component on the enemy object.
+//        or store game entities in GameState.
+//        After thinking about it again, the first option seems very nice, as when the enemy is deleted, the health
+//        bar will automatically be removed from the vector of enemies, when passing by reference.
 void UserInterfaceManager::update(GameState& gameState)
 {
+    std::vector<uint32_t> enemyIdsToRemove;
     for (auto& enemyHealthBar: enemyHealthBarComponents)
     {
-        enemyHealthBar->update(gameState);
+        std::shared_ptr<EnemyHealthBar> healthBar = enemyHealthBar.second;
+        if (healthBar->getEntity()->isDead())
+        {
+            enemyIdsToRemove.emplace_back(healthBar->getEntity()->getId());
+        }
+
+        healthBar->update(gameState);
+    }
+
+    // TODO This is not clean at all, refactor all of this block using suggestions at top of method.
+    if (!enemyIdsToRemove.empty())
+    {
+        for (uint32_t id : enemyIdsToRemove)
+        {
+            enemyHealthBarComponents.erase(id);
+        }
     }
 
     for (auto& component: playerUiComponents)
@@ -69,7 +92,7 @@ void UserInterfaceManager::draw(sf::RenderTarget& renderTarget, sf::RenderStates
 {
     for (auto& component: enemyHealthBarComponents)
     {
-        component->draw(renderTarget, sf::RenderStates::Default);
+        component.second->draw(renderTarget, sf::RenderStates::Default);
     }
 
     renderTarget.setView(renderTarget.getDefaultView());

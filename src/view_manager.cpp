@@ -5,7 +5,7 @@ ViewManager::ViewManager(sf::RenderTarget& renderTarget, std::shared_ptr<TextMan
 {
 }
 
-void ViewManager::centerViewOnEntity(const std::shared_ptr<GameEntity>& entity)
+sf::View ViewManager::centerViewOnEntity(const std::shared_ptr<GameEntity>& entity)
 {
     // keep view centred/centered on entity
     sf::Vector2f entityPos = entity->getPosition();
@@ -17,6 +17,7 @@ void ViewManager::centerViewOnEntity(const std::shared_ptr<GameEntity>& entity)
     newView.setCenter(centreX, centreY);
 
     m_renderTarget.setView(newView);
+    return newView;
 }
 
 float ViewManager::getViewCentreForCoordinate(const float playerCoordinatePosition, const float levelDimension,

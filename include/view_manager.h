@@ -18,7 +18,7 @@ class ViewManager
 {
     public:
         ViewManager(sf::RenderTarget& renderTarget, std::shared_ptr<TextManager>& textManager);
-        void centerViewOnEntity(const std::shared_ptr<GameEntity>& entity);
+        sf::View centerViewOnEntity(const std::shared_ptr<GameEntity>& entity);
         void showGameOverView();
 
     private:
