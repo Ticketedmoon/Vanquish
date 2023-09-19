@@ -164,3 +164,16 @@ void Level::enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf
         tileMap.highlightTileForDebug(entity, TileMap::getWorldWidthInTiles(), tileColour);
     }
 }
+
+std::vector<std::shared_ptr<GameEntity>> Level::getEnemies()
+{
+    std::vector<std::shared_ptr<GameEntity>> enemies;
+    for (const auto& entity: gameEntities)
+    {
+        if (entity->getType() == EntityType::ENEMY)
+        {
+            enemies.emplace_back(entity);
+        }
+    }
+    return enemies;
+}

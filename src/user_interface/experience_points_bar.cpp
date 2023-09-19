@@ -1,9 +1,9 @@
 #include "user_interface/experience_points_bar.h"
 
-ExperiencePointsBar::ExperiencePointsBar(std::shared_ptr<GameEntity>& entity, sf::Vector2f fillDimensions,
+ExperiencePointsBar::ExperiencePointsBar(const std::shared_ptr<Player>& player, sf::Vector2f fillDimensions,
         sf::Vector2f backgroundDimensions, sf::Vector2f position,
         sf::Color fillColor, sf::Color outlineColour, float outlineThickness)
-        : entity(entity)
+        : m_player(player)
 {
     experienceBarBackground = sf::RectangleShape(backgroundDimensions);
     experienceBarBackground.setPosition(position);
@@ -20,7 +20,7 @@ ExperiencePointsBar::ExperiencePointsBar(std::shared_ptr<GameEntity>& entity, sf
 
 void ExperiencePointsBar::update(GameState& gameState)
 {
-    sf::Vector2f newFillBarSize = sf::Vector2f(entity->getTotalExperiencePoints(), experienceBar.getSize().y);
+    sf::Vector2f newFillBarSize = sf::Vector2f(m_player->getTotalExperiencePoints(), experienceBar.getSize().y);
     experienceBar.setSize(newFillBarSize);
 }
 

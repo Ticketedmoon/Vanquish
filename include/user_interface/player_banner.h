@@ -11,7 +11,7 @@
 class PlayerBanner : public GameComponent
 {
     public:
-        PlayerBanner(std::shared_ptr<GameEntity>& gameEntity, sf::Vector2f fillDimensions,
+        PlayerBanner(std::shared_ptr<GameEntity> gameEntity, sf::Vector2f fillDimensions,
                 sf::Vector2f backgroundDimensions, sf::Vector2f position, sf::Color fillColor, sf::Color outlineColour,
                 sf::Color backgroundFillColour, float outlineThickness, std::shared_ptr<TextManager> textManager);
         void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;

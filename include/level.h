@@ -33,6 +33,7 @@ class Level : public GameComponent
 
         static void interactWithTile(sf::Time deltaTime, std::shared_ptr<Player>& player, Tile::Type tileType);
         void enableEntityTileHighlightsForDebug(std::unordered_map<EntityType, sf::Color> entityTypeTileColour);
+        std::vector<std::shared_ptr<GameEntity>> getEnemies();
 
     private:
         void initialiseGameEntities();

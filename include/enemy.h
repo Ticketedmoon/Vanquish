@@ -17,7 +17,7 @@ static constexpr float ENEMY_SPEED = 45.0f;
 
 static constexpr int HORIZONTAL_DIRECTION_WINDOW_SIZE_FOR_ENEMY_ANIMATION = 20;
 
-static inline constexpr uint16_t STARTING_ENEMY_HEALTH = 50;
+static inline constexpr uint16_t STARTING_ENEMY_HEALTH = 40;
 
 class Enemy : public GameEntity
 {

@@ -11,13 +11,13 @@
 class HealthBar : public GameComponent
 {
     public:
-        HealthBar(std::shared_ptr<GameEntity>& gameEntity, sf::Vector2f fillDimensions,
+        HealthBar(const std::shared_ptr<GameEntity>& entity, sf::Vector2f fillDimensions,
                 sf::Vector2f backgroundDimensions, sf::Vector2f position, sf::Color fillColor, sf::Color outlineColour,
                 float outlineThickness);
-        void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override;
-        void update(GameState& gameState) override;
+        void draw(sf::RenderTarget& renderTarget, sf::RenderStates states) const override = 0;
+        void update(GameState& gameState) override = 0;
 
-    private:
+    protected:
         std::shared_ptr<GameEntity> entity;
         sf::RectangleShape healthBar;
         sf::RectangleShape healthBarBackground;

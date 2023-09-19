@@ -1,9 +1,11 @@
 #include "player_banner.h"
 
-PlayerBanner::PlayerBanner(std::shared_ptr<GameEntity>& gameEntity, sf::Vector2f fillDimensions,
+#include <utility>
+
+PlayerBanner::PlayerBanner(std::shared_ptr<GameEntity> gameEntity, sf::Vector2f fillDimensions,
         sf::Vector2f backgroundDimensions, sf::Vector2f position, sf::Color fillColor, sf::Color outlineColour,
         sf::Color backgroundFillColour, float outlineThickness, std::shared_ptr<TextManager> textManager)
-        : entity(gameEntity), textManager(textManager)
+        : entity(std::move(gameEntity)), textManager(std::move(textManager))
 {
     bannerBackground = sf::RectangleShape(backgroundDimensions);
     bannerBackground.setPosition(position);
