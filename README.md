@@ -83,7 +83,17 @@ A 2D RPG where you begin as a prisoner and find your way in the world.
 ### Enemy health bars
 ![Tue 19 Sep 2023 18:28:15 IST](https://github.com/Ticketedmoon/vanquish/assets/21260839/66159f67-c8b8-4152-aa40-a28f0efb1c72)
 
+
+##### 2023-09-20
+
+**'Entity-Component-System'**
+
+- Today has been about researching into the Entity-Component-System architecture for managing our game.  
+- This may spill over into other days for this to be incorporated into the codebase and the current architecture revamped.
+See the **resources** section at the bottom of this `README` for links to ECS information sources.
+
 ---
 
 Resources:
 - https://route1rodent.itch.io/16x16-rpg-character-sprite-sheet
+- https://www.codingwiththomas.com/blog/an-entity-component-system-from-scratch
