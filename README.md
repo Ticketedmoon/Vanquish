@@ -97,3 +97,4 @@ See the **resources** section at the bottom of this `README` for links to ECS in
 Resources:
 - https://route1rodent.itch.io/16x16-rpg-character-sprite-sheet
 - https://www.codingwiththomas.com/blog/an-entity-component-system-from-scratch
+- https://david-delassus.medium.com/a-short-introduction-to-entity-component-system-in-c-with-entt-330b7def345b

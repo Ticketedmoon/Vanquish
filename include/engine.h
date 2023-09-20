@@ -43,6 +43,7 @@ class Engine {
 
     public:
         Engine();
+        ~Engine();
         static void startGameLoop();
 
     private:

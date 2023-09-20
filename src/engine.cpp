@@ -6,6 +6,11 @@ Engine::Engine()
     buildGameEngineComponents();
 }
 
+Engine::~Engine()
+{
+    window.close();
+}
+
 void Engine::startGameLoop()
 {
     while (window.isOpen())
