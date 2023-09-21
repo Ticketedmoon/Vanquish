@@ -90,11 +90,20 @@ A 2D RPG where you begin as a prisoner and find your way in the world.
 
 - Today has been about researching into the Entity-Component-System architecture for managing our game.  
 - This may spill over into other days for this to be incorporated into the codebase and the current architecture revamped.
+
+```
+Game Engine
+-> Scene [1...N]
+    -> SystemsManager [1]
+    -> EntityManager [1]
+       -> Entity [1...N]
+          -> Component [1...N]
+```
 See the **resources** section at the bottom of this `README` for links to ECS information sources.
 
 ---
 
 Resources:
 - https://route1rodent.itch.io/16x16-rpg-character-sprite-sheet
-- https://www.codingwiththomas.com/blog/an-entity-component-system-from-scratch
-- https://david-delassus.medium.com/a-short-introduction-to-entity-component-system-in-c-with-entt-330b7def345b
+- https://www.codingwiththomas.com/blog/an-Entity-component-system-from-scratch
+- https://david-delassus.medium.com/a-short-introduction-to-Entity-component-system-in-c-with-entt-330b7def345b
