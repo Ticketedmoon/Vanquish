@@ -16,7 +16,6 @@ void EnemyHealthBar::update(GameState& gameState)
     float healthBarPositionX = (entity->getPosition().x + entity->getWidth()/2) - healthBarDimensions.x / 2;
     float healthBarPositionY = (entity->getPosition().y + entity->getHeight()) + 5;
 
-    std::cout << healthBarPositionX << ", " << entity->getPosition().x << '\n';
     healthBarBackground.setPosition(sf::Vector2f(healthBarPositionX, healthBarPositionY));
     healthBar.setPosition(sf::Vector2f(healthBarPositionX, healthBarPositionY));
 }

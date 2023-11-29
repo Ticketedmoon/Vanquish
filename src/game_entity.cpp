@@ -167,8 +167,6 @@ float GameEntity::getTotalExperiencePointsRequiredForLevelUp()
 
 void GameEntity::increaseLevel(float xpPointsDelta)
 {
-    std::cout << "Level Up!" << '\n';
-
     // Update level
      this->level += 1;
 
